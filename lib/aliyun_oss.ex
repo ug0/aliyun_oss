@@ -1,18 +1,5 @@
-defmodule Aliyun.OSS do
+defmodule Aliyun.Oss do
   @moduledoc """
-  Documentation for AliyunOss.
+  Documentation for Aliyun.Oss.
   """
-
-  @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> AliyunOss.hello()
-      :world
-
-  """
-  def hello do
-    :world
-  end
 end

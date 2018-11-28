@@ -1,11 +1,11 @@
-defmodule Aliyun.Oss.Client.ResponseTest do
+defmodule Aliyun.Oss.Client.ErrorTest do
   use ExUnit.Case
-  doctest Aliyun.Oss.Client.Response
+  doctest Aliyun.Oss.Client.Error
 
 
-  alias Aliyun.Oss.Client.Response
+  alias Aliyun.Oss.Client.Error
 
-  describe "parse_error/1" do
+  describe "parse_xml!/1" do
     @xml """
     <Error>
       <Code>AccessDenied</Code>
@@ -18,11 +18,11 @@ defmodule Aliyun.Oss.Client.ResponseTest do
     """
     test "build the complete query url" do
       assert %{
-        code: 'AccessDenied',
-        message: 'The bucket you are attempting to access must be addressed using the specified endpoint. Please send all future requests to this endpoint.',
-        request_id: '5BFCF52FAEFD3AAD7B4D821A',
-        host_id: 'oss-cn-shenzhen.aliyuncs.com',
-      } = Response.parse_error(@xml)
+        "Code" => "AccessDenied",
+        "Message" => "The bucket you are attempting to access must be addressed using the specified endpoint. Please send all future requests to this endpoint.",
+        "RequestId" => "5BFCF52FAEFD3AAD7B4D821A",
+        "HostId" => "oss-cn-shenzhen.aliyuncs.com",
+      } = Error.parse_xml!(@xml)
     end
   end
 end

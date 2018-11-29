@@ -11,7 +11,8 @@ defmodule Aliyun.Oss.XmlParser do
       {"Prefix", :string},
       {"Marker", :string},
       {"IsTruncated", :boolean},
-      {"MaxKeys", :integer}
+      {"MaxKeys", :integer},
+      {"Delimiter", :string}
   ]
   defp do_parse_xml(xml, root_node) do
     XmlToMap.naive_map(xml)

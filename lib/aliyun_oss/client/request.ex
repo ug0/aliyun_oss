@@ -69,14 +69,18 @@ defmodule Aliyun.Oss.Client.Request do
   end
 
   defp canonicalize_resource(resource, nil), do: resource
-
   defp canonicalize_resource(resource, sub_resources) do
-    case sub_resources |> Enum.sort() |> URI.encode_query() do
+    case sub_resources |> Stream.map(&encode_param/1) |> Enum.join("&") do
       "" -> resource
       query_string -> resource <> "?" <> query_string
     end
+  end
 
-    resource
+  defp encode_param(param) do
+    case param do
+      {k, nil} -> k
+      {k, v} -> "#{k}=#{v}"
+    end
   end
 
   defp canonicalize_oss_headers(headers) do

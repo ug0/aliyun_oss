@@ -1,13 +1,34 @@
-defmodule Aliyun.Oss.XmlParserTest do
+defmodule Aliyun.Oss.Client.ResponseTest do
   use ExUnit.Case
-  doctest Aliyun.Oss.XmlParser
-
-  alias Aliyun.Oss.XmlParser
+  doctest Aliyun.Oss.Client.Response
 
 
-  describe "parse_xml/1" do
+  alias Aliyun.Oss.Client.Response
+
+  describe "parse_error_xml!/1" do
+    @xml """
+    <Error>
+      <Code>AccessDenied</Code>
+      <Message>The bucket you are attempting to access must be addressed using the specified endpoint. Please send all future requests to this endpoint.</Message>
+      <RequestId>5BFCF52FAEFD3AAD7B4D821A</RequestId>
+      <HostId>oss-cn-shenzhen.aliyuncs.com</HostId>
+      <Bucket>asd</Bucket>
+      <Endpoint>oss-cn-hangzhou.aliyuncs.com</Endpoint>
+    </Error>
+    """
+    test "build the complete query url" do
+      assert %{
+        "Code" => "AccessDenied",
+        "Message" => "The bucket you are attempting to access must be addressed using the specified endpoint. Please send all future requests to this endpoint.",
+        "RequestId" => "5BFCF52FAEFD3AAD7B4D821A",
+        "HostId" => "oss-cn-shenzhen.aliyuncs.com",
+      } = Response.parse_error_xml!(@xml)
+    end
+  end
+
+  describe "parse_result_xml/2" do
     test "parse invalid xml" do
-      assert {:error, _} = XmlParser.parse_xml("invalid xml", "root_node")
+      assert {:error, _} = Response.parse_xml("invalid xml")
     end
 
     @xml """
@@ -54,7 +75,7 @@ defmodule Aliyun.Oss.XmlParserTest do
         "IsTruncated" => true,
         "NextMarker" => "Bucket2",
         "Buckets" => %{ "Bucket" => [^bucket1, ^bucket2] }
-      }} = XmlParser.parse_xml(@xml, "ListAllMyBucketsResult")
+      }} = Response.parse_xml(@xml)
     end
   end
 end

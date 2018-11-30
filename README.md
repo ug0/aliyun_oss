@@ -17,6 +17,15 @@ def deps do
 end
 ```
 
+
+## Configuration
+```elixir
+config :aliyun_oss,
+  endpoint: "oss-cn-shenzhen.aliyuncs.com",
+  access_key_id: "ALIYUN_ACCESS_KEY_ID",
+  access_key_secret: "ALIYUN_ACCESS_KEY_SECRET"
+```
+
 ## Roadmap
 
 ### Official Interfaces

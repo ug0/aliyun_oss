@@ -1,11 +1,13 @@
 # AliyunOss
 
+[![Build Status](https://semaphoreci.com/api/v1/ug0/aliyun_oss/branches/master/shields_badge.svg)](https://semaphoreci.com/ug0/aliyun_oss)
+[![Hex.pm](https://img.shields.io/hexpm/v/aliyun_oss.svg)](https://hex.pm/packages/aliyun_oss)
+
 阿里云对象存储（OSS）API
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `aliyun_oss` to your list of dependencies in `mix.exs`:
+Add `aliyun_oss` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do

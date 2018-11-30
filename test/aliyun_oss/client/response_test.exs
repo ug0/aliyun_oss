@@ -67,7 +67,7 @@ defmodule Aliyun.Oss.Client.ResponseTest do
       bucket1 = %{"Name" => "Bucket1", "Location" => "oss-cn-shenzhen", "StorageClass" => "Standard", "CreationDate" => "2018-10-12T07:57:51.000Z", "IntranetEndpoint" => "oss-cn-shenzhen-internal.aliyuncs.com", "ExtranetEndpoint" => "oss-cn-shenzhen.aliyuncs.com"}
       bucket2 = %{"Name" => "Bucket2", "Location" => "oss-cn-shenzhen", "StorageClass" => "Standard", "CreationDate" => "2018-09-20T01:49:43.000Z", "IntranetEndpoint" => "oss-cn-shenzhen-internal.aliyuncs.com", "ExtranetEndpoint" => "oss-cn-shenzhen.aliyuncs.com"}
 
-      assert {:ok, %{
+      assert {:ok, %{ "ListAllMyBucketsResult" => %{
         "Owner" => %{"ID" => "12345", "DisplayName" => "12345"},
         "Prefix" => nil,
         "Marker" => nil,
@@ -75,7 +75,7 @@ defmodule Aliyun.Oss.Client.ResponseTest do
         "IsTruncated" => true,
         "NextMarker" => "Bucket2",
         "Buckets" => %{ "Bucket" => [^bucket1, ^bucket2] }
-      }} = Response.parse_xml(@xml)
+      }}} = Response.parse_xml(@xml)
     end
   end
 end

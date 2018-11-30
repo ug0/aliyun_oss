@@ -166,4 +166,94 @@ defmodule Aliyun.Oss.Bucket do
   def get_bucket_info(bucket) do
     get_bucket(bucket, %{}, %{"bucketInfo" => nil})
   end
+
+  @doc """
+  GetBucketLogging 用于查看Bucket的访问日志配置情况。
+
+  ## Examples
+
+      iex> Aliyun.Oss.Bucket.get_bucket_logging("some-bucket")
+      {:ok,
+      %{
+        "BucketLoggingStatus" => %{
+          "LoggingEnabled" => %{
+            "TargetBucket" => "some-bucket",
+            "TargetPrefix" => "oss-accesslog/"
+          }
+        }
+      }}
+  """
+  @spec get_bucket_logging(String.t()) :: {:error, error_details()} | {:ok, map()}
+  def get_bucket_logging(bucket) do
+    get_bucket(bucket, %{}, %{"logging" => nil})
+  end
+
+  @doc """
+  GetBucketWebsite 接口用于查看bucket的静态网站托管状态以及跳转规则。
+
+  ## Examples
+
+      iex> Aliyun.Oss.Bucket.get_bucket_website("some-bucket")
+      {:ok, %{"WebsiteConfiguration" => %{"IndexDocument" => %{"Suffix" => "index.html"}}}}
+
+      iex> Aliyun.Oss.Bucket.get_bucket_website("unkown-bucket")
+      {:error,
+        {:oss_error, 404,
+          %{
+            "BucketName" => "unkown-bucket",
+            "Code" => "NoSuchBucket",
+            "HostId" => "unkown-bucket.oss-cn-shenzhen.aliyuncs.com",
+            "Message" => "The specified bucket does not exist.",
+            "RequestId" => "5C0000000000000000000000"
+          }}}
+  """
+  @spec get_bucket_website(String.t()) :: {:error, error_details()} | {:ok, map()}
+  def get_bucket_website(bucket) do
+    get_bucket(bucket, %{}, %{"website" => nil})
+  end
+
+  @doc """
+  GetBucketReferer 操作用于查看bucket的Referer相关配置。
+
+  ## Examples
+
+      iex> Aliyun.Oss.Bucket.get_bucket_referer("some-bucket")
+      {:ok,
+      %{
+        "RefererConfiguration" => %{
+          "AllowEmptyReferer" => "true",
+          "RefererList" => nil
+        }
+      }}
+  """
+
+  @spec get_bucket_referer(String.t()) :: {:error, error_details()} | {:ok, map()}
+  def get_bucket_referer(bucket) do
+    get_bucket(bucket, %{}, %{"referer" => nil})
+  end
+
+  @doc """
+  GetBucketLifecycle 用于查看Bucket的Lifecycle配置。
+
+  ## Examples
+
+      iex> Aliyun.Oss.Bucket.get_bucket_lifecycle("some-bucket")
+      {:ok,
+      %{
+        "LifecycleConfiguration" => %{
+          "Rule" => %{
+            "ID" => "delete after one day",
+            "Prefix" => "logs/",
+            "Status" => "Enabled",
+            "Expiration" => %{
+              "Days" => "1"
+            }
+          }
+        }
+      }}
+  """
+  @spec get_bucket_lifecycle(String.t()) :: {:error, error_details()} | {:ok, map()}
+  def get_bucket_lifecycle(bucket) do
+    get_bucket(bucket, %{}, %{"lifecycle" => nil})
+  end
 end

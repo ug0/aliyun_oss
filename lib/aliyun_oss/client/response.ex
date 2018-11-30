@@ -8,7 +8,15 @@ defmodule Aliyun.Oss.Client.Response do
     "Marker" => :string,
     "IsTruncated" => :boolean,
     "MaxKeys" => :integer,
-    "Delimiter" => :string
+    "Delimiter" => :string,
+    "RuleNumber" => :integer,
+    "HttpErrorCodeReturnedEquals" => :integer,
+    "PassQueryString" => :boolean,
+    "MirrorPassQueryString" => :boolean,
+    "MirrorFollowRedirect" => :boolean,
+    "MirrorCheckMd5" => :boolean,
+    "PassAll" => :boolean,
+    "HttpRedirectCode" => :integer
   }
   def parse_xml(xml) do
     try do

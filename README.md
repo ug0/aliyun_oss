@@ -24,7 +24,7 @@ end
 
   - [x] GetService	得到该账户下所有Bucket
 
-- Bucket
+- [ ] Bucket
 
   - [ ] Put Bucket	创建Bucket
   - [ ] Put Bucket ACL	设置Bucket访问权限
@@ -32,18 +32,18 @@ end
   - [ ] Put Bucket Website	设置Bucket为静态网站托管模式
   - [ ] Put Bucket Referer	设置Bucket的防盗链规则
   - [ ] Put Bucket Lifecycle	设置Bucket中Object的生命周期规则
-  - [ ] Get Bucket Acl	获得Bucket访问权限
-  - [ ] Get Bucket Location	获得Bucket所属的数据中心位置信息
-  - [ ] Get Bucket Logging	查看Bucket的访问日志配置情况
-  - [ ] Get Bucket Website	查看Bucket的静态网站托管状态
-  - [ ] Get Bucket Referer	查看Bucket的防盗链规则
-  - [ ] Get Bucket Lifecycle	查看Bucket中Object的生命周期规则
+  - [x] Get Bucket Acl	获得Bucket访问权限
+  - [x] Get Bucket Location	获得Bucket所属的数据中心位置信息
+  - [x] Get Bucket Logging	查看Bucket的访问日志配置情况
+  - [x] Get Bucket Website	查看Bucket的静态网站托管状态
+  - [x] Get Bucket Referer	查看Bucket的防盗链规则
+  - [x] Get Bucket Lifecycle	查看Bucket中Object的生命周期规则
   - [ ] Delete Bucket	删除Bucket
   - [ ] Delete Bucket Logging	关闭Bucket访问日志记录功能
   - [ ] Delete Bucket Website	关闭Bucket的静态网站托管模式
   - [ ] Delete Bucket Lifecycle	删除Bucket中Object的生命周期规则
   - [x] Get Bucket(List Object)	获得Bucket中所有Object的信息
-  - [ ] Get Bucket Info	获取Bucket信息
+  - [x] Get Bucket Info	获取Bucket信息
 
 - [ ] Object
 

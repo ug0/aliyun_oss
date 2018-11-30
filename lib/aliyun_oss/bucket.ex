@@ -5,9 +5,7 @@ defmodule Aliyun.Oss.Bucket do
 
   import Aliyun.Oss.Config, only: [endpoint: 0]
 
-  alias Aliyun.Oss.Client
-
-  defstruct [:name, :location, :creation_date, :intranet_endpoint, :extranet_endpoint, :storage_class]
+  alias Aliyun.Oss.Service
 
   @type error_details() :: {:http_error, String.t()} | {:xml_parse_error, String.t()} | {:oss_error, integer(), map()}
 
@@ -51,16 +49,9 @@ defmodule Aliyun.Oss.Bucket do
             "RequestId" => "5BFF8912332CCD8D560F65D9"
           }}}
   """
-  @spec list_buckets(map(), map()) :: {:error, error_details()} | {:ok, map()}
-  def list_buckets(query_params \\ %{}, sub_resources \\ %{}) do
-    Client.request(%{
-      verb: "GET",
-      host: endpoint(),
-      path: "/",
-      resource: "/",
-      query_params: query_params,
-      sub_resources: sub_resources
-    })
+  @spec list_buckets(map()) :: {:error, error_details()} | {:ok, map()}
+  def list_buckets(query_params \\ %{}) do
+    Service.get(endpoint(), "/", "/", query_params)
   end
 
   @doc """
@@ -104,14 +95,6 @@ defmodule Aliyun.Oss.Bucket do
   """
   @spec get_bucket(String.t(), map(), map()) :: {:error, error_details()} | {:ok, map()}
   def get_bucket(bucket, query_params \\ %{}, sub_resources \\ %{}) do
-    host = bucket <> "." <> endpoint()
-    Client.request(%{
-      verb: "GET",
-      host: host,
-      resource: "/#{bucket}/",
-      path: "/",
-      query_params: query_params,
-      sub_resources: sub_resources
-    })
+    Service.get("#{bucket}.#{endpoint()}", "/", "/#{bucket}/", query_params, sub_resources)
   end
 end

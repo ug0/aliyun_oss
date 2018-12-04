@@ -60,14 +60,14 @@ config :aliyun_oss,
 
   - [ ] Put Object	上传object
   - [ ] Copy Object	拷贝一个object成另外一个object
-  - [ ] Get Object	获取Object
+  - [x] Get Object	获取Object
   - [ ] Delete Object	删除Object
   - [ ] Delete Multiple Objects	删除多个Object
   - [ ] Head Object	获得Object的meta信息
   - [ ] Post Object	使用Post上传Object
   - [ ] Append Object	在Object尾追加上传数据
   - [ ] Put Object ACL	设置Object ACL
-  - [ ] Get Object ACL	获取Object ACL信息
+  - [x] Get Object ACL	获取Object ACL信息
   - [ ] Callback	上传回调
 
 

@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.2.0
+- Get Object
+- Get Object Acl
+
 ## v0.1.0
 - Get Bucket Acl	获得Bucket访问权限
 - Get Bucket Location	获得Bucket所属的数据中心位置信息

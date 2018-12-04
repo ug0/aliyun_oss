@@ -5,7 +5,7 @@ defmodule Aliyun.Oss.Bucket do
 
   import Aliyun.Oss.Config, only: [endpoint: 0]
 
-  alias Aliyun.Oss.Service
+  alias Aliyun.Oss.Client
 
   @type error_details() :: {:http_error, String.t()} | {:xml_parse_error, String.t()} | {:oss_error, integer(), map()}
 
@@ -51,7 +51,13 @@ defmodule Aliyun.Oss.Bucket do
   """
   @spec list_buckets(map()) :: {:error, error_details()} | {:ok, map()}
   def list_buckets(query_params \\ %{}) do
-    Service.get(endpoint(), "/", "/", query_params)
+    Client.request(%{
+      verb: "GET",
+      host: endpoint(),
+      path: "/",
+      resource: "/",
+      query_params: query_params,
+    })
   end
 
   @doc """
@@ -97,7 +103,14 @@ defmodule Aliyun.Oss.Bucket do
   """
   @spec get_bucket(String.t(), map(), map()) :: {:error, error_details()} | {:ok, map()}
   def get_bucket(bucket, query_params \\ %{}, sub_resources \\ %{}) do
-    Service.get("#{bucket}.#{endpoint()}", "/", "/#{bucket}/", query_params, sub_resources)
+    Client.request(%{
+      verb: "GET",
+      host: "#{bucket}.#{endpoint()}",
+      path: "/",
+      resource: "/#{bucket}/",
+      query_params: query_params,
+      sub_resources: sub_resources
+    })
   end
 
   @doc """

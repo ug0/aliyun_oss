@@ -6,9 +6,9 @@ defmodule Aliyun.Oss.Bucket do
   import Aliyun.Oss.Config, only: [endpoint: 0]
 
   alias Aliyun.Oss.Client
-  alias Aliyun.Oss.Client.Response
+  alias Aliyun.Oss.Client.{Response, Error}
 
-  @type error_details() :: {:http_error, String.t()} | {:oss_error, integer(), map() | String.t()}
+  @type error() :: Error.t() | atom()
 
   @doc """
   GetService (ListBuckets) 对于服务地址作Get请求可以返回请求者拥有的所有Bucket。
@@ -47,17 +47,21 @@ defmodule Aliyun.Oss.Bucket do
 
       iex> Aliyun.Oss.Bucket.list_buckets(%{"max-keys" => 100000})
       {:error,
-        {:oss_error, 400,
-          %{
+        %Aliyun.Oss.Client.Error{
+          status_code: 400,
+          parsed_details: %{
             "ArgumentName" => "max-keys",
             "ArgumentValue" => "100000",
             "Code" => "InvalidArgument",
             "HostId" => "oss-cn-shenzhen.aliyuncs.com",
             "Message" => "Argument max-keys must be an integer between 1 and 1000.",
             "RequestId" => "5BFF8912332CCD8D560F65D9"
-          }}}
+          },
+          body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>...</xml>"
+        }
+      }
   """
-  @spec list_buckets(map()) :: {:error, error_details()} | {:ok, Response.t()}
+  @spec list_buckets(map()) :: {:error, error()} | {:ok, Response.t()}
   def list_buckets(query_params \\ %{}) do
     Client.request(%{
       verb: "GET",
@@ -107,18 +111,24 @@ defmodule Aliyun.Oss.Bucket do
 
       iex> Aliyun.Oss.Bucket.get_bucket("unknown-bucket")
       {:error,
-        {:oss_error, 404,
-          %{ "ListBucketResult" => %{
-            "BucketName" => "unknown-bucket",
-            "Code" => "NoSuchBucket",
-            "HostId" => "unknown-bucket.oss-cn-shenzhen.aliyuncs.com",
-            "Message" => "The specified bucket does not exist.",
-            "RequestId" => "5BFF89955E29FF66F10B9763"
-          }}}}
+        %Aliyun.Oss.Client.Error{
+          status_code: 404,
+          parsed_details: %{
+            "ListBucketResult" => %{
+              "BucketName" => "unknown-bucket",
+              "Code" => "NoSuchBucket",
+              "HostId" => "unknown-bucket.oss-cn-shenzhen.aliyuncs.com",
+              "Message" => "The specified bucket does not exist.",
+              "RequestId" => "5BFF89955E29FF66F10B9763"
+            }
+          },
+          body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>...</xml>"
+        }
+      }
 
     注：所有 GetBucketXXX 相关操作亦可由此接口实现, 即 Bucket.get_bucket_acl("some-bucket") 等同于 Bucket.get_bucket("some-bucket", %{}, %{"acl" => nil})
   """
-  @spec get_bucket(String.t(), map(), map()) :: {:error, error_details()} | {:ok, Response.t()}
+  @spec get_bucket(String.t(), map(), map()) :: {:error, error()} | {:ok, Response.t()}
   def get_bucket(bucket, query_params \\ %{}, sub_resources \\ %{}) do
     Client.request(%{
       verb: "GET",
@@ -149,7 +159,7 @@ defmodule Aliyun.Oss.Bucket do
         }
       }
   """
-  @spec get_bucket_acl(String.t()) :: {:error, error_details()} | {:ok, Response.t()}
+  @spec get_bucket_acl(String.t()) :: {:error, error()} | {:ok, Response.t()}
   def get_bucket_acl(bucket) do
     get_bucket(bucket, %{}, %{"acl" => nil})
   end
@@ -169,7 +179,7 @@ defmodule Aliyun.Oss.Bucket do
         }
       }
   """
-  @spec get_bucket_location(String.t()) :: {:error, error_details()} | {:ok, Response.t()}
+  @spec get_bucket_location(String.t()) :: {:error, error()} | {:ok, Response.t()}
   def get_bucket_location(bucket) do
     get_bucket(bucket, %{}, %{"location" => nil})
   end
@@ -212,7 +222,7 @@ defmodule Aliyun.Oss.Bucket do
         ]
       }
   """
-  @spec get_bucket_info(String.t()) :: {:error, error_details()} | {:ok, Response.t()}
+  @spec get_bucket_info(String.t()) :: {:error, error()} | {:ok, Response.t()}
   def get_bucket_info(bucket) do
     get_bucket(bucket, %{}, %{"bucketInfo" => nil})
   end
@@ -233,7 +243,7 @@ defmodule Aliyun.Oss.Bucket do
         }
       }}
   """
-  @spec get_bucket_logging(String.t()) :: {:error, error_details()} | {:ok, Response.t()}
+  @spec get_bucket_logging(String.t()) :: {:error, error()} | {:ok, Response.t()}
   def get_bucket_logging(bucket) do
     get_bucket(bucket, %{}, %{"logging" => nil})
   end
@@ -248,16 +258,20 @@ defmodule Aliyun.Oss.Bucket do
 
       iex> Aliyun.Oss.Bucket.get_bucket_website("unkown-bucket")
       {:error,
-        {:oss_error, 404,
-          %{
+        %Aliyun.Oss.Client.Error{
+          status_code: 404,
+          parsed_details: %{
             "BucketName" => "unkown-bucket",
             "Code" => "NoSuchBucket",
             "HostId" => "unkown-bucket.oss-cn-shenzhen.aliyuncs.com",
             "Message" => "The specified bucket does not exist.",
             "RequestId" => "5C0000000000000000000000"
-          }}}
+          },
+          body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>...</xml>"
+        }
+      }
   """
-  @spec get_bucket_website(String.t()) :: {:error, error_details()} | {:ok, Response.t()}
+  @spec get_bucket_website(String.t()) :: {:error, error()} | {:ok, Response.t()}
   def get_bucket_website(bucket) do
     get_bucket(bucket, %{}, %{"website" => nil})
   end
@@ -277,7 +291,7 @@ defmodule Aliyun.Oss.Bucket do
       }}
   """
 
-  @spec get_bucket_referer(String.t()) :: {:error, error_details()} | {:ok, Response.t()}
+  @spec get_bucket_referer(String.t()) :: {:error, error()} | {:ok, Response.t()}
   def get_bucket_referer(bucket) do
     get_bucket(bucket, %{}, %{"referer" => nil})
   end
@@ -302,7 +316,7 @@ defmodule Aliyun.Oss.Bucket do
         }
       }}
   """
-  @spec get_bucket_lifecycle(String.t()) :: {:error, error_details()} | {:ok, Response.t()}
+  @spec get_bucket_lifecycle(String.t()) :: {:error, error()} | {:ok, Response.t()}
   def get_bucket_lifecycle(bucket) do
     get_bucket(bucket, %{}, %{"lifecycle" => nil})
   end

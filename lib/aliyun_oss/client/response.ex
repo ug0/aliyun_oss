@@ -26,27 +26,15 @@ defmodule Aliyun.Oss.Client.Response do
     }
   end
 
-  def parse_error(error_body) do
-    try do
-      get_data_map!(error_body) |> Map.fetch!("Error")
-    catch
-      {:error, _} -> error_body
-    end
-  end
-
-  def parse_headers(headers) do
-    headers
-  end
-
   def parse_body(body) do
     try do
-      get_data_map!(body) |> cast_data()
+      body
+      |> XmlToMap.naive_map()
+      |> cast_data()
     catch
       {:error, _ } -> body
     end
   end
-
-  defp get_data_map!(xml), do: XmlToMap.naive_map(xml)
 
   defp cast_data(map) do
     map

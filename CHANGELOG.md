@@ -2,6 +2,7 @@
 
 ## v0.2.0
 - New response struct
+- New error struct
 - New APIs:
   - Get Object
   - Get Object Acl

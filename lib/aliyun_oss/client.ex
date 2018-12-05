@@ -1,5 +1,5 @@
 defmodule Aliyun.Oss.Client do
-  alias Aliyun.Oss.Client.{Request, Response}
+  alias Aliyun.Oss.Client.{Request, Response, Error}
 
   def request(init_req) do
     case init_req |> Request.build_signed() |> do_request do
@@ -7,10 +7,10 @@ defmodule Aliyun.Oss.Client do
         {:ok, Response.parse(body, headers)}
 
       {:ok, %HTTPoison.Response{body: body, status_code: status_code}} ->
-        {:error, {:oss_error, status_code, Response.parse_error(body)}}
+        {:error, Error.parse(%Error{body: body, status_code: status_code})}
 
       {:error, %HTTPoison.Error{reason: reason}} ->
-        {:error, {:http_error, reason}}
+        {:error, reason}
     end
   end
 

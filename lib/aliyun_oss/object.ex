@@ -6,9 +6,9 @@ defmodule Aliyun.Oss.Object do
   import Aliyun.Oss.Config, only: [endpoint: 0]
 
   alias Aliyun.Oss.Client
-  alias Aliyun.Oss.Client.Response
+  alias Aliyun.Oss.Client.{Response, Error}
 
-  @type error_details() :: {:http_error, String.t()} | {:oss_error, integer(), map() | String.t()}
+  @type error() :: Error.t() | atom()
 
   @doc """
   GetObject 用于获取某个 Object
@@ -48,7 +48,7 @@ defmodule Aliyun.Oss.Object do
         ]
       }
   """
-  @spec get_object(String.t(), String.t(), map(), map()) :: {:error, error_details()} | {:ok, Response.t()}
+  @spec get_object(String.t(), String.t(), map(), map()) :: {:error, error()} | {:ok, Response.t()}
   def get_object(bucket, object, headers \\ %{}, sub_resources \\ %{}) do
     Client.request(%{
       verb: "GET",
@@ -82,7 +82,7 @@ defmodule Aliyun.Oss.Object do
         ]
       }
   """
-  @spec get_object_acl(String.t(), String.t()) :: {:error, error_details()} | {:ok, Response.t()}
+  @spec get_object_acl(String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
   def get_object_acl(bucket, object) do
     get_object(bucket, object, %{}, %{"acl" => nil})
   end
@@ -114,9 +114,9 @@ defmodule Aliyun.Oss.Object do
         ]
       }}
       iex> Aliyun.Oss.Object.head_object("some-bucket", "unknown-object")
-      {:error, {:oss_error, 404, ""}}
+      {:error, %Aliyun.Oss.Client.Error{status_code: 404, body: "", parsed_details: nil}}
   """
-  @spec head_object(String.t(), String.t(), map()) :: {:error, error_details()} | {:ok, Response.t()}
+  @spec head_object(String.t(), String.t(), map()) :: {:error, error()} | {:ok, Response.t()}
   def head_object(bucket, object, headers \\ %{}) do
     Client.request(%{
       verb: "HEAD",

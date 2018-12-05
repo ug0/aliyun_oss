@@ -5,31 +5,6 @@ defmodule Aliyun.Oss.Client.ResponseTest do
 
   alias Aliyun.Oss.Client.Response
 
-  describe "parse_error/1" do
-    test "error is not xml" do
-      assert "invalid" == Response.parse_error("invalid xml")
-    end
-
-    @xml """
-    <Error>
-      <Code>AccessDenied</Code>
-      <Message>The bucket you are attempting to access must be addressed using the specified endpoint. Please send all future requests to this endpoint.</Message>
-      <RequestId>5BFCF52FAEFD3AAD7B4D821A</RequestId>
-      <HostId>oss-cn-shenzhen.aliyuncs.com</HostId>
-      <Bucket>asd</Bucket>
-      <Endpoint>oss-cn-hangzhou.aliyuncs.com</Endpoint>
-    </Error>
-    """
-    test "error is valid xml" do
-      assert %{
-        "Code" => "AccessDenied",
-        "Message" => "The bucket you are attempting to access must be addressed using the specified endpoint. Please send all future requests to this endpoint.",
-        "RequestId" => "5BFCF52FAEFD3AAD7B4D821A",
-        "HostId" => "oss-cn-shenzhen.aliyuncs.com",
-      } = Response.parse_error(@xml)
-    end
-  end
-
   describe "parse/1" do
     test "parse invalid xml" do
       assert %Response{
@@ -84,11 +59,12 @@ defmodule Aliyun.Oss.Client.ResponseTest do
           "MaxKeys" => 2,
           "IsTruncated" => true,
           "NextMarker" => "Bucket2",
-          "Buckets" => %{ "Bucket" => [^bucket1, ^bucket2] },
+          "Buckets" => %{ "Bucket" => [^bucket1, ^bucket2] }
+        }},
         headers: [
           {"Content-Length", "250"}
         ]
-      }}} = Response.parse(@xml, [{"Content-Length", "250"}])
+      } = Response.parse(@xml, [{"Content-Length", "250"}])
     end
   end
 end

@@ -8,7 +8,7 @@ defmodule Aliyun.Oss.Object do
   alias Aliyun.Oss.Client
   alias Aliyun.Oss.Client.Response
 
-  @type error_details() :: {:http_error, String.t()} | {:xml_parse_error, String.t()} | {:oss_error, integer(), map()}
+  @type error_details() :: {:http_error, String.t()} | {:oss_error, integer(), map() | String.t()}
 
   @doc """
   GetObject 用于获取某个 Object
@@ -16,30 +16,40 @@ defmodule Aliyun.Oss.Object do
   ## Examples
 
       iex> Aliyun.Oss.Object.get_object("some-bucket", "some-object")
-      {:ok,
-        <<208, 207, 17, 224, 161, 177, 26, 225, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-          0, 0, 0, 62, 0, 3, 0, 254, 255, 9, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 18,
-          0, 0, 0, ...>>}
+      {:ok, %Aliyun.Oss.Client.Response{
+          data: <<208, 207, 17, 224, 161, 177, 26, 225, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 62, 0, 3, 0, 254, 255, 9, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 18,
+            0, 0, 0, ...>>,
+          headers: [
+            {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
+            ...
+          ]
+        }
+      }
 
 
   亦可用于获取某个 Object 指定 SubResource(GetObjectXXX)。
 
   ## Examples
 
-      iex> Aliyun.Oss.Object.get_object("some-bucket", "some-object", %{}, %{"acl" => nil}, fn body -> {:ok, body})
-      {:ok,
-      %{
-        "AccessControlPolicy" => %{
-          "AccessControlList" => %{"Grant" => "default"},
-          "Owner" => %{
-            "DisplayName" => "1111111111111111",
-            "ID" => "1111111111111111"
+      iex> Aliyun.Oss.Object.get_object("some-bucket", "some-object", %{}, %{"acl" => nil})
+      {:ok, %Aliyun.Oss.Client.Response{
+        data: %{
+          "AccessControlPolicy" => %{
+            "AccessControlList" => %{"Grant" => "default"},
+            "Owner" => %{
+              "DisplayName" => "1111111111111111",
+              "ID" => "1111111111111111"
+            }
           }
-        }
-      }}
+        },
+        headers: [
+          {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"}
+        ]
+      }
   """
-  @spec get_object(String.t(), String.t(), map(), map(), fun()) :: {:error, error_details()} | {:ok, map()}
-  def get_object(bucket, object, headers \\ %{}, sub_resources \\ %{}, result_parser \\ &parse_plain/1) do
+  @spec get_object(String.t(), String.t(), map(), map()) :: {:error, error_details()} | {:ok, Response.t()}
+  def get_object(bucket, object, headers \\ %{}, sub_resources \\ %{}) do
     Client.request(%{
       verb: "GET",
       host: "#{bucket}.#{endpoint()}",
@@ -48,7 +58,7 @@ defmodule Aliyun.Oss.Object do
       resource: "/#{bucket}/#{object}",
       query_params: %{},
       sub_resources: sub_resources
-    }, result_parser)
+    })
   end
 
   @doc """
@@ -57,27 +67,65 @@ defmodule Aliyun.Oss.Object do
   ## Examples
 
       iex> Aliyun.Oss.Object.get_object_acl("some-bucket", "some-object")
-      {:ok,
-      %{
-        "AccessControlPolicy" => %{
-          "AccessControlList" => %{"Grant" => "default"},
-          "Owner" => %{
-            "DisplayName" => "1111111111111111",
-            "ID" => "1111111111111111"
+      {:ok, %Aliyun.Oss.Client.Response{
+        data: %{
+          "AccessControlPolicy" => %{
+            "AccessControlList" => %{"Grant" => "default"},
+            "Owner" => %{
+              "DisplayName" => "1111111111111111",
+              "ID" => "1111111111111111"
+            }
           }
-        }
-      }}
+        },
+        headers: [
+          {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"}
+        ]
+      }
   """
-  @spec get_object_acl(String.t(), String.t()) :: {:error, error_details()} | {:ok, map()}
+  @spec get_object_acl(String.t(), String.t()) :: {:error, error_details()} | {:ok, Response.t()}
   def get_object_acl(bucket, object) do
-    get_object(bucket, object, %{}, %{"acl" => nil}, &parse_xml/1)
+    get_object(bucket, object, %{}, %{"acl" => nil})
   end
 
-  def parse_xml(xml) do
-    Response.parse_xml(xml)
-  end
+  @doc """
+  HeadObject只返回某个Object的meta信息，不返回文件内容。
 
-  def parse_plain(body) do
-    {:ok, body}
+  ## Examples
+
+      iex> Aliyun.Oss.Object.head_object("some-bucket", "some-object")
+      {:ok,
+      %Aliyun.Oss.Client.Response{
+        data: "",
+        headers: [
+          {"Server", "AliyunOSS"},
+          {"Date", "Wed, 05 Dec 2018 05:50:02 GMT"},
+          {"Content-Type", "application/octet-stream"},
+          {"Content-Length", "0"},
+          {"Connection", "keep-alive"},
+          {"x-oss-request-id", "5C0000000000000000000000"},
+          {"Accept-Ranges", "bytes"},
+          {"ETag", "\"D4100000000000000000000000000000\""},
+          {"Last-Modified", "Mon, 15 Oct 2018 01:38:47 GMT"},
+          {"x-oss-object-type", "Normal"},
+          {"x-oss-hash-crc64ecma", "0"},
+          {"x-oss-storage-class", "IA"},
+          {"Content-MD5", "1B2M2Y8AsgTpgAmY7PhCfg=="},
+          {"x-oss-server-time", "19"}
+        ]
+      }}
+      iex> Aliyun.Oss.Object.head_object("some-bucket", "unknown-object")
+      {:error, {:oss_error, 404, ""}}
+  """
+  @spec head_object(String.t(), String.t(), map()) :: {:error, error_details()} | {:ok, Response.t()}
+  def head_object(bucket, object, headers \\ %{}) do
+    Client.request(%{
+      verb: "HEAD",
+      host: "#{bucket}.#{endpoint()}",
+      path: "/#{object}",
+      headers: headers,
+      resource: "/#{bucket}/#{object}",
+      query_params: %{},
+      sub_resources: %{}
+    })
   end
 end

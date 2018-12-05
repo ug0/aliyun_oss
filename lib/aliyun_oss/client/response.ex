@@ -1,7 +1,7 @@
 defmodule Aliyun.Oss.Client.Response do
-  def parse_error_xml!(xml) do
-    get_data_map!(xml) |> Map.fetch!("Error")
-  end
+  alias Aliyun.Oss.Client.Response
+
+  defstruct [:data, :headers]
 
   @value_casting_rules %{
     "Prefix" => :string,
@@ -18,11 +18,31 @@ defmodule Aliyun.Oss.Client.Response do
     "PassAll" => :boolean,
     "HttpRedirectCode" => :integer
   }
-  def parse_xml(xml) do
+
+  def parse(body, headers \\ []) do
+    %Response{
+      data: parse_body(body),
+      headers: headers,
+    }
+  end
+
+  def parse_error(error_body) do
     try do
-      {:ok, get_data_map!(xml) |> cast_data()}
+      get_data_map!(error_body) |> Map.fetch!("Error")
     catch
-      {:error, message} -> {:error, message}
+      {:error, _} -> error_body
+    end
+  end
+
+  def parse_headers(headers) do
+    headers
+  end
+
+  def parse_body(body) do
+    try do
+      get_data_map!(body) |> cast_data()
+    catch
+      {:error, _ } -> body
     end
   end
 

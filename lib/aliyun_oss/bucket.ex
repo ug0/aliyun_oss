@@ -6,8 +6,9 @@ defmodule Aliyun.Oss.Bucket do
   import Aliyun.Oss.Config, only: [endpoint: 0]
 
   alias Aliyun.Oss.Client
+  alias Aliyun.Oss.Client.Response
 
-  @type error_details() :: {:http_error, String.t()} | {:xml_parse_error, String.t()} | {:oss_error, integer(), map()}
+  @type error_details() :: {:http_error, String.t()} | {:oss_error, integer(), map() | String.t()}
 
   @doc """
   GetService (ListBuckets) 对于服务地址作Get请求可以返回请求者拥有的所有Bucket。
@@ -15,27 +16,34 @@ defmodule Aliyun.Oss.Bucket do
   ## Examples
 
       iex> Aliyun.Oss.Bucket.list_buckets(%{"max-keys" => 5})
-      {:ok, %{
-        "Buckets" => %{
-          "Bucket" => [
-            %{
-              "CreationDate" => "2018-10-12T07:57:51.000Z",
-              "ExtranetEndpoint" => "oss-cn-shenzhen.aliyuncs.com",
-              "IntranetEndpoint" => "oss-cn-shenzhen-internal.aliyuncs.com",
-              "Location" => "oss-cn-shenzhen",
-              "Name" => "XXXXX",
-              "StorageClass" => "Standard"
+      {:ok, %Aliyun.Oss.Client.Response{
+          data: %{
+            "Buckets" => %{
+              "Bucket" => [
+                %{
+                  "CreationDate" => "2018-10-12T07:57:51.000Z",
+                  "ExtranetEndpoint" => "oss-cn-shenzhen.aliyuncs.com",
+                  "IntranetEndpoint" => "oss-cn-shenzhen-internal.aliyuncs.com",
+                  "Location" => "oss-cn-shenzhen",
+                  "Name" => "XXXXX",
+                  "StorageClass" => "Standard"
+                },
+                ...
+              ]
             },
+            "IsTruncated" => true,
+            "Marker" => nil,
+            "MaxKeys" => 5,
+            "NextMarker" => "XXXXX",
+            "Owner" => %{"DislayName" => "11111111", "ID" => "11111111"},
+            "Prefix" => nil
+          },
+          headers: [
+            {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
             ...
           ]
-        },
-        "IsTruncated" => true,
-        "Marker" => nil,
-        "MaxKeys" => 5,
-        "NextMarker" => "XXXXX",
-        "Owner" => %{"DislayName" => "11111111", "ID" => "11111111"},
-        "Prefix" => nil
-      }}
+        }
+      }
 
       iex> Aliyun.Oss.Bucket.list_buckets(%{"max-keys" => 100000})
       {:error,
@@ -49,7 +57,7 @@ defmodule Aliyun.Oss.Bucket do
             "RequestId" => "5BFF8912332CCD8D560F65D9"
           }}}
   """
-  @spec list_buckets(map()) :: {:error, error_details()} | {:ok, map()}
+  @spec list_buckets(map()) :: {:error, error_details()} | {:ok, Response.t()}
   def list_buckets(query_params \\ %{}) do
     Client.request(%{
       verb: "GET",
@@ -66,27 +74,36 @@ defmodule Aliyun.Oss.Bucket do
   ## Examples
 
       iex> Aliyun.Oss.Bucket.get_bucket("some-bucket", %{"prefix" => "foo/"})
-      {:ok, %{ "ListAllMyBucketsResult" => %{
-        "Contents" => [
-          %{
-            "ETag" => "\"D410293F000B000D00D\"",
-            "key" => "foo/bar",
-            "LastModified" => "2018-09-12T02:59:41.000Z",
-            "Owner" => %{"DislayName" => "11111111", "ID" => "11111111"},
-            "Size" => "12345",
-            "StorageClass" => "IA",
-            "Type" => "Normal"
+      {:ok, %Aliyun.Oss.Client.Response{
+          data: %{
+            "ListAllMyBucketsResult" => %{
+              "Contents" => [
+                %{
+                  "ETag" => "\"D410293F000B000D00D\"",
+                  "key" => "foo/bar",
+                  "LastModified" => "2018-09-12T02:59:41.000Z",
+                  "Owner" => %{"DislayName" => "11111111", "ID" => "11111111"},
+                  "Size" => "12345",
+                  "StorageClass" => "IA",
+                  "Type" => "Normal"
+                },
+                ...
+              ],
+              "Delimiter" => nil,
+              "IsTruncated" => true,
+              "Marker" => nil,
+              "MaxKeys" => 100,
+              "Name" => "some-bucket",
+              "NextMarker" => "XXXXX",
+              "Prefix" => "foo/"
+            }
           },
-          ...
-        ],
-        "Delimiter" => nil,
-        "IsTruncated" => true,
-        "Marker" => nil,
-        "MaxKeys" => 100,
-        "Name" => "some-bucket",
-        "NextMarker" => "XXXXX",
-        "Prefix" => "foo/"
-      }}}
+          headers: [
+            {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
+            ...
+          ]
+        }
+      }
 
       iex> Aliyun.Oss.Bucket.get_bucket("unknown-bucket")
       {:error,
@@ -101,7 +118,7 @@ defmodule Aliyun.Oss.Bucket do
 
     注：所有 GetBucketXXX 相关操作亦可由此接口实现, 即 Bucket.get_bucket_acl("some-bucket") 等同于 Bucket.get_bucket("some-bucket", %{}, %{"acl" => nil})
   """
-  @spec get_bucket(String.t(), map(), map()) :: {:error, error_details()} | {:ok, map()}
+  @spec get_bucket(String.t(), map(), map()) :: {:error, error_details()} | {:ok, Response.t()}
   def get_bucket(bucket, query_params \\ %{}, sub_resources \\ %{}) do
     Client.request(%{
       verb: "GET",
@@ -119,12 +136,20 @@ defmodule Aliyun.Oss.Bucket do
   ## Examples
 
       iex> Aliyun.Oss.Bucket.get_bucket_acl("some-bucket")
-      {:ok, %{ "AccessControlPolicy" => %{
-        "AccessControlList" => %{"Grant" => "private"},
-        "Owner" => %{"DislayName" => "11111111", "ID" => "11111111"}
-      }}}
+      {:ok, %Aliyun.Oss.Client.Response{
+          data: %{
+            "AccessControlPolicy" => %{
+              "AccessControlList" => %{"Grant" => "private"},
+              "Owner" => %{"DislayName" => "11111111", "ID" => "11111111"}
+            }
+          },
+          headers: [
+            {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"}
+          ]
+        }
+      }
   """
-  @spec get_bucket_acl(String.t()) :: {:error, error_details()} | {:ok, map()}
+  @spec get_bucket_acl(String.t()) :: {:error, error_details()} | {:ok, Response.t()}
   def get_bucket_acl(bucket) do
     get_bucket(bucket, %{}, %{"acl" => nil})
   end
@@ -136,9 +161,15 @@ defmodule Aliyun.Oss.Bucket do
   ## Examples
 
       iex> Aliyun.Oss.Bucket.get_bucket_location("some-bucket")
-      {:ok, %{"LocationConstraint" => "oss-cn-shenzhen"}}
+      {:ok, %Aliyun.Oss.Client.Response{
+          data: %{"LocationConstraint" => "oss-cn-shenzhen"},
+          headers: [
+            {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"}
+          ]
+        }
+      }
   """
-  @spec get_bucket_location(String.t()) :: {:error, error_details()} | {:ok, map()}
+  @spec get_bucket_location(String.t()) :: {:error, error_details()} | {:ok, Response.t()}
   def get_bucket_location(bucket) do
     get_bucket(bucket, %{}, %{"location" => nil})
   end
@@ -156,26 +187,32 @@ defmodule Aliyun.Oss.Bucket do
   ## Examples
 
       iex> Aliyun.Oss.Bucket.get_bucket_info("some-bucket")
-      {:ok,
-      %{ "BucketInfo" => %{
-        "Bucket" => %{
-          "AccessControlList" => %{"Grant" => "private"},
-          "Comment" => nil,
-          "CreationDate" => "2018-08-29T01:52:03.000Z",
-          "DataRedundancyType" => "LRS",
-          "ExtranetEndpoint" => "oss-cn-shenzhen.aliyuncs.com",
-          "IntranetEndpoint" => "oss-cn-shenzhen-internal.aliyuncs.com",
-          "Location" => "oss-cn-shenzhen",
-          "Name" => "some-bucket",
-          "Owner" => %{
-            "DisplayName" => "11111111",
-            "ID" => "11111111"
-          },
-          "StorageClass" => "IA"
-        }
-      }}}
+      {:ok, %Aliyun.Oss.Client.Response{
+        data: %{
+          "BucketInfo" => %{
+            "Bucket" => %{
+              "AccessControlList" => %{"Grant" => "private"},
+              "Comment" => nil,
+              "CreationDate" => "2018-08-29T01:52:03.000Z",
+              "DataRedundancyType" => "LRS",
+              "ExtranetEndpoint" => "oss-cn-shenzhen.aliyuncs.com",
+              "IntranetEndpoint" => "oss-cn-shenzhen-internal.aliyuncs.com",
+              "Location" => "oss-cn-shenzhen",
+              "Name" => "some-bucket",
+              "Owner" => %{
+                "DisplayName" => "11111111",
+                "ID" => "11111111"
+              },
+              "StorageClass" => "IA"
+            }
+          }
+        },
+        headers: [
+          {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"}
+        ]
+      }
   """
-  @spec get_bucket_info(String.t()) :: {:error, error_details()} | {:ok, map()}
+  @spec get_bucket_info(String.t()) :: {:error, error_details()} | {:ok, Response.t()}
   def get_bucket_info(bucket) do
     get_bucket(bucket, %{}, %{"bucketInfo" => nil})
   end
@@ -196,7 +233,7 @@ defmodule Aliyun.Oss.Bucket do
         }
       }}
   """
-  @spec get_bucket_logging(String.t()) :: {:error, error_details()} | {:ok, map()}
+  @spec get_bucket_logging(String.t()) :: {:error, error_details()} | {:ok, Response.t()}
   def get_bucket_logging(bucket) do
     get_bucket(bucket, %{}, %{"logging" => nil})
   end
@@ -220,7 +257,7 @@ defmodule Aliyun.Oss.Bucket do
             "RequestId" => "5C0000000000000000000000"
           }}}
   """
-  @spec get_bucket_website(String.t()) :: {:error, error_details()} | {:ok, map()}
+  @spec get_bucket_website(String.t()) :: {:error, error_details()} | {:ok, Response.t()}
   def get_bucket_website(bucket) do
     get_bucket(bucket, %{}, %{"website" => nil})
   end
@@ -240,7 +277,7 @@ defmodule Aliyun.Oss.Bucket do
       }}
   """
 
-  @spec get_bucket_referer(String.t()) :: {:error, error_details()} | {:ok, map()}
+  @spec get_bucket_referer(String.t()) :: {:error, error_details()} | {:ok, Response.t()}
   def get_bucket_referer(bucket) do
     get_bucket(bucket, %{}, %{"referer" => nil})
   end
@@ -265,7 +302,7 @@ defmodule Aliyun.Oss.Bucket do
         }
       }}
   """
-  @spec get_bucket_lifecycle(String.t()) :: {:error, error_details()} | {:ok, map()}
+  @spec get_bucket_lifecycle(String.t()) :: {:error, error_details()} | {:ok, Response.t()}
   def get_bucket_lifecycle(bucket) do
     get_bucket(bucket, %{}, %{"lifecycle" => nil})
   end

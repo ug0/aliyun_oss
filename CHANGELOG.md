@@ -1,8 +1,11 @@
 # Changelog
 
 ## v0.2.0
-- Get Object
-- Get Object Acl
+- New response struct
+- New APIs:
+  - Get Object
+  - Get Object Acl
+  - Get Object Meta
 
 ## v0.1.0
 - Get Bucket Acl	获得Bucket访问权限

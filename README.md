@@ -26,6 +26,10 @@ config :aliyun_oss,
   access_key_secret: "ALIYUN_ACCESS_KEY_SECRET"
 ```
 
+## **Warning**
+**This package is unstable until v1.0 is out. Before that, new minor versions might bring breaking changes. For example, v0.2.0 might break existing APIs in v0.1.x, but 0.2.1 won't break 0.2.0.**
+
+
 ## Roadmap
 
 ### Official Interfaces
@@ -63,7 +67,7 @@ config :aliyun_oss,
   - [x] Get Object	获取Object
   - [ ] Delete Object	删除Object
   - [ ] Delete Multiple Objects	删除多个Object
-  - [ ] Head Object	获得Object的meta信息
+  - [x] Head Object	获得Object的meta信息
   - [ ] Post Object	使用Post上传Object
   - [ ] Append Object	在Object尾追加上传数据
   - [ ] Put Object ACL	设置Object ACL

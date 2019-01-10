@@ -30,7 +30,7 @@ config :aliyun_oss,
 **This package is unstable until v1.0 is out. Before that, new minor versions might bring breaking changes. For example, v0.2.0 might break existing APIs in v0.1.x, but 0.2.1 won't break 0.2.0.**
 
 
-## Roadmap
+## Roadmap(master)
 
 ### Official Interfaces
 [参考阿里云官方文档](https://help.aliyun.com/document_detail/31948.html?spm=a2c4g.11186623.6.1037.520869cbKcHFcL)
@@ -73,6 +73,7 @@ config :aliyun_oss,
   - [ ] Put Object ACL	设置Object ACL
   - [x] Get Object ACL	获取Object ACL信息
   - [ ] Callback	上传回调
+  - [x] Generate signed URL 生成包含签名的 URL
 
 
 - [ ] Multipart Upload

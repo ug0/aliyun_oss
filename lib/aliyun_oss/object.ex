@@ -3,10 +3,10 @@ defmodule Aliyun.Oss.Object do
   Object 相关操作
   """
 
-  import Aliyun.Oss.Config, only: [endpoint: 0]
+  import Aliyun.Oss.Config, only: [endpoint: 0, access_key_id: 0]
 
   alias Aliyun.Oss.Client
-  alias Aliyun.Oss.Client.{Response, Error}
+  alias Aliyun.Oss.Client.{Request, Response, Error}
 
   @type error() :: Error.t() | atom()
 
@@ -48,7 +48,8 @@ defmodule Aliyun.Oss.Object do
         ]
       }
   """
-  @spec get_object(String.t(), String.t(), map(), map()) :: {:error, error()} | {:ok, Response.t()}
+  @spec get_object(String.t(), String.t(), map(), map()) ::
+          {:error, error()} | {:ok, Response.t()}
   def get_object(bucket, object, headers \\ %{}, sub_resources \\ %{}) do
     Client.request(%{
       verb: "GET",
@@ -126,6 +127,44 @@ defmodule Aliyun.Oss.Object do
       resource: "/#{bucket}/#{object}",
       query_params: %{},
       sub_resources: %{}
+    })
+  end
+
+  @doc """
+  生成包含签名的 URL
+
+  ## Examples
+
+      iex> expires = Timex.now() |> Timex.shift(days: 1) |> Timex.to_unix()
+      iex> Aliyun.Oss.Object.object_url("some-bucket", "some-object", expires)
+      "http://oss-example.oss-cn-hangzhou.aliyuncs.com/oss-api.pdf?OSSAccessKeyId=nz2pc56s936**9l&Expires=1141889120&Signature=vjbyPxybdZaNmGa%2ByT272YEAiv4%3D"
+  """
+  @spec object_url(String.t(), String.t(), integer()) :: String.t()
+  def object_url(bucket, object, expires) do
+    signature =
+      Request.gen_signature(%Request{
+        verb: "GET",
+        host: "#{bucket}.#{endpoint()}",
+        path: "",
+        resource: "/#{bucket}/#{object}",
+        query_params: %{},
+        sub_resources: %{},
+        headers: %{
+          "Date" => Integer.to_string(expires),
+          "Content-Type" => ""
+        }
+      })
+
+    URI.to_string(%URI{
+      scheme: "https",
+      host: "#{bucket}.#{endpoint()}",
+      path: "/#{object}",
+      query:
+        URI.encode_query(%{
+          "Expires" => expires,
+          "OSSAccessKeyId" => access_key_id(),
+          "Signature" => signature
+        })
     })
   end
 end

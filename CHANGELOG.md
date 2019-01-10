@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.2.1(WIP)
+- New APIs:
+  - generate signed object URL
+
 ## v0.2.0
 - New response struct
 - New error struct

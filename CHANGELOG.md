@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.2.1(WIP)
+## v0.2.1
 - New APIs:
   - generate signed object URL
   - Put Bucket	创建Bucket

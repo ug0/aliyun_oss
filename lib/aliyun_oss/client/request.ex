@@ -10,6 +10,7 @@ defmodule Aliyun.Oss.Client.Request do
             resource: nil,
             query_params: %{},
             sub_resources: %{},
+            body: "",
             headers: %{}
 
   @default_content_type "application/octet-stream"

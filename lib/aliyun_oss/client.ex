@@ -3,7 +3,7 @@ defmodule Aliyun.Oss.Client do
 
   def request(init_req) do
     case init_req |> Request.build_signed() |> do_request do
-      {:ok, %HTTPoison.Response{body: body, status_code: 200, headers: headers}} ->
+      {:ok, %HTTPoison.Response{body: body, status_code: status_code, headers: headers}} when status_code in [200, 204] ->
         {:ok, Response.parse(body, headers)}
 
       {:ok, %HTTPoison.Response{body: body, status_code: status_code}} ->
@@ -11,6 +11,8 @@ defmodule Aliyun.Oss.Client do
 
       {:error, %HTTPoison.Error{reason: reason}} ->
         {:error, reason}
+      r ->
+        r
     end
   end
 
@@ -23,6 +25,21 @@ defmodule Aliyun.Oss.Client do
 
   defp do_request(req = %Request{verb: "HEAD"}) do
     HTTPoison.head(
+      Request.query_url(req),
+      req.headers
+    )
+  end
+
+  defp do_request(req = %Request{verb: "PUT"}) do
+    HTTPoison.put(
+      Request.query_url(req),
+      req.body,
+      req.headers
+    )
+  end
+
+  defp do_request(req = %Request{verb: "DELETE"}) do
+    HTTPoison.delete(
       Request.query_url(req),
       req.headers
     )

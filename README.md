@@ -41,9 +41,9 @@ config :aliyun_oss,
 
 - [ ] Bucket
 
-  - [ ] Put Bucket	创建Bucket
-  - [ ] Put Bucket ACL	设置Bucket访问权限
-  - [ ] Put Bucket Logging	开启Bucket日志
+  - [x] Put Bucket	创建Bucket
+  - [x] Put Bucket ACL	设置Bucket访问权限
+  - [x] Put Bucket Logging	开启Bucket日志
   - [ ] Put Bucket Website	设置Bucket为静态网站托管模式
   - [ ] Put Bucket Referer	设置Bucket的防盗链规则
   - [ ] Put Bucket Lifecycle	设置Bucket中Object的生命周期规则
@@ -53,8 +53,8 @@ config :aliyun_oss,
   - [x] Get Bucket Website	查看Bucket的静态网站托管状态
   - [x] Get Bucket Referer	查看Bucket的防盗链规则
   - [x] Get Bucket Lifecycle	查看Bucket中Object的生命周期规则
-  - [ ] Delete Bucket	删除Bucket
-  - [ ] Delete Bucket Logging	关闭Bucket访问日志记录功能
+  - [x] Delete Bucket	删除Bucket
+  - [x] Delete Bucket Logging	关闭Bucket访问日志记录功能
   - [ ] Delete Bucket Website	关闭Bucket的静态网站托管模式
   - [ ] Delete Bucket Lifecycle	删除Bucket中Object的生命周期规则
   - [x] Get Bucket(List Object)	获得Bucket中所有Object的信息

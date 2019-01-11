@@ -320,4 +320,215 @@ defmodule Aliyun.Oss.Bucket do
   def get_bucket_lifecycle(bucket) do
     get_bucket(bucket, %{}, %{"lifecycle" => nil})
   end
+
+  @doc """
+  PutBucket接口用于创建 Bucket
+
+  ## Examples
+
+      iex> Aliyun.Oss.Bucket.put_bucket("new-bucket", %{"x-oss-acl" => "private"})
+      {:ok,
+      %Aliyun.Oss.Client.Response{
+        data: "",
+        headers: [
+          {"Server", "AliyunOSS"},
+          {"Date", "Fri, 11 Jan 2019 04:35:39 GMT"},
+          {"Content-Length", "0"},
+          {"Connection", "keep-alive"},
+          {"x-oss-request-id", "5C381D000000000000000000"},
+          {"Location", "/new-bucket"},
+          {"x-oss-server-time", "438"}
+        ]
+      }}
+      iex> Aliyun.Oss.Bucket.put_bucket("new-bucket", %{"x-oss-acl" => "invalid-permission"}) # get error
+      {:error,
+      %Aliyun.Oss.Client.Error{
+        body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Error>\n  <Code>InvalidArgument</Code>\n  <Message>no such bucket access control exists</Message>\n  <RequestId>5C3820B9B79FD628EABAF02D</RequestId>\n  <HostId>new-bucket.oss-cn-shenzhen.aliyuncs.com</HostId>\n  <ArgumentName>x-oss-acl</ArgumentName>\n  <ArgumentValue>invalid-permission</ArgumentValue>\n</Error>\n",
+        parsed_details: %{
+          "ArgumentName" => "x-oss-acl",
+          "ArgumentValue" => "invalid-permission",
+          "Code" => "InvalidArgument",
+          "HostId" => "new-bucket.oss-cn-shenzhen.aliyuncs.com",
+          "Message" => "no such bucket access control exists",
+          "RequestId" => "5C3000000000000000000000"
+        },
+        status_code: 400
+      }}
+
+    注：所有 PutBucketXXX 相关操作亦可由此接口实现, 即 Bucket.put_bucket_acl("some-bucket", "private") 等同于 Bucket.put_bucket("some-bucket", %{"x-oss-acl" => "private"}, %{"acl" => "private"}, "")
+  """
+  @body """
+  <?xml version="1.0" encoding="UTF-8"?>
+  <CreateBucketConfiguration>
+    <StorageClass>Standard</StorageClass>
+  </CreateBucketConfiguration>
+  """
+  @spec put_bucket(String.t(), map(), map(), String.t()) :: {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
+  def put_bucket(bucket, headers = %{} \\ %{}, sub_resources = %{} \\ %{}, body \\ @body) when is_binary(body) do
+    Client.request(%{
+      verb: "PUT",
+      host: "#{bucket}.#{endpoint()}",
+      path: "/",
+      resource: "/#{bucket}/",
+      body: body,
+      headers: headers,
+      sub_resources: sub_resources
+    })
+  end
+
+  @doc """
+  PutBucketACL接口用于修改Bucket访问权限
+
+  ## Examples
+
+      iex> Aliyun.Oss.Bucket.put_bucket_acl("some-bucket", "public-read")
+      {:ok,
+      %Aliyun.Oss.Client.Response{
+        data: "",
+        headers: [
+          {"Server", "AliyunOSS"},
+          {"Date", "Fri, 11 Jan 2019 04:43:42 GMT"},
+          {"Content-Length", "0"},
+          {"Connection", "keep-alive"},
+          {"x-oss-request-id", "5C0000000000000000000000"},
+          {"Location", "/some-bucket"},
+          {"x-oss-server-time", "333"}
+        ]
+      }}
+      iex> Aliyun.Oss.Bucket.put_bucket_acl("some-bucket", "invalid-permission")
+      {:error,
+      %Aliyun.Oss.Client.Error{
+        body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Error>\n  <Code>InvalidArgument</Code>\n  <Message>no such bucket access control exists</Message>\n  <RequestId>5C38203AB79FD628EAB8D743</RequestId>\n  <HostId>zidcn-test-1.oss-cn-shenzhen.aliyuncs.com</HostId>\n  <ArgumentName>x-oss-acl</ArgumentName>\n  <ArgumentValue>invalid-read</ArgumentValue>\n</Error>\n",
+        parsed_details: %{
+          "ArgumentName" => "x-oss-acl",
+          "ArgumentValue" => "invalid-read",
+          "Code" => "InvalidArgument",
+          "HostId" => "some-bucket.oss-cn-shenzhen.aliyuncs.com",
+          "Message" => "no such bucket access control exists",
+          "RequestId" => "5C3000000000000000000000"
+        },
+        status_code: 400
+      }}
+  """
+  @spec put_bucket_acl(String.t(), String.t()) :: {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
+  def put_bucket_acl(bucket, acl) do
+    put_bucket(bucket, %{"x-oss-acl" => acl}, %{"acl" => acl}, "")
+  end
+
+  @doc """
+  PutBucketLogging 关闭 Bucket 日志功能
+
+  ## Examples
+
+      iex> Aliyun.Oss.Bucket.put_bucket_logging("some-bucket", false)
+      {:ok,
+      %Aliyun.Oss.Client.Response{
+        data: "",
+        headers: [
+          {"Server", "AliyunOSS"},
+          {"Date", "Fri, 11 Jan 2019 05:05:50 GMT"},
+          {"Content-Length", "0"},
+          {"Connection", "keep-alive"},
+          {"x-oss-request-id", "5C0000000000000000000000"},
+          {"x-oss-server-time", "63"}
+        ]
+      }}
+  """
+
+  @spec put_bucket_logging(String.t(), String.t(), String.t()) :: {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
+  def put_bucket_logging(bucket, target_bucket, target_prefix \\ "oss-accesslog/") do
+    body = """
+    <?xml version="1.0" encoding="UTF-8"?>
+    <BucketLoggingStatus>
+        <LoggingEnabled>
+            <TargetBucket>#{target_bucket}</TargetBucket>
+            <TargetPrefix>#{target_prefix}</TargetPrefix>
+        </LoggingEnabled>
+    </BucketLoggingStatus>
+    """
+
+    put_bucket(bucket, %{}, %{"logging" => nil}, body)
+  end
+
+  @doc """
+  DeleteBucket用于删除某个Bucket
+
+  ## Examples
+
+      iex> Aliyun.Oss.Bucket.delete_bucket("some-bucket")
+      {:ok,
+      %Aliyun.Oss.Client.Response{
+        data: "",
+        headers: [
+          {"Server", "AliyunOSS"},
+          {"Date", "Fri, 11 Jan 2019 05:26:36 GMT"},
+          {"Content-Length", "0"},
+          {"Connection", "keep-alive"},
+          {"x-oss-request-id", "5C38290C41F2DE32412A3A88"},
+          {"x-oss-server-time", "230"}
+        ]
+      }}
+      iex> Aliyun.Oss.Bucket.delete_bucket("unknown-bucket")
+      {:error,
+      %Aliyun.Oss.Client.Error{
+        body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Error>\n  <Code>NoSuchBucket</Code>\n  <Message>The specified bucket does not exist.</Message>\n  <RequestId>5C3829B29BF380354CF9C2E8</RequestId>\n  <HostId>unknown-bucket.oss-cn-shenzhen.aliyuncs.com</HostId>\n  <BucketName>unknown-bucket</BucketName>\n</Error>\n",
+        parsed_details: %{
+          "BucketName" => "unknown-bucket",
+          "Code" => "NoSuchBucket",
+          "HostId" => "unknown-bucket.oss-cn-shenzhen.aliyuncs.com",
+          "Message" => "The specified bucket does not exist.",
+          "RequestId" => "5C3000000000000000000000"
+        },
+        status_code: 404
+      }}
+  """
+  @spec delete_bucket(String.t(), map()) :: {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
+  def delete_bucket(bucket, sub_resources \\ %{}) do
+    Client.request(%{
+      verb: "DELETE",
+      host: "#{bucket}.#{endpoint()}",
+      path: "/",
+      resource: "/#{bucket}/",
+      sub_resources: sub_resources
+    })
+  end
+
+  @doc """
+  DeleteBucketLogging接口用于关闭bucket访问日志记录功能
+
+  ## Examples
+
+      iex> Aliyun.Oss.Bucket.delete_bucket_logging("some-bucket")
+      {:ok,
+      %Aliyun.Oss.Client.Response{
+        data: "",
+        headers: [
+          {"Server", "AliyunOSS"},
+          {"Date", "Fri, 11 Jan 2019 05:19:45 GMT"},
+          {"Content-Length", "0"},
+          {"Connection", "keep-alive"},
+          {"x-oss-request-id", "5C3000000000000000000000"},
+          {"x-oss-server-time", "90"}
+        ]
+      }}
+      iex> Aliyun.Oss.Bucket.delete_bucket_logging("unknown-bucket")
+      {:error,
+      %Aliyun.Oss.Client.Error{
+        body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Error>\n  <Code>NoSuchBucket</Code>\n  <Message>The specified bucket does not exist.</Message>\n  <RequestId>5C38283EC84D1C4471F2F48A</RequestId>\n  <HostId>zidcn-test-asdad1.oss-cn-shenzhen.aliyuncs.com</HostId>\n  <BucketName>zidcn-test-asdad1</BucketName>\n</Error>\n",
+        parsed_details: %{
+          "BucketName" => "unknown-bucket",
+          "Code" => "NoSuchBucket",
+          "HostId" => "unknown-bucket.oss-cn-shenzhen.aliyuncs.com",
+          "Message" => "The specified bucket does not exist.",
+          "RequestId" => "5C38283EC84D1C4471F2F48A"
+        },
+        status_code: 404
+      }}
+
+    注：所有 DeleteBucketXXX 相关操作亦可由此接口实现, 即 Bucket.delete_bucket_logging("some-bucket") 等同于 Bucket.delete_bucket("some-bucket", %{"logging" => nil})
+  """
+  @spec delete_bucket_logging(String.t()) :: {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
+  def delete_bucket_logging(bucket) do
+    delete_bucket(bucket, %{"logging" => nil})
+  end
 end

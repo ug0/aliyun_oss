@@ -3,6 +3,11 @@
 ## v0.2.1(WIP)
 - New APIs:
   - generate signed object URL
+  - Put Bucket	创建Bucket
+  - Put Bucket ACL	设置Bucket访问权限
+  - Put Bucket Logging	开启Bucket日志
+  - Delete Bucket	删除Bucket
+  - Delete Bucket Logging	关闭Bucket访问日志记录功能
 
 ## v0.2.0
 - New response struct

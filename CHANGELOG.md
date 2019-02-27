@@ -2,6 +2,10 @@
 
 ## v0.3.0
 - New APIs:
+  - Put Bucket Website
+  - Put Bucket Referer
+  - Delete Bucket Website
+  - Delete Bucket Lifecycle
   - Put Object
   - Copy Object
   - Put Object ACL

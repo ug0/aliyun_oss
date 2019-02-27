@@ -451,6 +451,76 @@ defmodule Aliyun.Oss.Bucket do
   end
 
   @doc """
+  PutBucketWebsite接口用于将一个bucket设置成静态网站托管模式，以及设置跳转规则。
+
+  ## Examples
+
+      iex> xml_body = \"""
+      ...> <?xml version="1.0" encoding="UTF-8"?>
+      ...> <WebsiteConfiguration>
+      ...> <IndexDocument>
+      ...>   <Suffix>index.html</Suffix>
+      ...> </IndexDocument>
+      ...> ...
+      ...> ...
+      ...> </WebsiteConfiguration>
+      ...>  \"""
+      iex> Aliyun.Oss.Bucket.put_bucket_website("some-bucket", xml_body)
+      {:ok,
+      %Aliyun.Oss.Client.Response{
+        data: "",
+        headers: [
+          {"Server", "AliyunOSS"},
+          {"Date", "Fri, 11 Jan 2019 05:05:50 GMT"},
+          {"Content-Length", "0"},
+          {"Connection", "keep-alive"},
+          {"x-oss-request-id", "5C0000000000000000000000"},
+          {"x-oss-server-time", "63"}
+        ]
+      }}
+  """
+  @spec put_bucket_website(String.t(), String.t()) :: {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
+  def put_bucket_website(bucket, xml_body) do
+    put_bucket(bucket, %{}, %{"website" => nil}, xml_body)
+  end
+
+  @doc """
+  PutBucketReferer接口用于设置Bucket的Referer访问白名单以及允许Referer字段是否为空。
+
+  ## Examples
+
+      iex> xml_body = \"""
+      ...> <?xml version="1.0" encoding="UTF-8"?>
+      ...> <RefererConfiguration>
+      ...> <AllowEmptyReferer>true</AllowEmptyReferer >
+      ...>     <RefererList>
+      ...>         <Referer> http://www.aliyun.com</Referer>
+      ...>         <Referer> https://www.aliyun.com</Referer>
+      ...>         <Referer> http://www.*.com</Referer>
+      ...>         <Referer> https://www.?.aliyuncs.com</Referer>
+      ...>     </RefererList>
+      ...> </RefererConfiguration>
+      ...>  \"""
+      iex> Aliyun.Oss.Bucket.put_bucket_referer("some-bucket", xml_body)
+      {:ok,
+      %Aliyun.Oss.Client.Response{
+        data: "",
+        headers: [
+          {"Server", "AliyunOSS"},
+          {"Date", "Fri, 11 Jan 2019 05:05:50 GMT"},
+          {"Content-Length", "0"},
+          {"Connection", "keep-alive"},
+          {"x-oss-request-id", "5C0000000000000000000000"},
+          {"x-oss-server-time", "63"}
+        ]
+      }}
+  """
+  @spec put_bucket_referer(String.t(), String.t()) :: {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
+  def put_bucket_referer(bucket, xml_body) do
+    put_bucket(bucket, %{}, %{"referer" => nil}, xml_body)
+  end
+
+  @doc """
   DeleteBucket用于删除某个Bucket
 
   ## Examples
@@ -481,6 +551,8 @@ defmodule Aliyun.Oss.Bucket do
         },
         status_code: 404
       }}
+
+    注：所有 DeleteBucketXXX 相关操作亦可由此接口实现, 即 Bucket.delete_bucket_logging("some-bucket") 等同于 Bucket.delete_bucket("some-bucket", %{"logging" => nil})
   """
   @spec delete_bucket(String.t(), map()) :: {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
   def delete_bucket(bucket, sub_resources \\ %{}) do
@@ -524,11 +596,83 @@ defmodule Aliyun.Oss.Bucket do
         },
         status_code: 404
       }}
-
-    注：所有 DeleteBucketXXX 相关操作亦可由此接口实现, 即 Bucket.delete_bucket_logging("some-bucket") 等同于 Bucket.delete_bucket("some-bucket", %{"logging" => nil})
   """
   @spec delete_bucket_logging(String.t()) :: {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
   def delete_bucket_logging(bucket) do
     delete_bucket(bucket, %{"logging" => nil})
+  end
+
+  @doc """
+  DeleteBucketWebsite操作用于关闭Bucket的静态网站托管模式以及跳转规则。
+
+  ## Examples
+
+      iex> Aliyun.Oss.Bucket.delete_bucket_website("some-bucket")
+      {:ok,
+      %Aliyun.Oss.Client.Response{
+        data: "",
+        headers: [
+          {"Server", "AliyunOSS"},
+          {"Date", "Fri, 11 Jan 2019 05:19:45 GMT"},
+          {"Content-Length", "0"},
+          {"Connection", "keep-alive"},
+          {"x-oss-request-id", "5C3000000000000000000000"},
+          {"x-oss-server-time", "90"}
+        ]
+      }}
+      iex> Aliyun.Oss.Bucket.delete_bucket_website("unknown-bucket")
+      {:error,
+      %Aliyun.Oss.Client.Error{
+        body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Error>\n  <Code>NoSuchBucket</Code>\n  <Message>The specified bucket does not exist.</Message>\n  <RequestId>5C38283EC84D1C4471F2F48A</RequestId>\n  <HostId>zidcn-test-asdad1.oss-cn-shenzhen.aliyuncs.com</HostId>\n  <BucketName>zidcn-test-asdad1</BucketName>\n</Error>\n",
+        parsed_details: %{
+          "BucketName" => "unknown-bucket",
+          "Code" => "NoSuchBucket",
+          "HostId" => "unknown-bucket.oss-cn-shenzhen.aliyuncs.com",
+          "Message" => "The specified bucket does not exist.",
+          "RequestId" => "5C38283EC84D1C4471F2F48A"
+        },
+        status_code: 404
+      }}
+  """
+  @spec delete_bucket_website(String.t()) :: {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
+  def delete_bucket_website(bucket) do
+    delete_bucket(bucket, %{"website" => nil})
+  end
+
+  @doc """
+  通过DeleteBucketLifecycle接口来删除指定 Bucket 的生命周期规则。
+
+  ## Examples
+
+      iex> Aliyun.Oss.Bucket.delete_bucket_lifecycle("some-bucket")
+      {:ok,
+      %Aliyun.Oss.Client.Response{
+        data: "",
+        headers: [
+          {"Server", "AliyunOSS"},
+          {"Date", "Fri, 11 Jan 2019 05:19:45 GMT"},
+          {"Content-Length", "0"},
+          {"Connection", "keep-alive"},
+          {"x-oss-request-id", "5C3000000000000000000000"},
+          {"x-oss-server-time", "90"}
+        ]
+      }}
+      iex> Aliyun.Oss.Bucket.delete_bucket_lifecycle("unknown-bucket")
+      {:error,
+      %Aliyun.Oss.Client.Error{
+        body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Error>\n  <Code>NoSuchBucket</Code>\n  <Message>The specified bucket does not exist.</Message>\n  <RequestId>5C38283EC84D1C4471F2F48A</RequestId>\n  <HostId>zidcn-test-asdad1.oss-cn-shenzhen.aliyuncs.com</HostId>\n  <BucketName>zidcn-test-asdad1</BucketName>\n</Error>\n",
+        parsed_details: %{
+          "BucketName" => "unknown-bucket",
+          "Code" => "NoSuchBucket",
+          "HostId" => "unknown-bucket.oss-cn-shenzhen.aliyuncs.com",
+          "Message" => "The specified bucket does not exist.",
+          "RequestId" => "5C38283EC84D1C4471F2F48A"
+        },
+        status_code: 404
+      }}
+  """
+  @spec delete_bucket_lifecycle(String.t()) :: {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
+  def delete_bucket_lifecycle(bucket) do
+    delete_bucket(bucket, %{"lifecycle" => nil})
   end
 end

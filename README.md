@@ -26,23 +26,22 @@ config :aliyun_oss,
   access_key_secret: "ALIYUN_ACCESS_KEY_SECRET"
 ```
 
-## Roadmap(master)
+## Implemented APIs
 
-### Official Interfaces
-[参考阿里云官方文档](https://help.aliyun.com/document_detail/31948.html?spm=a2c4g.11186623.6.1037.520869cbKcHFcL)
+参考[阿里云官方文档](https://help.aliyun.com/document_detail/31948.html?spm=a2c4g.11186623.6.1037.520869cbKcHFcL)
 
 - [x] **Service**
 
   - [x] GetService	得到该账户下所有Bucket
 
-- [ ] Bucket
+- [x] Bucket
 
   - [x] Put Bucket	创建Bucket
   - [x] Put Bucket ACL	设置Bucket访问权限
   - [x] Put Bucket Logging	开启Bucket日志
-  - [ ] Put Bucket Website	设置Bucket为静态网站托管模式
-  - [ ] Put Bucket Referer	设置Bucket的防盗链规则
-  - [ ] Put Bucket Lifecycle	设置Bucket中Object的生命周期规则
+  - [x] Put Bucket Website	设置Bucket为静态网站托管模式
+  - [x] Put Bucket Referer	设置Bucket的防盗链规则
+  - [x] Put Bucket Lifecycle	设置Bucket中Object的生命周期规则
   - [x] Get Bucket Acl	获得Bucket访问权限
   - [x] Get Bucket Location	获得Bucket所属的数据中心位置信息
   - [x] Get Bucket Logging	查看Bucket的访问日志配置情况
@@ -51,8 +50,8 @@ config :aliyun_oss,
   - [x] Get Bucket Lifecycle	查看Bucket中Object的生命周期规则
   - [x] Delete Bucket	删除Bucket
   - [x] Delete Bucket Logging	关闭Bucket访问日志记录功能
-  - [ ] Delete Bucket Website	关闭Bucket的静态网站托管模式
-  - [ ] Delete Bucket Lifecycle	删除Bucket中Object的生命周期规则
+  - [x] Delete Bucket Website	关闭Bucket的静态网站托管模式
+  - [x] Delete Bucket Lifecycle	删除Bucket中Object的生命周期规则
   - [x] Get Bucket(List Object)	获得Bucket中所有Object的信息
   - [x] Get Bucket Info	获取Bucket信息
 

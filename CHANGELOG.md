@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.3.0
+- New APIs:
+  - Put Object
+  - Put Object ACL
+
 ## v0.2.1
 - New APIs:
   - generate signed object URL

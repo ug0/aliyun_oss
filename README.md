@@ -12,7 +12,7 @@ Add `aliyun_oss` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:aliyun_oss, "~> 0.2.1"}
+    {:aliyun_oss, "~> 0.3.0"}
   ]
 end
 ```
@@ -58,7 +58,7 @@ config :aliyun_oss,
 
 - [ ] Object
 
-  - [ ] Put Object	上传object
+  - [x] Put Object	上传object
   - [ ] Copy Object	拷贝一个object成另外一个object
   - [x] Get Object	获取Object
   - [ ] Delete Object	删除Object
@@ -66,7 +66,7 @@ config :aliyun_oss,
   - [x] Head Object	获得Object的meta信息
   - [ ] Post Object	使用Post上传Object
   - [ ] Append Object	在Object尾追加上传数据
-  - [ ] Put Object ACL	设置Object ACL
+  - [x] Put Object ACL	设置Object ACL
   - [x] Get Object ACL	获取Object ACL信息
   - [ ] Callback	上传回调
   - [x] Generate signed URL 生成包含签名的 URL

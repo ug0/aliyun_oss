@@ -167,4 +167,58 @@ defmodule Aliyun.Oss.Object do
         })
     })
   end
+
+  @doc """
+  PutObject接口用于上传文件（Object）。
+   - 添加的文件大小不得超过5 GB。
+   - 如果已经存在同名的Object，并且有访问权限，则新添加的文件将覆盖原来的文件，并成功返回200 OK。
+
+  ## Examples
+
+      iex> Aliyun.Oss.Object.put_object("some-bucket", "some-object", "CONTENT")
+      {:ok, %Aliyun.Oss.Client.Response{
+          data: "",
+          headers: [
+            {"Server", "AliyunOSS"},
+            {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
+            ...
+          ]
+        }
+      }
+  """
+  @spec put_object(String.t(), String.t(), String.t(), map(), map()) :: {:error, error()} | {:ok, Response.t()}
+  def put_object(bucket, object, body, headers \\ %{}, sub_resources \\ %{}) do
+    Client.request(%{
+      verb: "PUT",
+      host: "#{bucket}.#{endpoint()}",
+      path: "/#{object}",
+      headers: headers,
+      resource: "/#{bucket}/#{object}",
+      query_params: %{},
+      sub_resources: sub_resources,
+      body: body
+    })
+  end
+
+
+  @doc """
+  PutObjectACL接口用于修改Object的访问权限。
+
+  ## Examples
+
+      iex> Aliyun.Oss.Object.put_object_acl("some-bucket", "some-object", "private")
+      {:ok, %Aliyun.Oss.Client.Response{
+          data: "",
+          headers: [
+            {"Server", "AliyunOSS"},
+            {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
+            ...
+          ]
+        }
+      }
+  """
+  @spec put_object_acl(String.t(), String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  def put_object_acl(bucket, object, acl) do
+    put_object(bucket, object, "", %{"x-oss-object-acl" => acl}, %{"acl" => nil})
+  end
 end

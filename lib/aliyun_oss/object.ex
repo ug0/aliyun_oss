@@ -221,4 +221,32 @@ defmodule Aliyun.Oss.Object do
   def put_object_acl(bucket, object, acl) do
     put_object(bucket, object, "", %{"x-oss-object-acl" => acl}, %{"acl" => nil})
   end
+
+
+  @doc """
+  CopyObject接口用于在存储空间（Bucket ） 内或同地域的Bucket之间拷贝文件（Object）。
+
+  ## Examples
+
+      iex> Aliyun.Oss.Object.copy_object({"source-bucket", "source-object"}, {"target-bucket", "target-object"})
+      {:ok, %Aliyun.Oss.Client.Response{
+          data: %{
+            "CopyObjectResult" => %{
+              "ETag" => "\"D2D50000000000000000000000000000\"",
+              "LastModified" => "2019-02-27T09:21:13.000Z"
+            }
+          },
+          headers: [
+            {"Server", "AliyunOSS"},
+            {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
+            ...
+          ]
+        }
+      }
+  """
+  @spec copy_object({String.t(), String.t()}, {String.t(), String.t()}, map()) :: {:error, error()} | {:ok, Response.t()}
+  def copy_object({source_bucket, source_object}, {target_bucket, target_object}, headers \\ %{}) do
+    headers = Map.put(headers, "x-oss-copy-source", "/#{source_bucket}/#{source_object}")
+    put_object(target_bucket, target_object, "", headers)
+  end
 end

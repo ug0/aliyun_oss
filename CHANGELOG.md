@@ -3,6 +3,7 @@
 ## v0.3.0
 - New APIs:
   - Put Object
+  - Copy Object
   - Put Object ACL
 
 ## v0.2.1

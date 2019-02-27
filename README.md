@@ -59,7 +59,7 @@ config :aliyun_oss,
 - [ ] Object
 
   - [x] Put Object	上传object
-  - [ ] Copy Object	拷贝一个object成另外一个object
+  - [x] Copy Object	拷贝一个object成另外一个object
   - [x] Get Object	获取Object
   - [ ] Delete Object	删除Object
   - [ ] Delete Multiple Objects	删除多个Object

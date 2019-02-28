@@ -68,6 +68,10 @@ config :aliyun_oss,
   - [x] Put Object ACL	设置Object ACL
   - [x] Get Object ACL	获取Object ACL信息
   - [ ] Callback	上传回调
+  - [ ] PutSymlink	创建软链接
+  - [ ] GetSymlink	获取软链接
+  - [ ] RestoreObject	解冻文件
+  - [ ] SelectObject	用SQL语法查询Object内容
   - [x] Generate signed URL 生成包含签名的 URL
 
 
@@ -87,6 +91,17 @@ config :aliyun_oss,
   - [ ] Get Bucket cors	获取指定的Bucket目前的CORS规则
   - [ ] Delete Bucket cors	关闭指定Bucket对应的CORS功能并清空所有规则
   - [ ] Option Object	跨域访问preflight请求
+
+- [ ] live Channel
+  - [ ] PutLiveChannelStatus	切换LiveChannel的状态
+  - [ ] PutLiveChannel	创建LiveChannel
+  - [ ] GetVodPlaylist	获取播放列表
+  - [ ] PostVodPlaylist	生成播放列表
+  - [ ] Get LiveChannelStat	获取LiveChannel的推流状态信息
+  - [ ] GetLiveChannelInfo	获取LiveChannel的配置信息
+  - [ ] GetLiveChannelHistory	获取LiveChannel的推流记录
+  - [ ] ListLiveChannel	列举LiveChannel
+  - [ ] DeleteLiveChannel	删除LiveChannel
 
 ### Documentation(WIP)
 [https://hexdocs.pm/aliyun_oss](https://hexdocs.pm/aliyun_oss)

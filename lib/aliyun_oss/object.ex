@@ -263,4 +263,86 @@ defmodule Aliyun.Oss.Object do
       signature: Aliyun.Util.Sign.sign(encoded_policy, key)
     }
   end
+
+  @doc """
+  DeleteObject用于删除某个文件（Object）。
+
+  ## Examples
+
+      iex> Aliyun.Oss.Object.delete_object("some-bucket", "some-object")
+      {:ok, %Aliyun.Oss.Client.Response{
+          data: "",
+          headers: [
+            {"Server", "AliyunOSS"},
+            {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
+            ...
+          ]
+        }
+      }
+  """
+  @spec delete_object(String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  def delete_object(bucket, object) do
+    Client.request(%{
+      verb: "DELETE",
+      host: "#{bucket}.#{endpoint()}",
+      path: "/#{object}",
+      resource: "/#{bucket}/#{object}"
+    })
+  end
+
+  @doc """
+  DeleteMultipleObjects接口用于删除同一个存储空间（Bucket）中的多个文件（Object）。
+
+
+  ## Options
+
+    - `:encoding_type` - Accept value: `:url`
+    - `:quiet` - Set `true` to enable the quiet mode, default is `false`
+
+  ## Examples
+
+      iex> Aliyun.Oss.Object.delete_multiple_objects("some-bucket", ["object1", "object2"])
+      {:ok, %Aliyun.Oss.Client.Response{
+          data: %{
+            "DeleteResult" => %{
+              "Deleted" => [%{"key" => "object1"}, %{"key" => "object2"}]
+            }
+          },
+          headers: [
+            {"Server", "AliyunOSS"},
+            {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
+            ...
+          ]
+        }
+      }
+  """
+  @spec delete_multiple_objects(String.t(), [String.t()], [encoding_type: :url, quiet: boolean()]) :: {:error, error()} | {:ok, Response.t()}
+  def delete_multiple_objects(bucket, objects, options \\ []) do
+    headers = case options[:encoding_type] do
+      :url -> %{"encoding-type" => "url"}
+      _ -> %{}
+    end
+    quiet = Keyword.get(options, :quiet, false)
+
+    body = """
+    <?xml version="1.0" encoding="UTF-8"?>
+    <Delete>
+      <Quiet>#{quiet}</Quiet>
+      #{Stream.map(objects, fn object_key ->
+        "<Object><Key>#{object_key}</Key></Object>"
+      end) |> Enum.join("\n")}
+    </Delete>
+    """
+
+    Client.request(%{
+      verb: "POST",
+      host: "#{bucket}.#{endpoint()}",
+      path: "/",
+      resource: "/#{bucket}/",
+      query_params: %{},
+      sub_resources: %{"delete" => nil},
+      headers: headers,
+      body: body
+    })
+  end
 end

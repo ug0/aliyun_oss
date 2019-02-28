@@ -23,7 +23,7 @@ defmodule Aliyun.Oss.Client.Request do
 
   def build_signed(init_req = %{}) do
     build(init_req)
-    |> set_authorization_header
+    |> set_authorization_header()
   end
 
   def gen_signature(%Request{
@@ -33,12 +33,13 @@ defmodule Aliyun.Oss.Client.Request do
          headers:
            headers = %{
              "Content-Type" => content_type,
+             "Content-MD5" => md5,
              "Date" => date
            }
        }) do
     build_string_to_sign(%{
       verb: verb,
-      content_md5: Map.get(headers, "Content-MD5", ""),
+      content_md5: md5,
       content_type: content_type,
       date: date,
       canonicalized_oss_headers: canonicalize_oss_headers(headers),
@@ -63,6 +64,8 @@ defmodule Aliyun.Oss.Client.Request do
       req.headers
       |> Map.put_new("Host", req.host)
       |> Map.put_new_lazy("Content-Type", fn -> get_content_type(req) end)
+      |> Map.put_new_lazy("Content-MD5", fn -> calc_content_md5(req) end)
+      |> Map.put_new_lazy("Content-Length", fn -> byte_size(req.body) end)
       |> Map.put_new_lazy("Date", fn -> Aliyun.Util.Time.gmt_now() end)
 
     %Request{req | headers: headers}
@@ -121,5 +124,10 @@ defmodule Aliyun.Oss.Client.Request do
     content_type <> "\n" <>
     date <> "\n" <>
     headers <> resource
+  end
+
+  defp calc_content_md5(%Request{body: ""}), do: ""
+  defp calc_content_md5(%Request{body: body}) do
+    :crypto.hash(:md5, body) |> Base.encode64()
   end
 end

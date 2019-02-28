@@ -9,6 +9,8 @@
   - Put Object
   - Copy Object
   - Put Object ACL
+  - Delete Object
+  - Delete Multiple Objects
   - Sign Post Object Policy
 - Fixes
   - doc of `Bucket.put_bucket_logging/3`

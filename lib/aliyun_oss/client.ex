@@ -30,6 +30,14 @@ defmodule Aliyun.Oss.Client do
     )
   end
 
+  defp do_request(req = %Request{verb: "POST"}) do
+    HTTPoison.post(
+      Request.query_url(req),
+      req.body,
+      req.headers
+    )
+  end
+
   defp do_request(req = %Request{verb: "PUT"}) do
     HTTPoison.put(
       Request.query_url(req),

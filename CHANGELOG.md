@@ -9,6 +9,7 @@
   - Put Object
   - Copy Object
   - Put Object ACL
+  - Sign Post Object Policy
 - Fixes
   - doc of `Bucket.put_bucket_logging/3`
 

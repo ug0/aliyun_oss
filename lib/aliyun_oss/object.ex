@@ -249,4 +249,18 @@ defmodule Aliyun.Oss.Object do
     headers = Map.put(headers, "x-oss-copy-source", "/#{source_bucket}/#{source_object}")
     put_object(target_bucket, target_object, "", headers)
   end
+
+
+  @doc """
+  签名 Post Policy 返回签名字符串及编码后的 policy
+  """
+  @spec sign_post_policy(map(), String.t()) :: %{policy: String.t(), signature: String.t()}
+  def sign_post_policy(%{} = policy, key \\ Aliyun.Oss.Config.access_key_secret()) do
+    encoded_policy = policy |> Jason.encode!() |> Base.encode64()
+
+    %{
+      policy: encoded_policy,
+      signature: Aliyun.Util.Sign.sign(encoded_policy, key)
+    }
+  end
 end

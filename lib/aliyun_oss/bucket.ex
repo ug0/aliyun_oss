@@ -416,11 +416,11 @@ defmodule Aliyun.Oss.Bucket do
   end
 
   @doc """
-  PutBucketLogging 关闭 Bucket 日志功能
+  PutBucketLogging接口用于为 Bucket 开启访问日志记录功能。
 
   ## Examples
 
-      iex> Aliyun.Oss.Bucket.put_bucket_logging("some-bucket", false)
+      iex> Aliyun.Oss.Bucket.put_bucket_logging("some-bucket", "target-bucket", "target-prefix")
       {:ok,
       %Aliyun.Oss.Client.Response{
         data: "",

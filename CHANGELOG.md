@@ -5,6 +5,8 @@
   - Put Object
   - Copy Object
   - Put Object ACL
+- Fixes
+  - doc of `Bucket.put_bucket_logging/3`
 
 ## v0.2.1
 - New APIs:

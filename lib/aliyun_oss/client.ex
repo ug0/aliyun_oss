@@ -11,8 +11,6 @@ defmodule Aliyun.Oss.Client do
 
       {:error, %HTTPoison.Error{reason: reason}} ->
         {:error, reason}
-      r ->
-        r
     end
   end
 

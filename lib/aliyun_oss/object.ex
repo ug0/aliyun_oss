@@ -224,6 +224,43 @@ defmodule Aliyun.Oss.Object do
 
 
   @doc """
+  AppendObject接口用于以追加写的方式上传Object。
+
+  ## Examples
+
+      iex> Aliyun.Oss.Object.append_object("some-bucket", "some-object", 0)
+      {:ok, %Aliyun.Oss.Client.Response{
+          data: "",
+          headers: [
+            {"Server", "AliyunOSS"},
+            {"Date", "Fri, 01 Mar 2019 05:57:23 GMT"},
+            {"Content-Length", "0"},
+            {"Connection", "keep-alive"},
+            {"x-oss-request-id", "5C0000000000000000000000"},
+            {"ETag", "\"B38D0000000000000000000000000000\""},
+            {"x-oss-next-append-position", "10"},
+            {"x-oss-hash-crc64ecma", "8000000000000000000"},
+            {"x-oss-server-time", "17"}
+          ]
+        }
+      }
+  """
+  @spec append_object(String.t(), String.t(), String.t(), integer(), map()) :: {:error, error()} | {:ok, Response.t()}
+  def append_object(bucket, object, body, position, headers \\ %{}) do
+    Client.request(%{
+      verb: "POST",
+      host: "#{bucket}.#{endpoint()}",
+      path: "/#{object}",
+      resource: "/#{bucket}/#{object}",
+      query_params: %{},
+      sub_resources: %{"append" => nil, "position" => position},
+      headers: headers,
+      body: body
+    })
+  end
+
+
+  @doc """
   CopyObject接口用于在存储空间（Bucket ） 内或同地域的Bucket之间拷贝文件（Object）。
 
   ## Examples

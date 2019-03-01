@@ -64,7 +64,7 @@ config :aliyun_oss,
   - [x] Delete Multiple Objects	删除多个Object
   - [x] Head Object	获得Object的meta信息
   - [x] Sign Post Policy	生成 Post Policy 签名
-  - [ ] Append Object	在Object尾追加上传数据
+  - [x] Append Object	在Object尾追加上传数据
   - [x] Put Object ACL	设置Object ACL
   - [x] Get Object ACL	获取Object ACL信息
   - [ ] Callback	上传回调

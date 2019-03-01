@@ -7,6 +7,7 @@
   - Delete Bucket Website
   - Delete Bucket Lifecycle
   - Put Object
+  - Append Object
   - Copy Object
   - Put Object ACL
   - Delete Object

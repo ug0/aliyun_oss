@@ -55,7 +55,7 @@ config :aliyun_oss,
   - [x] Get Bucket(List Object)	获得Bucket中所有Object的信息
   - [x] Get Bucket Info	获取Bucket信息
 
-- [ ] Object
+- [x] Object
 
   - [x] Put Object	上传object
   - [x] Copy Object	拷贝一个object成另外一个object
@@ -67,11 +67,10 @@ config :aliyun_oss,
   - [x] Append Object	在Object尾追加上传数据
   - [x] Put Object ACL	设置Object ACL
   - [x] Get Object ACL	获取Object ACL信息
-  - [ ] Callback	上传回调
-  - [ ] PutSymlink	创建软链接
-  - [ ] GetSymlink	获取软链接
-  - [ ] RestoreObject	解冻文件
-  - [ ] SelectObject	用SQL语法查询Object内容
+  - [x] Callback	上传回调
+  - [x] PutSymlink	创建软链接
+  - [x] GetSymlink	获取软链接
+  - [x] RestoreObject	解冻文件
   - [x] Generate signed URL 生成包含签名的 URL
 
 

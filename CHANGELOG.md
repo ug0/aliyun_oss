@@ -1,12 +1,15 @@
 # Changelog
 
 ## v0.3.0
-- New APIs:
+- New APIs(Complete Bucket and Object):
   - Put Bucket Website
   - Put Bucket Referer
   - Delete Bucket Website
   - Delete Bucket Lifecycle
   - Put Object
+  - Put Symlink
+  - Get Symlink
+  - Restore Object
   - Append Object
   - Copy Object
   - Put Object ACL

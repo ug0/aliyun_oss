@@ -10,83 +10,6 @@ defmodule Aliyun.Oss.Object do
 
   @type error() :: Error.t() | atom()
 
-  @doc """
-  GetObject 用于获取某个 Object
-
-  ## Examples
-
-      iex> Aliyun.Oss.Object.get_object("some-bucket", "some-object")
-      {:ok, %Aliyun.Oss.Client.Response{
-          data: <<208, 207, 17, 224, 161, 177, 26, 225, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 62, 0, 3, 0, 254, 255, 9, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 18,
-            0, 0, 0, ...>>,
-          headers: [
-            {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
-            ...
-          ]
-        }
-      }
-
-
-  亦可用于获取某个 Object 指定 SubResource(GetObjectXXX)。
-
-  ## Examples
-
-      iex> Aliyun.Oss.Object.get_object("some-bucket", "some-object", %{}, %{"acl" => nil})
-      {:ok, %Aliyun.Oss.Client.Response{
-        data: %{
-          "AccessControlPolicy" => %{
-            "AccessControlList" => %{"Grant" => "default"},
-            "Owner" => %{
-              "DisplayName" => "1111111111111111",
-              "ID" => "1111111111111111"
-            }
-          }
-        },
-        headers: [
-          {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"}
-        ]
-      }
-  """
-  @spec get_object(String.t(), String.t(), map(), map()) ::
-          {:error, error()} | {:ok, Response.t()}
-  def get_object(bucket, object, headers \\ %{}, sub_resources \\ %{}) do
-    Client.request(%{
-      verb: "GET",
-      host: "#{bucket}.#{endpoint()}",
-      path: "/#{object}",
-      headers: headers,
-      resource: "/#{bucket}/#{object}",
-      query_params: %{},
-      sub_resources: sub_resources
-    })
-  end
-
-  @doc """
-  GetObjectACL 用来获取某个Bucket下的某个Object的访问权限。
-
-  ## Examples
-
-      iex> Aliyun.Oss.Object.get_object_acl("some-bucket", "some-object")
-      {:ok, %Aliyun.Oss.Client.Response{
-        data: %{
-          "AccessControlPolicy" => %{
-            "AccessControlList" => %{"Grant" => "default"},
-            "Owner" => %{
-              "DisplayName" => "1111111111111111",
-              "ID" => "1111111111111111"
-            }
-          }
-        },
-        headers: [
-          {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"}
-        ]
-      }
-  """
-  @spec get_object_acl(String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
-  def get_object_acl(bucket, object) do
-    get_object(bucket, object, %{}, %{"acl" => nil})
-  end
 
   @doc """
   HeadObject只返回某个Object的meta信息，不返回文件内容。
@@ -129,6 +52,117 @@ defmodule Aliyun.Oss.Object do
       sub_resources: %{}
     })
   end
+
+
+  @doc """
+  GetObject 用于获取某个 Object
+
+  ## Examples
+
+      iex> Aliyun.Oss.Object.get_object("some-bucket", "some-object")
+      {:ok, %Aliyun.Oss.Client.Response{
+          data: <<208, 207, 17, 224, 161, 177, 26, 225, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 62, 0, 3, 0, 254, 255, 9, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 18,
+            0, 0, 0, ...>>,
+          headers: [
+            {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
+            ...
+          ]
+        }
+      }
+
+
+  亦可用于获取某个 Object 指定 SubResource(GetObjectXXX)。
+
+  ## Examples
+
+      iex> Aliyun.Oss.Object.get_object("some-bucket", "some-object", %{}, %{"acl" => nil})
+      {:ok, %Aliyun.Oss.Client.Response{
+          data: %{
+            "AccessControlPolicy" => %{
+              "AccessControlList" => %{"Grant" => "default"},
+              "Owner" => %{
+                "DisplayName" => "1111111111111111",
+                "ID" => "1111111111111111"
+              }
+            }
+          },
+          headers: [
+            {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"}
+          ]
+        }
+      }
+  """
+  @spec get_object(String.t(), String.t(), map(), map()) ::
+          {:error, error()} | {:ok, Response.t()}
+  def get_object(bucket, object, headers \\ %{}, sub_resources \\ %{}) do
+    Client.request(%{
+      verb: "GET",
+      host: "#{bucket}.#{endpoint()}",
+      path: "/#{object}",
+      headers: headers,
+      resource: "/#{bucket}/#{object}",
+      query_params: %{},
+      sub_resources: sub_resources
+    })
+  end
+
+  @doc """
+  GetObjectACL 用来获取某个Bucket下的某个Object的访问权限。
+
+  ## Examples
+
+      iex> Aliyun.Oss.Object.get_object_acl("some-bucket", "some-object")
+      {:ok, %Aliyun.Oss.Client.Response{
+          data: %{
+            "AccessControlPolicy" => %{
+              "AccessControlList" => %{"Grant" => "default"},
+              "Owner" => %{
+                "DisplayName" => "1111111111111111",
+                "ID" => "1111111111111111"
+              }
+            }
+          },
+          headers: [
+            {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"}
+          ]
+        }
+      }
+  """
+  @spec get_object_acl(String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  def get_object_acl(bucket, object) do
+    get_object(bucket, object, %{}, %{"acl" => nil})
+  end
+
+
+  @doc """
+  GetSymlink接口用于获取符号链接。此操作需要您对该符号链接有读权限。
+
+  ## Examples
+
+      iex> Aliyun.Oss.Object.get_symlink("some-bucket", "some-object")
+      {:ok, %Aliyun.Oss.Client.Response{
+          data: "",
+          headers: [
+            {"Server", "AliyunOSS"},
+            {"Date", "Fri, 01 Mar 2019 06:26:07 GMT"},
+            {"Content-Type", "text/plain"},
+            {"Content-Length", "0"},
+            {"Connection", "keep-alive"},
+            {"x-oss-request-id", "5C7000000000000000000000"},
+            {"Last-Modified", "Fri, 01 Mar 2019 06:23:13 GMT"},
+            {"ETag", "\"6751C000000000000000000000000000\""},
+            {"x-oss-symlink-target", "test.txt"},
+            {"x-oss-server-time", "1"}
+          ]
+        }
+      }
+  """
+  @spec get_symlink(String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  def get_symlink(bucket, object) do
+    get_object(bucket, object, %{}, %{"symlink" => nil})
+  end
+
 
   @doc """
   生成包含签名的 URL
@@ -202,6 +236,27 @@ defmodule Aliyun.Oss.Object do
 
 
   @doc """
+  PutSymlink接口用于为OSS的TargetObject创建软链接，您可以通过该软链接访问TargetObject。
+
+  ## Examples
+
+      iex> Aliyun.Oss.Object.put_symlink("some-bucket", "symlink", "target-object")
+      {:ok, %Aliyun.Oss.Client.Response{
+          data: "",
+          headers: [
+            {"Server", "AliyunOSS"},
+            {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
+            ...
+          ]
+        }
+      }
+  """
+  @spec put_symlink(String.t(), String.t(), String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  def put_symlink(bucket, symlink, target_object, storage_class \\ "Standard") do
+    put_object(bucket, symlink, "", %{"x-oss-symlink-target" => target_object, "x-oss-storage-class" => storage_class}, %{"symlink" => nil})
+  end
+
+  @doc """
   PutObjectACL接口用于修改Object的访问权限。
 
   ## Examples
@@ -220,43 +275,6 @@ defmodule Aliyun.Oss.Object do
   @spec put_object_acl(String.t(), String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
   def put_object_acl(bucket, object, acl) do
     put_object(bucket, object, "", %{"x-oss-object-acl" => acl}, %{"acl" => nil})
-  end
-
-
-  @doc """
-  AppendObject接口用于以追加写的方式上传Object。
-
-  ## Examples
-
-      iex> Aliyun.Oss.Object.append_object("some-bucket", "some-object", 0)
-      {:ok, %Aliyun.Oss.Client.Response{
-          data: "",
-          headers: [
-            {"Server", "AliyunOSS"},
-            {"Date", "Fri, 01 Mar 2019 05:57:23 GMT"},
-            {"Content-Length", "0"},
-            {"Connection", "keep-alive"},
-            {"x-oss-request-id", "5C0000000000000000000000"},
-            {"ETag", "\"B38D0000000000000000000000000000\""},
-            {"x-oss-next-append-position", "10"},
-            {"x-oss-hash-crc64ecma", "8000000000000000000"},
-            {"x-oss-server-time", "17"}
-          ]
-        }
-      }
-  """
-  @spec append_object(String.t(), String.t(), String.t(), integer(), map()) :: {:error, error()} | {:ok, Response.t()}
-  def append_object(bucket, object, body, position, headers \\ %{}) do
-    Client.request(%{
-      verb: "POST",
-      host: "#{bucket}.#{endpoint()}",
-      path: "/#{object}",
-      resource: "/#{bucket}/#{object}",
-      query_params: %{},
-      sub_resources: %{"append" => nil, "position" => position},
-      headers: headers,
-      body: body
-    })
   end
 
 
@@ -289,17 +307,56 @@ defmodule Aliyun.Oss.Object do
 
 
   @doc """
-  签名 Post Policy 返回签名字符串及编码后的 policy
-  """
-  @spec sign_post_policy(map(), String.t()) :: %{policy: String.t(), signature: String.t()}
-  def sign_post_policy(%{} = policy, key \\ Aliyun.Oss.Config.access_key_secret()) do
-    encoded_policy = policy |> Jason.encode!() |> Base.encode64()
+  AppendObject接口用于以追加写的方式上传Object。
 
-    %{
-      policy: encoded_policy,
-      signature: Aliyun.Util.Sign.sign(encoded_policy, key)
-    }
+  ## Examples
+
+      iex> Aliyun.Oss.Object.append_object("some-bucket", "some-object", 0)
+      {:ok, %Aliyun.Oss.Client.Response{
+          data: "",
+          headers: [
+            {"Server", "AliyunOSS"},
+            {"Date", "Fri, 01 Mar 2019 05:57:23 GMT"},
+            {"Content-Length", "0"},
+            {"Connection", "keep-alive"},
+            {"x-oss-request-id", "5C0000000000000000000000"},
+            {"ETag", "\"B38D0000000000000000000000000000\""},
+            {"x-oss-next-append-position", "10"},
+            {"x-oss-hash-crc64ecma", "8000000000000000000"},
+            {"x-oss-server-time", "17"}
+          ]
+        }
+      }
+  """
+  @spec append_object(String.t(), String.t(), String.t(), integer(), map()) :: {:error, error()} | {:ok, Response.t()}
+  def append_object(bucket, object, body, position, headers \\ %{}) do
+    post(bucket, object, body, headers, %{"append" => nil, "position" => position})
   end
+
+  @doc """
+  RestoreObject接口用于解冻归档类型（Archive）的文件（Object）。
+
+  ## Examples
+
+      iex> Aliyun.Oss.Object.restore_object("some-bucket", "some-object")
+      {:ok, %Aliyun.Oss.Client.Response{
+          data: "",
+          headers: [
+            {"Server", "AliyunOSS"},
+            {"Date", "Fri, 01 Mar 2019 06:38:21 GMT"},
+            {"Content-Length", "0"},
+            {"Connection", "keep-alive"},
+            {"x-oss-request-id", "5C7000000000000000000000"},
+            {"x-oss-server-time", "7"}
+          ]
+        }
+      }
+  """
+  @spec restore_object(String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  def restore_object(bucket, object) do
+    post(bucket, object, "", %{}, %{"restore" => nil})
+  end
+
 
   @doc """
   DeleteObject用于删除某个文件（Object）。
@@ -329,7 +386,6 @@ defmodule Aliyun.Oss.Object do
 
   @doc """
   DeleteMultipleObjects接口用于删除同一个存储空间（Bucket）中的多个文件（Object）。
-
 
   ## Options
 
@@ -371,13 +427,45 @@ defmodule Aliyun.Oss.Object do
     </Delete>
     """
 
+    post(bucket, body, headers, %{"delete" => nil})
+  end
+
+
+  @doc """
+  签名 Post Policy 返回签名字符串及编码后的 policy
+  """
+  @spec sign_post_policy(map(), String.t()) :: %{policy: String.t(), signature: String.t()}
+  def sign_post_policy(%{} = policy, key \\ Aliyun.Oss.Config.access_key_secret()) do
+    encoded_policy = policy |> Jason.encode!() |> Base.encode64()
+
+    %{
+      policy: encoded_policy,
+      signature: Aliyun.Util.Sign.sign(encoded_policy, key)
+    }
+  end
+
+
+  defp post(bucket, object, body, headers, sub_resources) do
+    Client.request(%{
+      verb: "POST",
+      host: "#{bucket}.#{endpoint()}",
+      path: "/#{object}",
+      resource: "/#{bucket}/#{object}",
+      query_params: %{},
+      sub_resources: sub_resources,
+      headers: headers,
+      body: body
+    })
+  end
+
+  defp post(bucket, body, headers, sub_resources) do
     Client.request(%{
       verb: "POST",
       host: "#{bucket}.#{endpoint()}",
       path: "/",
       resource: "/#{bucket}/",
       query_params: %{},
-      sub_resources: %{"delete" => nil},
+      sub_resources: sub_resources,
       headers: headers,
       body: body
     })

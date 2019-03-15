@@ -12,7 +12,7 @@ Add `aliyun_oss` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:aliyun_oss, "~> 0.3.0"}
+    {:aliyun_oss, "~> 0.3.1"}
   ]
 end
 ```
@@ -26,7 +26,11 @@ config :aliyun_oss,
   access_key_secret: "ALIYUN_ACCESS_KEY_SECRET"
 ```
 
-## Implemented APIs
+## Documentation
+[https://hexdocs.pm/aliyun_oss](https://hexdocs.pm/aliyun_oss)
+
+
+### API List
 
 参考[阿里云官方文档](https://help.aliyun.com/document_detail/31948.html?spm=a2c4g.11186623.6.1037.520869cbKcHFcL)
 
@@ -101,8 +105,3 @@ config :aliyun_oss,
   - [ ] GetLiveChannelHistory	获取LiveChannel的推流记录
   - [ ] ListLiveChannel	列举LiveChannel
   - [ ] DeleteLiveChannel	删除LiveChannel
-
-### Documentation(WIP)
-[https://hexdocs.pm/aliyun_oss](https://hexdocs.pm/aliyun_oss)
-
-### Improvements

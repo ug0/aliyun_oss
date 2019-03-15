@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.3.1
+- Improve docs
+
 ## v0.3.0
 - New APIs(Complete Bucket and Object):
   - Put Bucket Website

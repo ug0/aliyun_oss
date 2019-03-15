@@ -8,7 +8,7 @@ defmodule Aliyun.Oss.Object do
   alias Aliyun.Oss.Client
   alias Aliyun.Oss.Client.{Request, Response, Error}
 
-  @type error() :: Error.t() | atom()
+  @type error() :: %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
 
 
   @doc """

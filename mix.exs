@@ -4,12 +4,13 @@ defmodule AliyunOss.MixProject do
   def project do
     [
       app: :aliyun_oss,
-      version: "0.3.0",
+      version: "0.3.1",
       elixir: "~> 1.7",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       description: description(),
-      package: package()
+      package: package(),
+      docs: docs()
     ]
   end
 
@@ -45,6 +46,27 @@ defmodule AliyunOss.MixProject do
       links: %{"GitHub" => "https://github.com/ug0/aliyun_oss"},
       source_urL: "https://github.com/ug0/aliyun_oss",
       homapage_url: "https://github.com/ug0/aliyun_oss"
+    ]
+  end
+
+  defp docs do
+    [
+      main: "Aliyun.Oss",
+      groups_for_modules: [
+        # Aliyun.Oss,
+        # Aliyun.Oss.Bucket,
+        # Aliyun.Oss.Object,
+
+        "HTTP Client": [
+          Aliyun.Oss.Client,
+          Aliyun.Oss.Client.Request,
+          Aliyun.Oss.Client.Response,
+          Aliyun.Oss.Client.Error
+        ],
+        "Configuration": [
+          Aliyun.Oss.Config
+        ]
+      ]
     ]
   end
 end

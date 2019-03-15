@@ -8,7 +8,7 @@ defmodule Aliyun.Oss.Bucket do
   alias Aliyun.Oss.Client
   alias Aliyun.Oss.Client.{Response, Error}
 
-  @type error() :: Error.t() | atom()
+  @type error() :: %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
 
   @doc """
   GetService (ListBuckets) 对于服务地址作Get请求可以返回请求者拥有的所有Bucket。
@@ -343,7 +343,6 @@ defmodule Aliyun.Oss.Bucket do
       iex> Aliyun.Oss.Bucket.put_bucket("new-bucket", %{"x-oss-acl" => "invalid-permission"}) # get error
       {:error,
       %Aliyun.Oss.Client.Error{
-        body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Error>\n  <Code>InvalidArgument</Code>\n  <Message>no such bucket access control exists</Message>\n  <RequestId>5C3820B9B79FD628EABAF02D</RequestId>\n  <HostId>new-bucket.oss-cn-shenzhen.aliyuncs.com</HostId>\n  <ArgumentName>x-oss-acl</ArgumentName>\n  <ArgumentValue>invalid-permission</ArgumentValue>\n</Error>\n",
         parsed_details: %{
           "ArgumentName" => "x-oss-acl",
           "ArgumentValue" => "invalid-permission",
@@ -352,6 +351,7 @@ defmodule Aliyun.Oss.Bucket do
           "Message" => "no such bucket access control exists",
           "RequestId" => "5C3000000000000000000000"
         },
+        body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>...</xml>",
         status_code: 400
       }}
 
@@ -398,7 +398,6 @@ defmodule Aliyun.Oss.Bucket do
       iex> Aliyun.Oss.Bucket.put_bucket_acl("some-bucket", "invalid-permission")
       {:error,
       %Aliyun.Oss.Client.Error{
-        body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Error>\n  <Code>InvalidArgument</Code>\n  <Message>no such bucket access control exists</Message>\n  <RequestId>5C38203AB79FD628EAB8D743</RequestId>\n  <HostId>zidcn-test-1.oss-cn-shenzhen.aliyuncs.com</HostId>\n  <ArgumentName>x-oss-acl</ArgumentName>\n  <ArgumentValue>invalid-read</ArgumentValue>\n</Error>\n",
         parsed_details: %{
           "ArgumentName" => "x-oss-acl",
           "ArgumentValue" => "invalid-read",
@@ -407,6 +406,7 @@ defmodule Aliyun.Oss.Bucket do
           "Message" => "no such bucket access control exists",
           "RequestId" => "5C3000000000000000000000"
         },
+        body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>...</xml>",
         status_code: 400
       }}
   """
@@ -541,7 +541,14 @@ defmodule Aliyun.Oss.Bucket do
       iex> Aliyun.Oss.Bucket.delete_bucket("unknown-bucket")
       {:error,
       %Aliyun.Oss.Client.Error{
-        body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Error>\n  <Code>NoSuchBucket</Code>\n  <Message>The specified bucket does not exist.</Message>\n  <RequestId>5C3829B29BF380354CF9C2E8</RequestId>\n  <HostId>unknown-bucket.oss-cn-shenzhen.aliyuncs.com</HostId>\n  <BucketName>unknown-bucket</BucketName>\n</Error>\n",
+        body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
+               <Error>\n\
+                 <Code>NoSuchBucket</Code>\n\
+                 <Message>The specified bucket does not exist.</Message>\n\
+                 <RequestId>5C3829B29BF380354CF9C2E8</RequestId>\n\
+                 <HostId>unknown-bucket.oss-cn-shenzhen.aliyuncs.com</HostId>\n\
+                 <BucketName>unknown-bucket</BucketName>\n\
+               </Error>",
         parsed_details: %{
           "BucketName" => "unknown-bucket",
           "Code" => "NoSuchBucket",
@@ -586,7 +593,6 @@ defmodule Aliyun.Oss.Bucket do
       iex> Aliyun.Oss.Bucket.delete_bucket_logging("unknown-bucket")
       {:error,
       %Aliyun.Oss.Client.Error{
-        body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Error>\n  <Code>NoSuchBucket</Code>\n  <Message>The specified bucket does not exist.</Message>\n  <RequestId>5C38283EC84D1C4471F2F48A</RequestId>\n  <HostId>zidcn-test-asdad1.oss-cn-shenzhen.aliyuncs.com</HostId>\n  <BucketName>zidcn-test-asdad1</BucketName>\n</Error>\n",
         parsed_details: %{
           "BucketName" => "unknown-bucket",
           "Code" => "NoSuchBucket",
@@ -594,6 +600,7 @@ defmodule Aliyun.Oss.Bucket do
           "Message" => "The specified bucket does not exist.",
           "RequestId" => "5C38283EC84D1C4471F2F48A"
         },
+        body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>...</xml>",
         status_code: 404
       }}
   """
@@ -623,7 +630,6 @@ defmodule Aliyun.Oss.Bucket do
       iex> Aliyun.Oss.Bucket.delete_bucket_website("unknown-bucket")
       {:error,
       %Aliyun.Oss.Client.Error{
-        body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Error>\n  <Code>NoSuchBucket</Code>\n  <Message>The specified bucket does not exist.</Message>\n  <RequestId>5C38283EC84D1C4471F2F48A</RequestId>\n  <HostId>zidcn-test-asdad1.oss-cn-shenzhen.aliyuncs.com</HostId>\n  <BucketName>zidcn-test-asdad1</BucketName>\n</Error>\n",
         parsed_details: %{
           "BucketName" => "unknown-bucket",
           "Code" => "NoSuchBucket",
@@ -631,6 +637,7 @@ defmodule Aliyun.Oss.Bucket do
           "Message" => "The specified bucket does not exist.",
           "RequestId" => "5C38283EC84D1C4471F2F48A"
         },
+        body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>...</xml>",
         status_code: 404
       }}
   """
@@ -660,7 +667,6 @@ defmodule Aliyun.Oss.Bucket do
       iex> Aliyun.Oss.Bucket.delete_bucket_lifecycle("unknown-bucket")
       {:error,
       %Aliyun.Oss.Client.Error{
-        body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Error>\n  <Code>NoSuchBucket</Code>\n  <Message>The specified bucket does not exist.</Message>\n  <RequestId>5C38283EC84D1C4471F2F48A</RequestId>\n  <HostId>zidcn-test-asdad1.oss-cn-shenzhen.aliyuncs.com</HostId>\n  <BucketName>zidcn-test-asdad1</BucketName>\n</Error>\n",
         parsed_details: %{
           "BucketName" => "unknown-bucket",
           "Code" => "NoSuchBucket",
@@ -668,6 +674,7 @@ defmodule Aliyun.Oss.Bucket do
           "Message" => "The specified bucket does not exist.",
           "RequestId" => "5C38283EC84D1C4471F2F48A"
         },
+        body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>...</xml>",
         status_code: 404
       }}
   """

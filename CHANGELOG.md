@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.3.2
+- Ammend doc of example usage
+
 ## v0.3.1
 - Improve docs
 

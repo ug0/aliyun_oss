@@ -433,6 +433,23 @@ defmodule Aliyun.Oss.Object do
 
   @doc """
   签名 Post Policy 返回签名字符串及编码后的 policy
+
+  ## Examples
+
+      iex> policy = %{
+      ...>  "conditions" => [
+      ...>    ["content-length-range", 0, 10485760],
+      ...>    %{"bucket" => "ahaha"},
+      ...>    %{"A" => "a"},
+      ...>    %{"key" => "ABC"}
+      ...>  ],
+      ...>  "expiration" => "2013-12-01T12:00:00Z"
+      ...>}
+      iex> Aliyun.Oss.Object.sign_post_policy(policy)
+      %{
+        policy: "eyJjb25kaXRpb25zIjpbWyJjb250ZW50LWxlbmd0aC1yYW5nZSIsMCwxMDQ4NTc2MF0seyJidWNrZXQiOiJhaGFoYSJ9LHsiQSI6ImEifSx7ImtleSI6IkFCQyJ9XSwiZXhwaXJhdGlvbiI6IjIwMTMtMTItMDFUMTI6MDA6MDBaIn0=",
+        signature: "W835KpLsL6k1/oo28RcsEflB6hw="
+      }
   """
   @spec sign_post_policy(map(), String.t()) :: %{policy: String.t(), signature: String.t()}
   def sign_post_policy(%{} = policy, key \\ Aliyun.Oss.Config.access_key_secret()) do

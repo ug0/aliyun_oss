@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.3.3
+- Bump aliyun_util from 0.3.1 to 0.3.3
+- Bump ex_doc from 0.19.3 to 0.20.3
+
 ## v0.3.2
 - Ammend doc of example usage
 

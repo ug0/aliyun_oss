@@ -4,7 +4,7 @@ defmodule AliyunOss.MixProject do
   def project do
     [
       app: :aliyun_oss,
-      version: "0.3.2",
+      version: "0.3.3",
       elixir: "~> 1.7",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
@@ -25,11 +25,11 @@ defmodule AliyunOss.MixProject do
   defp deps do
     [
       {:mime, "~> 1.3"},
-      {:aliyun_util, "~> 0.3.0" },
+      {:aliyun_util, "~> 0.3.3" },
       {:httpoison, "~> 1.4"},
       {:elixir_xml_to_map, "~> 0.1"},
       {:jason, "~> 1.1"},
-      {:ex_doc, "~> 0.18", only: :dev},
+      {:ex_doc, "~> 0.20", only: :dev},
       {:mock, "~> 0.3.2", only: :test}
     ]
   end

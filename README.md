@@ -58,6 +58,9 @@ config :aliyun_oss,
   - [x] Delete Bucket Lifecycle	删除Bucket中Object的生命周期规则
   - [x] Get Bucket(List Object)	获得Bucket中所有Object的信息
   - [x] Get Bucket Info	获取Bucket信息
+  - [ ] PutBucketEncryption	配置Bucket的加密规则
+  - [ ] GetBucketEncryption	获取Bucket的加密规则
+  - [ ] DeleteBucketEncryption	删除Bucket的加密规则
 
 - [x] Object
 
@@ -76,6 +79,10 @@ config :aliyun_oss,
   - [x] GetSymlink	获取软链接
   - [x] RestoreObject	解冻文件
   - [x] Generate signed URL 生成包含签名的 URL
+  - [ ] SelectObject	用SQL语法查询Object内容
+  - [ ] PutObjectTagging	设置或更新对象标签
+  - [ ] GetObjectTagging	获取对象标签信息
+  - [ ] DeleteObjectTagging	删除指定的对象标签
 
 
 - [ ] Multipart Upload

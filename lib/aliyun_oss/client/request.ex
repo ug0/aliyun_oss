@@ -56,33 +56,37 @@ defmodule Aliyun.Oss.Client.Request do
   end
 
   defp canonicalize_oss_headers(%{headers: headers}) do
-    case headers
-         |> Stream.filter(fn {h, _} ->
-           Regex.match?(~r/^x-oss-/i, to_string(h))
-         end)
-         |> Stream.map(fn {h, v} ->
-           (h |> to_string() |> String.downcase()) <> ":" <> to_string(v)
-         end)
-         |> Enum.join("\n") do
+    headers
+    |> Stream.filter(&is_oss_header?/1)
+    |> Stream.map(&encode_header/1)
+    |> Enum.join("\n")
+    |> case do
       "" -> ""
       str -> str <> "\n"
     end
   end
 
+  defp is_oss_header?({h, _}) do
+    Regex.match?(~r/^x-oss-/i, to_string(h))
+  end
+
+  defp encode_header({h, v}) do
+    (h |> to_string() |> String.downcase()) <> ":" <> to_string(v)
+  end
+
   defp canonicalize_resource(%{resource: resource, sub_resources: nil}), do: resource
   defp canonicalize_resource(%{resource: resource, sub_resources: sub_resources}) do
-    case sub_resources |> Stream.map(&encode_param/1) |> Enum.join("&") do
+    sub_resources
+    |> Stream.map(&encode_param/1)
+    |> Enum.join("&")
+    |> case do
       "" -> resource
       query_string -> resource <> "?" <> query_string
     end
   end
 
-  defp encode_param(param) do
-    case param do
-      {k, nil} -> k
-      {k, v} -> "#{k}=#{v}"
-    end
-  end
+  defp encode_param({k, nil}), do: k
+  defp encode_param({k, v}), do: "#{k}=#{v}"
 
   defp parse_content_type(%{resource: resource}) do
     case Path.extname(resource) do

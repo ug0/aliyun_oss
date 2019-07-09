@@ -176,7 +176,7 @@ defmodule Aliyun.Oss.Object do
   @spec object_url(String.t(), String.t(), integer()) :: String.t()
   def object_url(bucket, object, expires) do
     signature =
-      Request.gen_signature(%Request{
+      %{
         verb: "GET",
         host: "#{bucket}.#{endpoint()}",
         path: "",
@@ -187,7 +187,9 @@ defmodule Aliyun.Oss.Object do
           "Date" => Integer.to_string(expires),
           "Content-Type" => ""
         }
-      })
+      }
+      |> Request.build()
+      |> Request.gen_signature()
 
     URI.to_string(%URI{
       scheme: "https",

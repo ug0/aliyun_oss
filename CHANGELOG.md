@@ -1,5 +1,14 @@
 # Changelog
 
+## V0.4.0
+- New APIs:
+  - PutBucketEncryption
+  - GetBucketEncryption
+  - DeleteBucketEncryption
+  - PutObjectTagging
+  - GetObjectTagging
+  - DeleteObjectTagging
+
 ## v0.3.4
 - Fix documentation
 

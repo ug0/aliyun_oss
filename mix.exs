@@ -4,7 +4,7 @@ defmodule AliyunOss.MixProject do
   def project do
     [
       app: :aliyun_oss,
-      version: "0.3.4",
+      version: "0.4.0",
       elixir: "~> 1.7",
       start_permanent: Mix.env() == :prod,
       deps: deps(),

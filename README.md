@@ -80,9 +80,9 @@ config :aliyun_oss,
   - [x] RestoreObject	解冻文件
   - [x] Generate signed URL 生成包含签名的 URL
   - [ ] SelectObject	用SQL语法查询Object内容
-  - [ ] PutObjectTagging	设置或更新对象标签
-  - [ ] GetObjectTagging	获取对象标签信息
-  - [ ] DeleteObjectTagging	删除指定的对象标签
+  - [x] PutObjectTagging	设置或更新对象标签
+  - [x] GetObjectTagging	获取对象标签信息
+  - [x] DeleteObjectTagging	删除指定的对象标签
 
 
 - [ ] Multipart Upload

@@ -165,6 +165,35 @@ defmodule Aliyun.Oss.Object do
 
 
   @doc """
+  通过GetObjectTagging接口获取对象的标签信息。
+
+  ## Examples
+
+      iex> Aliyun.Oss.Object.get_object_tagging("some-bucket", "some-object")
+      {:ok, %Aliyun.Oss.Client.Response{
+          data: %{"Tagging" => %{"TagSet" => [%{"Key" => "key", "Value" => "value"}]}},
+          headers: [
+            {"Server", "AliyunOSS"},
+            {"Date", "Fri, 01 Mar 2019 06:26:07 GMT"},
+            {"Content-Type", "text/plain"},
+            {"Content-Length", "0"},
+            {"Connection", "keep-alive"},
+            {"x-oss-request-id", "5C7000000000000000000000"},
+            {"Last-Modified", "Fri, 01 Mar 2019 06:23:13 GMT"},
+            {"ETag", "\"6751C000000000000000000000000000\""},
+            {"x-oss-symlink-target", "test.txt"},
+            {"x-oss-server-time", "1"}
+          ]
+        }
+      }
+  """
+  @spec get_object_tagging(String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  def get_object_tagging(bucket, object) do
+    get_object(bucket, object, %{}, %{"tagging" => nil})
+  end
+
+
+  @doc """
   生成包含签名的 URL
 
   ## Examples
@@ -309,6 +338,45 @@ defmodule Aliyun.Oss.Object do
 
 
   @doc """
+  通过PutObjectTagging接口设置或更新对象的标签（Object Tagging）。
+
+  ## Examples
+
+      iex> Aliyun.Oss.Object.put_object_tagging("some-bucket", "some-object", [{"key1", "value1"}, {:key2, "value2}])
+      {:ok, %Aliyun.Oss.Client.Response{
+          data: "",
+          headers: [
+            {"Server", "AliyunOSS"},
+            {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
+            ...
+          ]
+        }
+      }
+  """
+  @spec put_object_tagging(String.t(), String.t(), [{any(), any()}, ...]) :: {:error, error()} | {:ok, Response.t()}
+  def put_object_tagging(bucket, object, tags) do
+    tag_set = Enum.reduce(tags, "", fn {key, value}, acc ->
+      acc <> """
+      <Tag>
+        <Key>#{key}</Key>
+        <Value>#{value}</Value>
+      </Tag>
+      """
+    end)
+
+    xml_body = """
+    <?xml version="1.0" encoding="UTF-8"?>
+    <Tagging>
+      <TagSet>
+        #{tag_set}
+      </TagSet>
+    </Tagging>
+    """
+    put_object(bucket, object, xml_body, %{}, %{"tagging" => nil})
+  end
+
+
+  @doc """
   AppendObject接口用于以追加写的方式上传Object。
 
   ## Examples
@@ -377,12 +445,13 @@ defmodule Aliyun.Oss.Object do
       }
   """
   @spec delete_object(String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
-  def delete_object(bucket, object) do
+  def delete_object(bucket, object, sub_resources \\ %{}) do
     Client.request(%{
       verb: "DELETE",
       host: "#{bucket}.#{endpoint()}",
       path: "/#{object}",
-      resource: "/#{bucket}/#{object}"
+      resource: "/#{bucket}/#{object}",
+      sub_resources: sub_resources
     })
   end
 
@@ -430,6 +499,28 @@ defmodule Aliyun.Oss.Object do
     """
 
     post(bucket, body, headers, %{"delete" => nil})
+  end
+
+
+  @doc """
+  通过DeleteObjectTagging删除指定对象的标签。
+
+  ## Examples
+
+      iex> Aliyun.Oss.Object.delete_object_tagging("some-bucket", "some-object")
+      {:ok, %Aliyun.Oss.Client.Response{
+          data: "",
+          headers: [
+            {"Server", "AliyunOSS"},
+            {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
+            ...
+          ]
+        }
+      }
+  """
+  @spec delete_object_tagging(String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  def delete_object_tagging(bucket, object) do
+    delete_object(bucket, object, %{"tagging" => nil})
   end
 
 

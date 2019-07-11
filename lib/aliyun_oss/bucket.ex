@@ -233,14 +233,19 @@ defmodule Aliyun.Oss.Bucket do
   ## Examples
 
       iex> Aliyun.Oss.Bucket.get_bucket_logging("some-bucket")
-      {:ok,
-      %{
-        "BucketLoggingStatus" => %{
-          "LoggingEnabled" => %{
-            "TargetBucket" => "some-bucket",
-            "TargetPrefix" => "oss-accesslog/"
+      {:ok, %Aliyun.Oss.Client.Response{
+        data: %{
+          "BucketLoggingStatus" => %{
+            "LoggingEnabled" => %{
+              "TargetBucket" => "some-bucket",
+              "TargetPrefix" => "oss-accesslog/"
+            }
           }
-        }
+        },
+        headers: [
+          {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
+          ...
+        ]
       }}
   """
   @spec get_bucket_logging(String.t()) :: {:error, error()} | {:ok, Response.t()}
@@ -254,7 +259,15 @@ defmodule Aliyun.Oss.Bucket do
   ## Examples
 
       iex> Aliyun.Oss.Bucket.get_bucket_website("some-bucket")
-      {:ok, %{"WebsiteConfiguration" => %{"IndexDocument" => %{"Suffix" => "index.html"}}}}
+      {:ok, %Aliyun.Oss.Client.Response{
+        data: %{
+          "WebsiteConfiguration" => %{"IndexDocument" => %{"Suffix" => "index.html"}}
+        },
+        headers: [
+          {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
+          ...
+        ]
+      }}
 
       iex> Aliyun.Oss.Bucket.get_bucket_website("unkown-bucket")
       {:error,
@@ -282,12 +295,17 @@ defmodule Aliyun.Oss.Bucket do
   ## Examples
 
       iex> Aliyun.Oss.Bucket.get_bucket_referer("some-bucket")
-      {:ok,
-      %{
-        "RefererConfiguration" => %{
-          "AllowEmptyReferer" => "true",
-          "RefererList" => nil
-        }
+      {:ok, %Aliyun.Oss.Client.Response{
+        data: %{
+          "RefererConfiguration" => %{
+            "AllowEmptyReferer" => "true",
+            "RefererList" => nil
+          }
+        },
+        headers: [
+          {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
+          ...
+        ]
       }}
   """
 
@@ -302,18 +320,23 @@ defmodule Aliyun.Oss.Bucket do
   ## Examples
 
       iex> Aliyun.Oss.Bucket.get_bucket_lifecycle("some-bucket")
-      {:ok,
-      %{
-        "LifecycleConfiguration" => %{
-          "Rule" => %{
-            "ID" => "delete after one day",
-            "Prefix" => "logs/",
-            "Status" => "Enabled",
-            "Expiration" => %{
-              "Days" => "1"
+      {:ok, %Aliyun.Oss.Client.Response{
+        data: %{
+          "LifecycleConfiguration" => %{
+            "Rule" => %{
+              "ID" => "delete after one day",
+              "Prefix" => "logs/",
+              "Status" => "Enabled",
+              "Expiration" => %{
+                "Days" => "1"
+              }
             }
           }
-        }
+        },
+        headers: [
+          {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
+          ...
+        ]
       }}
   """
   @spec get_bucket_lifecycle(String.t()) :: {:error, error()} | {:ok, Response.t()}

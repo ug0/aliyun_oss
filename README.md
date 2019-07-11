@@ -58,9 +58,9 @@ config :aliyun_oss,
   - [x] Delete Bucket Lifecycle	删除Bucket中Object的生命周期规则
   - [x] Get Bucket(List Object)	获得Bucket中所有Object的信息
   - [x] Get Bucket Info	获取Bucket信息
-  - [ ] PutBucketEncryption	配置Bucket的加密规则
-  - [ ] GetBucketEncryption	获取Bucket的加密规则
-  - [ ] DeleteBucketEncryption	删除Bucket的加密规则
+  - [x] PutBucketEncryption	配置Bucket的加密规则
+  - [x] GetBucketEncryption	获取Bucket的加密规则
+  - [x] DeleteBucketEncryption	删除Bucket的加密规则
 
 - [x] Object
 

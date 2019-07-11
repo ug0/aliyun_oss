@@ -345,6 +345,31 @@ defmodule Aliyun.Oss.Bucket do
   end
 
   @doc """
+  GetBucketEncryption 用于获取Bucket加密规则。
+
+  ## Examples
+
+      iex> Aliyun.Oss.Bucket.get_bucket_encryption("some-bucket")
+      {:ok, %Aliyun.Oss.Client.Response{
+        data: %{
+          "ServerSideEncryptionRule" => %{
+            "ApplyServerSideEncryptionByDefault" => %{
+              "SSEAlgorithm" => "AES256"
+            }
+          }
+        },
+        headers: [
+          {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
+          ...
+        ]
+      }}
+  """
+  @spec get_bucket_encryption(String.t()) :: {:error, error()} | {:ok, Response.t()}
+  def get_bucket_encryption(bucket) do
+    get_bucket(bucket, %{}, %{"encryption" => nil})
+  end
+
+  @doc """
   PutBucket接口用于创建 Bucket
 
   ## Examples
@@ -544,6 +569,49 @@ defmodule Aliyun.Oss.Bucket do
   end
 
   @doc """
+  PutBucketEncryption接口用于配置Bucket的加密规则。
+
+  ## Options
+
+    - `:algorithm` - Accept value: `:aes256`, `:kms`, default is `:aes256`
+    - `:kms_master_key_id` - Should and only be set if algorithm is `:kms`
+
+  ## Examples
+
+      iex> Aliyun.Oss.Bucket.put_bucket_encryption("some-bucket", algorithm: :aes256)
+      {:ok,
+      %Aliyun.Oss.Client.Response{
+        data: "",
+        headers: [
+          {"Server", "AliyunOSS"},
+          {"Date", "Fri, 11 Jan 2019 05:05:50 GMT"},
+          {"Content-Length", "0"},
+          {"Connection", "keep-alive"},
+          {"x-oss-request-id", "5C0000000000000000000000"},
+          {"x-oss-server-time", "63"}
+        ]
+      }}
+  """
+  @spec put_bucket_encryption(String.t(), Keyword.t()) :: {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
+  def put_bucket_encryption(bucket, opts \\ []) do
+    {algorithm, kms_master_key_id} =
+      case Keyword.get(opts, :algorithm, :aes256) do
+        :aes256 -> {"AES256", nil}
+        :kms -> {"KMS", Keyword.fetch!(opts, :kms_master_key_id)}
+      end
+    xml_body = """
+    <?xml version="1.0" encoding="UTF-8"?>
+    <ServerSideEncryptionRule>
+      <ApplyServerSideEncryptionByDefault>
+        <SSEAlgorithm>#{algorithm}</SSEAlgorithm>
+        <KMSMasterKeyID>#{kms_master_key_id}</KMSMasterKeyID>
+      </ApplyServerSideEncryptionByDefault>
+    </ServerSideEncryptionRule>
+    """
+    put_bucket(bucket, %{}, %{"encryption" => nil}, xml_body)
+  end
+
+  @doc """
   DeleteBucket用于删除某个Bucket
 
   ## Examples
@@ -704,5 +772,29 @@ defmodule Aliyun.Oss.Bucket do
   @spec delete_bucket_lifecycle(String.t()) :: {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
   def delete_bucket_lifecycle(bucket) do
     delete_bucket(bucket, %{"lifecycle" => nil})
+  end
+
+  @doc """
+  DeleteBucketEncryption接口用于删除Bucket加密规则。
+
+  ## Examples
+
+      iex> Aliyun.Oss.Bucket.delete_bucket_encryption("some-bucket")
+      {:ok,
+      %Aliyun.Oss.Client.Response{
+        data: "",
+        headers: [
+          {"Server", "AliyunOSS"},
+          {"Date", "Fri, 11 Jan 2019 05:19:45 GMT"},
+          {"Content-Length", "0"},
+          {"Connection", "keep-alive"},
+          {"x-oss-request-id", "5C3000000000000000000000"},
+          {"x-oss-server-time", "90"}
+        ]
+      }}
+  """
+  @spec delete_bucket_encryption(String.t()) :: {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
+  def delete_bucket_encryption(bucket) do
+    delete_bucket(bucket, %{"encryption" => nil})
   end
 end

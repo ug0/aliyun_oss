@@ -29,6 +29,7 @@ defmodule AliyunOss.MixProject do
       {:httpoison, "~> 1.4"},
       {:elixir_xml_to_map, "~> 0.1"},
       {:jason, "~> 1.1"},
+      {:confex, "~> 3.4"},
       {:ex_doc, "~> 0.20", only: :dev},
       {:mock, "~> 0.3.2", only: :test}
     ]

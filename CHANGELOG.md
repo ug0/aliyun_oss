@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.4.1
+  - Support configs via run-time system environment variables.
+
 ## V0.4.0
 - New APIs:
   - PutBucketEncryption

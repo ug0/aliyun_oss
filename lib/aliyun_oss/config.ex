@@ -1,13 +1,10 @@
 defmodule Aliyun.Oss.Config do
-  def endpoint do
-    Application.get_env(:aliyun_oss, :endpoint)
-  end
-
-  def access_key_id do
-    Application.get_env(:aliyun_oss, :access_key_id)
-  end
-
-  def access_key_secret do
-    Application.get_env(:aliyun_oss, :access_key_secret)
-  end
+  [:endpoint, :access_key_id, :access_key_secret]
+  |> Enum.map(fn config ->
+    def unquote(config)() do
+      :aliyun_oss
+      |> Application.get_env(unquote(config))
+      |> Confex.Resolver.resolve!()
+    end
+  end)
 end

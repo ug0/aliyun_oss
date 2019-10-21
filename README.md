@@ -25,6 +25,13 @@ config :aliyun_oss,
   access_key_id: "ALIYUN_ACCESS_KEY_ID",
   access_key_secret: "ALIYUN_ACCESS_KEY_SECRET"
 ```
+Or if you want to config them via run-time system environment variables:
+```elixir
+config :aliyun_oss,
+  endpoint: {:system, "ALIYUN_ENDPOINT"},
+  access_key_id: {:system, "ALIYUN_ACCESS_KEY_ID"},
+  access_key_secret: {:system, "ALIYUN_ACCESS_KEY_SECRET"}
+```
 
 ## Documentation
 [https://hexdocs.pm/aliyun_oss](https://hexdocs.pm/aliyun_oss)

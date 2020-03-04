@@ -240,7 +240,7 @@ defmodule Aliyun.Oss.Object do
 
   ## Examples
 
-      iex> Aliyun.Oss.Object.put_object("some-bucket", "some-object", "CONTENT")
+      iex> Aliyun.Oss.Object.put_object("some-bucket", "some-object", {:file, "abc.txt"})
       {:ok, %Aliyun.Oss.Client.Response{
           data: "",
           headers: [
@@ -251,7 +251,7 @@ defmodule Aliyun.Oss.Object do
         }
       }
   """
-  @spec put_object(String.t(), String.t(), String.t(), map(), map()) :: {:error, error()} | {:ok, Response.t()}
+  @spec put_object(String.t(), String.t(), any, map(), map()) :: {:error, error()} | {:ok, Response.t()}
   def put_object(bucket, object, body, headers \\ %{}, sub_resources \\ %{}) do
     Client.request(%{
       verb: "PUT",

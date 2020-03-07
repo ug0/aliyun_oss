@@ -9,7 +9,8 @@ defmodule Aliyun.Oss.Client.Request do
             query_params: %{},
             sub_resources: %{},
             body: "",
-            headers: %{}
+            headers: %{},
+            expires: nil
 
   @default_content_type "application/octet-stream"
 
@@ -37,6 +38,18 @@ defmodule Aliyun.Oss.Client.Request do
       path: req.path,
       query: Map.merge(req.query_params, req.sub_resources) |> URI.encode_query()
     })
+  end
+
+  def signed_query_url(%__MODULE__{} = req) do
+    req
+    |> Map.update!(:query_params, fn params ->
+      Map.merge(params, %{
+        "Expires" => req.expires,
+        "OSSAccessKeyId" => access_key_id(),
+        "Signature" => gen_signature(req)
+      })
+    end)
+    |> query_url()
   end
 
   defp ensure_essential_headers(%__MODULE__{} = req) do
@@ -99,9 +112,11 @@ defmodule Aliyun.Oss.Client.Request do
     req.verb <> "\n" <>
     header_content_md5(req) <> "\n" <>
     header_content_type(req) <> "\n" <>
-    header_date(req) <> "\n" <>
+    expires_time(req) <> "\n" <>
     canonicalize_oss_headers(req) <> canonicalize_resource(req)
   end
+
+  defp expires_time(%{expires: expires} = req), do: (expires || header_date(req)) |> to_string()
 
   defp header_content_md5(%{headers: %{"Content-MD5" => md5}}), do: md5
   defp header_content_type(%{headers: %{"Content-Type" => content_type}}), do: content_type

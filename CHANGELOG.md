@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.5.0
+  - Add `Object.signed_url/6`
+
 ## v0.4.1
   - Support configs via run-time system environment variables.
 

@@ -3,7 +3,7 @@ defmodule Aliyun.Oss.Object do
   Object 相关操作
   """
 
-  import Aliyun.Oss.Config, only: [endpoint: 0, access_key_id: 0]
+  import Aliyun.Oss.Config, only: [endpoint: 0]
 
   alias Aliyun.Oss.Client
   alias Aliyun.Oss.Client.{Request, Response, Error}
@@ -192,45 +192,45 @@ defmodule Aliyun.Oss.Object do
     get_object(bucket, object, %{}, %{"tagging" => nil})
   end
 
+  @doc """
+  生成包含签名的 Object URL
+
+  ## Examples
+
+      iex> expires = Timex.now() |> Timex.shift(days: 1) |> Timex.to_unix()
+      iex> Aliyun.Oss.Object.signed_url("some-bucket", "some-object", expires, "GET", %{"Content-Type" -> ""})
+      "http://some-bucket.oss-cn-hangzhou.aliyuncs.com/oss-api.pdf?OSSAccessKeyId=nz2pc5*******9l&Expires=1141889120&Signature=vjbyPxybdZ*****************v4%3D"
+      iex> Aliyun.Oss.Object.signed_url("some-bucket", "some-object", expires, "PUT", %{"Content-Type" -> "text/plain"})
+      "http://some-bucket.oss-cn-hangzhou.aliyuncs.com/oss-api.pdf?OSSAccessKeyId=nz2pc5*******9l&Expires=1141889120&Signature=vjbyPxybdZ*****************v4%3D"
+  """
+  @spec signed_url(String.t(), String.t(), integer(), String.t(), map(), map()) :: String.t()
+  def signed_url(bucket, object, expires, method, headers, sub_resources \\ %{}) do
+    %{
+      verb: method,
+      host: "#{bucket}.#{endpoint()}",
+      path: "/#{object}",
+      resource: "/#{bucket}/#{object}",
+      sub_resources: sub_resources,
+      headers: headers,
+      expires: expires
+    }
+    |> Request.build()
+    |> Request.signed_query_url()
+  end
+
 
   @doc """
-  生成包含签名的 URL
+  生成包含签名的可用于直接访问的 Object URL
 
   ## Examples
 
       iex> expires = Timex.now() |> Timex.shift(days: 1) |> Timex.to_unix()
       iex> Aliyun.Oss.Object.object_url("some-bucket", "some-object", expires)
-      "http://oss-example.oss-cn-hangzhou.aliyuncs.com/oss-api.pdf?OSSAccessKeyId=nz2pc56s936**9l&Expires=1141889120&Signature=vjbyPxybdZaNmGa%2ByT272YEAiv4%3D"
+      "http://some-bucket.oss-cn-hangzhou.aliyuncs.com/oss-api.pdf?OSSAccessKeyId=nz2pc56s936**9l&Expires=1141889120&Signature=vjbyPxybdZaNmGa%2ByT272YEAiv4%3D"
   """
   @spec object_url(String.t(), String.t(), integer()) :: String.t()
   def object_url(bucket, object, expires) do
-    signature =
-      %{
-        verb: "GET",
-        host: "#{bucket}.#{endpoint()}",
-        path: "",
-        resource: "/#{bucket}/#{object}",
-        query_params: %{},
-        sub_resources: %{},
-        headers: %{
-          "Date" => Integer.to_string(expires),
-          "Content-Type" => ""
-        }
-      }
-      |> Request.build()
-      |> Request.gen_signature()
-
-    URI.to_string(%URI{
-      scheme: "https",
-      host: "#{bucket}.#{endpoint()}",
-      path: "/#{object}",
-      query:
-        URI.encode_query(%{
-          "Expires" => expires,
-          "OSSAccessKeyId" => access_key_id(),
-          "Signature" => signature
-        })
-    })
+    signed_url(bucket, object, expires, "GET", %{"Content-Type" => ""})
   end
 
   @doc """

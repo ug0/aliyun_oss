@@ -1,4 +1,7 @@
 defmodule Aliyun.Oss.Client.Request do
+  @moduledoc """
+  Internal module
+  """
   import Aliyun.Oss.Config, only: [access_key_id: 0, access_key_secret: 0]
 
   @enforce_keys [:host, :path, :resource]

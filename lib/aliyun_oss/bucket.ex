@@ -3,9 +3,7 @@ defmodule Aliyun.Oss.Bucket do
   Bucket 相关操作
   """
 
-  import Aliyun.Oss.Config, only: [endpoint: 0]
-
-  alias Aliyun.Oss.Client
+  alias Aliyun.Oss.Service
   alias Aliyun.Oss.Client.{Response, Error}
 
   @type error() :: %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
@@ -63,13 +61,7 @@ defmodule Aliyun.Oss.Bucket do
   """
   @spec list_buckets(map()) :: {:error, error()} | {:ok, Response.t()}
   def list_buckets(query_params \\ %{}) do
-    Client.request(%{
-      verb: "GET",
-      host: endpoint(),
-      path: "/",
-      resource: "/",
-      query_params: query_params,
-    })
+    Service.get(nil, nil, query_params: query_params)
   end
 
   @doc """
@@ -130,14 +122,7 @@ defmodule Aliyun.Oss.Bucket do
   """
   @spec get_bucket(String.t(), map(), map()) :: {:error, error()} | {:ok, Response.t()}
   def get_bucket(bucket, query_params \\ %{}, sub_resources \\ %{}) do
-    Client.request(%{
-      verb: "GET",
-      host: "#{bucket}.#{endpoint()}",
-      path: "/",
-      resource: "/#{bucket}/",
-      query_params: query_params,
-      sub_resources: sub_resources
-    })
+    Service.get(bucket, nil, query_params: query_params, sub_resources: sub_resources)
   end
 
   @doc """
@@ -413,15 +398,7 @@ defmodule Aliyun.Oss.Bucket do
   """
   @spec put_bucket(String.t(), map(), map(), String.t()) :: {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
   def put_bucket(bucket, headers = %{} \\ %{}, sub_resources = %{} \\ %{}, body \\ @body) when is_binary(body) do
-    Client.request(%{
-      verb: "PUT",
-      host: "#{bucket}.#{endpoint()}",
-      path: "/",
-      resource: "/#{bucket}/",
-      body: body,
-      headers: headers,
-      sub_resources: sub_resources
-    })
+    Service.put(bucket, nil, body, headers: headers, sub_resources: sub_resources)
   end
 
   @doc """
@@ -654,13 +631,7 @@ defmodule Aliyun.Oss.Bucket do
   """
   @spec delete_bucket(String.t(), map()) :: {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
   def delete_bucket(bucket, sub_resources \\ %{}) do
-    Client.request(%{
-      verb: "DELETE",
-      host: "#{bucket}.#{endpoint()}",
-      path: "/",
-      resource: "/#{bucket}/",
-      sub_resources: sub_resources
-    })
+    Service.delete(bucket, nil, sub_resources: sub_resources)
   end
 
   @doc """

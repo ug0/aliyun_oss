@@ -5,7 +5,7 @@ defmodule Aliyun.Oss.Object do
 
   import Aliyun.Oss.Config, only: [endpoint: 0]
 
-  alias Aliyun.Oss.Client
+  alias Aliyun.Oss.Service
   alias Aliyun.Oss.Client.{Request, Response, Error}
 
   @type error() :: %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
@@ -42,15 +42,7 @@ defmodule Aliyun.Oss.Object do
   """
   @spec head_object(String.t(), String.t(), map()) :: {:error, error()} | {:ok, Response.t()}
   def head_object(bucket, object, headers \\ %{}) do
-    Client.request(%{
-      verb: "HEAD",
-      host: "#{bucket}.#{endpoint()}",
-      path: "/#{object}",
-      headers: headers,
-      resource: "/#{bucket}/#{object}",
-      query_params: %{},
-      sub_resources: %{}
-    })
+    Service.head(bucket, object, headers: headers)
   end
 
 
@@ -96,15 +88,7 @@ defmodule Aliyun.Oss.Object do
   @spec get_object(String.t(), String.t(), map(), map()) ::
           {:error, error()} | {:ok, Response.t()}
   def get_object(bucket, object, headers \\ %{}, sub_resources \\ %{}) do
-    Client.request(%{
-      verb: "GET",
-      host: "#{bucket}.#{endpoint()}",
-      path: "/#{object}",
-      headers: headers,
-      resource: "/#{bucket}/#{object}",
-      query_params: %{},
-      sub_resources: sub_resources
-    })
+    Service.get(bucket, object, headers: headers, sub_resources: sub_resources)
   end
 
   @doc """
@@ -253,16 +237,7 @@ defmodule Aliyun.Oss.Object do
   """
   @spec put_object(String.t(), String.t(), String.t(), map(), map()) :: {:error, error()} | {:ok, Response.t()}
   def put_object(bucket, object, body, headers \\ %{}, sub_resources \\ %{}) do
-    Client.request(%{
-      verb: "PUT",
-      host: "#{bucket}.#{endpoint()}",
-      path: "/#{object}",
-      headers: headers,
-      resource: "/#{bucket}/#{object}",
-      query_params: %{},
-      sub_resources: sub_resources,
-      body: body
-    })
+    Service.put(bucket, object, body, headers: headers, sub_resources: sub_resources)
   end
 
 
@@ -400,7 +375,7 @@ defmodule Aliyun.Oss.Object do
   """
   @spec append_object(String.t(), String.t(), String.t(), integer(), map()) :: {:error, error()} | {:ok, Response.t()}
   def append_object(bucket, object, body, position, headers \\ %{}) do
-    post(bucket, object, body, headers, %{"append" => nil, "position" => position})
+    post_object(bucket, object, body, headers, %{"append" => nil, "position" => position})
   end
 
   @doc """
@@ -424,7 +399,7 @@ defmodule Aliyun.Oss.Object do
   """
   @spec restore_object(String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
   def restore_object(bucket, object) do
-    post(bucket, object, "", %{}, %{"restore" => nil})
+    post_object(bucket, object, "", %{}, %{"restore" => nil})
   end
 
 
@@ -446,13 +421,7 @@ defmodule Aliyun.Oss.Object do
   """
   @spec delete_object(String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
   def delete_object(bucket, object, sub_resources \\ %{}) do
-    Client.request(%{
-      verb: "DELETE",
-      host: "#{bucket}.#{endpoint()}",
-      path: "/#{object}",
-      resource: "/#{bucket}/#{object}",
-      sub_resources: sub_resources
-    })
+    Service.delete(bucket, object, sub_resources: sub_resources)
   end
 
   @doc """
@@ -498,7 +467,7 @@ defmodule Aliyun.Oss.Object do
     </Delete>
     """
 
-    post(bucket, body, headers, %{"delete" => nil})
+    Service.post(bucket, nil, body, headers: headers, sub_resources: %{"delete" => nil})
   end
 
 
@@ -555,29 +524,7 @@ defmodule Aliyun.Oss.Object do
   end
 
 
-  defp post(bucket, object, body, headers, sub_resources) do
-    Client.request(%{
-      verb: "POST",
-      host: "#{bucket}.#{endpoint()}",
-      path: "/#{object}",
-      resource: "/#{bucket}/#{object}",
-      query_params: %{},
-      sub_resources: sub_resources,
-      headers: headers,
-      body: body
-    })
-  end
-
-  defp post(bucket, body, headers, sub_resources) do
-    Client.request(%{
-      verb: "POST",
-      host: "#{bucket}.#{endpoint()}",
-      path: "/",
-      resource: "/#{bucket}/",
-      query_params: %{},
-      sub_resources: sub_resources,
-      headers: headers,
-      body: body
-    })
+  defp post_object(bucket, object, body, headers, sub_resources) do
+    Service.post(bucket, object, body, headers: headers, sub_resources: sub_resources)
   end
 end

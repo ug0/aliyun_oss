@@ -1,4 +1,8 @@
 defmodule Aliyun.Oss.Client do
+  @moduledoc """
+  Internal module
+  """
+
   alias Aliyun.Oss.Client.{Request, Response, Error}
 
   def request(init_req) do

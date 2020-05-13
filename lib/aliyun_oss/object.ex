@@ -328,25 +328,22 @@ defmodule Aliyun.Oss.Object do
         }
       }
   """
+  @body_tmpl """
+  <?xml version="1.0" encoding="UTF-8"?>
+  <Tagging>
+    <TagSet>
+      <%= for {key, value} <- tags do %>
+        <Tag>
+          <Key><%= key %></Key>
+          <Value><%= value %></Value>
+        </Tag>
+      <% end %>
+    </TagSet>
+  </Tagging>
+  """
   @spec put_object_tagging(String.t(), String.t(), [{any(), any()}, ...]) :: {:error, error()} | {:ok, Response.t()}
   def put_object_tagging(bucket, object, tags) do
-    tag_set = Enum.reduce(tags, "", fn {key, value}, acc ->
-      acc <> """
-      <Tag>
-        <Key>#{key}</Key>
-        <Value>#{value}</Value>
-      </Tag>
-      """
-    end)
-
-    xml_body = """
-    <?xml version="1.0" encoding="UTF-8"?>
-    <Tagging>
-      <TagSet>
-        #{tag_set}
-      </TagSet>
-    </Tagging>
-    """
+    xml_body = EEx.eval_string(@body_tmpl, [tags: tags])
     put_object(bucket, object, xml_body, %{}, %{"tagging" => nil})
   end
 
@@ -449,23 +446,24 @@ defmodule Aliyun.Oss.Object do
         }
       }
   """
+  @body_tmpl """
+  <?xml version="1.0" encoding="UTF-8"?>
+  <Delete>
+    <Quiet><%= quiet %></Quiet>
+    <%= for object <- objects do %>
+      <Object><Key><%= object %></Key></Object>
+    <% end %>
+  </Delete>
+  """
   @spec delete_multiple_objects(String.t(), [String.t()], [encoding_type: :url, quiet: boolean()]) :: {:error, error()} | {:ok, Response.t()}
   def delete_multiple_objects(bucket, objects, options \\ []) do
     headers = case options[:encoding_type] do
       :url -> %{"encoding-type" => "url"}
       _ -> %{}
     end
-    quiet = Keyword.get(options, :quiet, false)
 
-    body = """
-    <?xml version="1.0" encoding="UTF-8"?>
-    <Delete>
-      <Quiet>#{quiet}</Quiet>
-      #{Stream.map(objects, fn object_key ->
-        "<Object><Key>#{object_key}</Key></Object>"
-      end) |> Enum.join("\n")}
-    </Delete>
-    """
+    quiet = Keyword.get(options, :quiet, false)
+    body = EEx.eval_string(@body_tmpl, [quiet: quiet, objects: objects])
 
     Service.post(bucket, nil, body, headers: headers, sub_resources: %{"delete" => nil})
   end

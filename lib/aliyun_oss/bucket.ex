@@ -460,18 +460,21 @@ defmodule Aliyun.Oss.Bucket do
       }}
   """
 
+  @body_tmpl """
+  <?xml version="1.0" encoding="UTF-8"?>
+  <BucketLoggingStatus>
+    <LoggingEnabled>
+      <TargetBucket><%= target_bucket %></TargetBucket>
+      <TargetPrefix><%= target_prefix %></TargetPrefix>
+    </LoggingEnabled>
+  </BucketLoggingStatus>
+  """
   @spec put_bucket_logging(String.t(), String.t(), String.t()) :: {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
   def put_bucket_logging(bucket, target_bucket, target_prefix \\ "oss-accesslog/") do
-    body = """
-    <?xml version="1.0" encoding="UTF-8"?>
-    <BucketLoggingStatus>
-        <LoggingEnabled>
-            <TargetBucket>#{target_bucket}</TargetBucket>
-            <TargetPrefix>#{target_prefix}</TargetPrefix>
-        </LoggingEnabled>
-    </BucketLoggingStatus>
-    """
-
+    body = EEx.eval_string(
+      @body_tmpl,
+      [target_bucket: target_bucket, target_prefix: target_prefix]
+    )
     put_bucket(bucket, %{}, %{"logging" => nil}, body)
   end
 
@@ -569,6 +572,15 @@ defmodule Aliyun.Oss.Bucket do
         ]
       }}
   """
+  @body_tmpl """
+  <?xml version="1.0" encoding="UTF-8"?>
+  <ServerSideEncryptionRule>
+    <ApplyServerSideEncryptionByDefault>
+      <SSEAlgorithm><%= algorithm %></SSEAlgorithm>
+      <KMSMasterKeyID><%= kms_master_key_id %></KMSMasterKeyID>
+    </ApplyServerSideEncryptionByDefault>
+  </ServerSideEncryptionRule>
+  """
   @spec put_bucket_encryption(String.t(), Keyword.t()) :: {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
   def put_bucket_encryption(bucket, opts \\ []) do
     {algorithm, kms_master_key_id} =
@@ -576,15 +588,11 @@ defmodule Aliyun.Oss.Bucket do
         :aes256 -> {"AES256", nil}
         :kms -> {"KMS", Keyword.fetch!(opts, :kms_master_key_id)}
       end
-    xml_body = """
-    <?xml version="1.0" encoding="UTF-8"?>
-    <ServerSideEncryptionRule>
-      <ApplyServerSideEncryptionByDefault>
-        <SSEAlgorithm>#{algorithm}</SSEAlgorithm>
-        <KMSMasterKeyID>#{kms_master_key_id}</KMSMasterKeyID>
-      </ApplyServerSideEncryptionByDefault>
-    </ServerSideEncryptionRule>
-    """
+
+    xml_body = EEx.eval_string(
+      @body_tmpl,
+      [algorithm: algorithm, kms_master_key_id: kms_master_key_id]
+    )
     put_bucket(bucket, %{}, %{"encryption" => nil}, xml_body)
   end
 

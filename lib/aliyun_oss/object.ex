@@ -356,7 +356,7 @@ defmodule Aliyun.Oss.Object do
 
   ## Examples
 
-      iex> Aliyun.Oss.Object.append_object("some-bucket", "some-object", 0)
+      iex> Aliyun.Oss.Object.append_object("some-bucket", "some-object", "CONTENT", 0)
       {:ok, %Aliyun.Oss.Client.Response{
           data: "",
           headers: [

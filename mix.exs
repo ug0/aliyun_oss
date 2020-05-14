@@ -4,7 +4,7 @@ defmodule AliyunOss.MixProject do
   def project do
     [
       app: :aliyun_oss,
-      version: "0.5.0",
+      version: "0.6.0",
       elixir: "~> 1.7",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
@@ -56,7 +56,8 @@ defmodule AliyunOss.MixProject do
       groups_for_modules: [
         # Aliyun.Oss,
         # Aliyun.Oss.Bucket,
-        # Aliyun.Oss.Object,
+        # Aliyun.Oss.Object.MultipartUpload,
+        # Aliyun.Oss.Service,
 
         "HTTP Client": [
           Aliyun.Oss.Client,

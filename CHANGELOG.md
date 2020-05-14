@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.6.0
+  - Implement Multipart Upload(`Aliyun.Oss.Object.MultipartUpload`)
+  - Some code refactoring
+  - Fix docs
+
 ## v0.5.0
   - Add `Object.signed_url/6`
 

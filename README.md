@@ -12,7 +12,7 @@ Add `aliyun_oss` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:aliyun_oss, "~> 0.5.0"}
+    {:aliyun_oss, "~> 0.6.0"}
   ]
 end
 ```

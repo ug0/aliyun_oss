@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.6.1
+  - Add doc link to `Aliyun.Oss.Object.MultipartUpload`
+
 ## v0.6.0
   - Implement Multipart Upload(`Aliyun.Oss.Object.MultipartUpload`)
   - Some code refactoring

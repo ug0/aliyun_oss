@@ -92,15 +92,14 @@ config :aliyun_oss,
   - [x] DeleteObjectTagging	删除指定的对象标签
 
 
-- [ ] Multipart Upload
-
-  - [ ] Initiate Multipart Upload	初始化MultipartUpload事件
-  - [ ] Upload Part	分块上传文件
-  - [ ] Upload Part Copy	分块复制上传文件
-  - [ ] Complete Multipart Upload	完成整个文件的Multipart Upload上传
-  - [ ] Abort Multipart Upload	取消Multipart Upload事件
-  - [ ] List Multipart Uploads	罗列出所有执行中的Multipart Upload事件
-  - [ ] List Parts	罗列出指定Upload ID所属的所有已经上传成功Part
+- [x] Multipart Upload
+  - [x] Initiate Multipart Upload	初始化 MultipartUpload 事件
+  - [x] Upload Part	分块上传文件
+  - [x] Upload Part Copy	分块复制上传文件
+  - [x] Complete Multipart Upload	完成整个文件的 Multipart Upload 上传
+  - [x] Abort Multipart Upload	取消 Multipart Upload 事件
+  - [x] List Multipart Uploads	罗列出所有执行中的 Multipart Upload 事件
+  - [x] List Parts	罗列出指定 Upload ID 所属的所有已经上传成功 Part
 
 
 - [ ] CORS

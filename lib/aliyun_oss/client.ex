@@ -5,6 +5,8 @@ defmodule Aliyun.Oss.Client do
 
   alias Aliyun.Oss.Client.{Request, Response, Error}
 
+  @ssl_options [ssl: [{:versions, [:"tlsv1.2", :"tlsv1.1", :tlsv1]}]]
+
   def request(init_req) do
     case init_req |> Request.build_signed() |> do_request do
       {:ok, %HTTPoison.Response{body: body, status_code: status_code, headers: headers}} when status_code in 200..299 ->
@@ -21,14 +23,16 @@ defmodule Aliyun.Oss.Client do
   defp do_request(req = %Request{verb: "GET"}) do
     HTTPoison.get(
       Request.query_url(req),
-      req.headers
+      req.headers,
+      @ssl_options
     )
   end
 
   defp do_request(req = %Request{verb: "HEAD"}) do
     HTTPoison.head(
       Request.query_url(req),
-      req.headers
+      req.headers,
+      @ssl_options
     )
   end
 
@@ -36,7 +40,8 @@ defmodule Aliyun.Oss.Client do
     HTTPoison.post(
       Request.query_url(req),
       req.body,
-      req.headers
+      req.headers,
+      @ssl_options
     )
   end
 
@@ -44,14 +49,16 @@ defmodule Aliyun.Oss.Client do
     HTTPoison.put(
       Request.query_url(req),
       req.body,
-      req.headers
+      req.headers,
+      @ssl_options
     )
   end
 
   defp do_request(req = %Request{verb: "DELETE"}) do
     HTTPoison.delete(
       Request.query_url(req),
-      req.headers
+      req.headers,
+      @ssl_options
     )
   end
 end

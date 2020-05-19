@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.6.2
+  - Fix ssl connection issue on OTP23(also see https://github.com/edgurgel/httpoison/issues/411)
+
 ## v0.6.1
   - Add doc link to `Aliyun.Oss.Object.MultipartUpload`
 

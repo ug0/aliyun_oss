@@ -28,6 +28,7 @@ defmodule Aliyun.Oss.Object.MultipartUpload do
   alias Aliyun.Oss.Bucket
   alias Aliyun.Oss.Service
   alias Aliyun.Oss.Client.{Response, Error}
+  alias Aliyun.Oss.TaskSupervisor
 
   @type error() :: %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
 
@@ -68,12 +69,12 @@ defmodule Aliyun.Oss.Object.MultipartUpload do
             {:ok, resp}
           else
             {:error, error} ->
-              Task.start(fn -> abort_upload(bucket, object, upload_id) end)
+              Task.Supervisor.start_child(TaskSupervisor, fn -> abort_upload(bucket, object, upload_id) end)
               {:error, error}
           end
         catch
           _, error ->
-            Task.start(fn -> abort_upload(bucket, object, upload_id) end)
+            Task.Supervisor.start_child(TaskSupervisor, fn -> abort_upload(bucket, object, upload_id) end)
             raise(error)
         end
 
@@ -83,9 +84,9 @@ defmodule Aliyun.Oss.Object.MultipartUpload do
   end
 
   defp async_upload_parts(bucket, object, upload_id, parts) do
-    parts
-    |> Stream.with_index(1)
-    |> Task.async_stream(
+    Task.Supervisor.async_stream(
+      TaskSupervisor,
+      Stream.with_index(parts, 1),
       fn {binary, num} ->
         try do
           {num, upload_part(bucket, object, upload_id, num, binary)}

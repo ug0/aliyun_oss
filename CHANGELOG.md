@@ -1,5 +1,8 @@
 # Changelog
 
+## master
+  - Use Supervised Task
+
 ## v0.6.2
   - Fix ssl connection issue on OTP23(also see https://github.com/edgurgel/httpoison/issues/411)
 

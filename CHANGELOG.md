@@ -1,6 +1,6 @@
 # Changelog
 
-## master
+## v0.6.3
   - Use Supervised Task
   - Update HTTPoison requirement to ~> 1.7
 

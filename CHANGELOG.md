@@ -2,6 +2,7 @@
 
 ## master
   - Use Supervised Task
+  - Update HTTPoison requirement to ~> 1.7
 
 ## v0.6.2
   - Fix ssl connection issue on OTP23(also see https://github.com/edgurgel/httpoison/issues/411)

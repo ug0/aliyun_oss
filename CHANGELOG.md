@@ -4,6 +4,9 @@
   - Update dependencies
   - New APIs:
     - GetBucketV2 (ListObjectsV2): `Aliyun.Oss.Bucket.list_objects`
+  - **Breaking changes**:
+    - Use separated modules to scope SubResources of Bucket/Object, for example:
+      - `Aliyun.Oss.Bucket.get_lifecycle` becomes `Aliyun.Oss.Bucket.Lifecycle.get`
 
 ## v0.6.3
   - Use Supervised Task

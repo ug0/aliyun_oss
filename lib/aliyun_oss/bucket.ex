@@ -67,6 +67,10 @@ defmodule Aliyun.Oss.Bucket do
   @doc """
   GetBucket(ListObject) 接口可用来列出 Bucket中所有Object的信息。
 
+  **注意：**
+    - 建议使用 `Bucket.list_objects` 来获取所有 Object 信息
+    - 所有 GetBucketXXX 相关操作亦可由此接口实现, 即 Bucket.get_bucket_acl("some-bucket") 等同于 Bucket.get_bucket("some-bucket", %{}, %{"acl" => nil})
+
   ## Examples
 
       iex> Aliyun.Oss.Bucket.get_bucket("some-bucket", %{"prefix" => "foo/"})
@@ -117,12 +121,70 @@ defmodule Aliyun.Oss.Bucket do
           body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>...</xml>"
         }
       }
-
-    注：所有 GetBucketXXX 相关操作亦可由此接口实现, 即 Bucket.get_bucket_acl("some-bucket") 等同于 Bucket.get_bucket("some-bucket", %{}, %{"acl" => nil})
   """
   @spec get_bucket(String.t(), map(), map()) :: {:error, error()} | {:ok, Response.t()}
   def get_bucket(bucket, query_params \\ %{}, sub_resources \\ %{}) do
     Service.get(bucket, nil, query_params: query_params, sub_resources: sub_resources)
+  end
+
+  @doc """
+  GetBucketV2(ListObjectsV2) 接口用于列举存储空间（Bucket）中所有文件（Object）的信息。
+
+  ## Examples
+
+      iex> Aliyun.Oss.Bucket.list_objects("some-bucket", %{"prefix" => "foo/"})
+      {:ok, %Aliyun.Oss.Client.Response{
+          data: %{
+            "ListBucketResult" => %{
+              "Contents" => [
+                %{
+                  "ETag" => "\"D410293F000B000D00D\"",
+                  "key" => "foo/bar",
+                  "LastModified" => "2018-09-12T02:59:41.000Z",
+                  "Owner" => %{"DislayName" => "11111111", "ID" => "11111111"},
+                  "Size" => "12345",
+                  "StorageClass" => "IA",
+                  "Type" => "Normal"
+                },
+                ...
+              ],
+              "Delimiter" => nil,
+              "IsTruncated" => true,
+              "Marker" => nil,
+              "KeyCount" => 100,
+              "MaxKeys" => 100,
+              "Name" => "some-bucket",
+              "NextContinuationToken" => "XXXXX",
+              "Prefix" => "foo/"
+            }
+          },
+          headers: [
+            {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
+            ...
+          ]
+        }
+      }
+
+      iex> Aliyun.Oss.Bucket.list_objects("unknown-bucket")
+      {:error,
+        %Aliyun.Oss.Client.Error{
+          status_code: 404,
+          parsed_details: %{
+            "ListBucketResult" => %{
+              "BucketName" => "unknown-bucket",
+              "Code" => "NoSuchBucket",
+              "HostId" => "unknown-bucket.oss-cn-shenzhen.aliyuncs.com",
+              "Message" => "The specified bucket does not exist.",
+              "RequestId" => "5BFF89955E29FF66F10B9763"
+            }
+          },
+          body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>...</xml>"
+        }
+      }
+  """
+  @spec list_objects(String.t(), map(), map()) :: {:error, error()} | {:ok, Response.t()}
+  def list_objects(bucket, query_params \\ %{}, sub_resources \\ %{}) do
+    get_bucket(bucket, Map.merge(query_params, %{"list-type" => 2}), sub_resources)
   end
 
   @doc """

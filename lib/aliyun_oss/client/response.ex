@@ -8,6 +8,7 @@ defmodule Aliyun.Oss.Client.Response do
     "Marker" => :string,
     "IsTruncated" => :boolean,
     "MaxKeys" => :integer,
+    "KeyCount" => :integer,
     "Delimiter" => :string,
     "RuleNumber" => :integer,
     "HttpErrorCodeReturnedEquals" => :integer,

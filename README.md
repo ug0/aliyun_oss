@@ -44,7 +44,7 @@ config :aliyun_oss,
 **关于Bucket的操作**
   - [x] PutBucket	创建Bucket
   - [x] DeleteBucket	删除Bucket
-  - [x] GetBucket(ListObject)	获得Bucket中所有Object的信息
+  - [x] GetBucket(ListObjects)	获得Bucket中所有Object的信息
   - [x] GetBucketInfo	获取Bucket信息
   - [x] GetBucketLocation	获得Bucket所属的数据中心位置信息
   - [x] PutBucketACL	设置Bucket访问权限

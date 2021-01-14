@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.7.0(WIP)
+  - Update dependencies
+  - New APIs:
+    - GetBucketV2 (ListObjectsV2): `Aliyun.Oss.Bucket.list_objects`
+
 ## v0.6.3
   - Use Supervised Task
   - Update HTTPoison requirement to ~> 1.7

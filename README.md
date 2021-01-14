@@ -99,7 +99,7 @@ config :aliyun_oss,
   - [x] DeleteObject	删除Object
   - [x] DeleteMultipleObjects	删除多个Object
   - [x] HeadObject	只返回某个Object的meta信息，不返回文件内容
-  - [ ] GetObjectMeta	返回Object的基本meta信息，包括该Object的ETag、Size（文件大小）以及LastModified等，不返回文件内容
+  - [x] GetObjectMeta	返回Object的基本meta信息，包括该Object的ETag、Size（文件大小）以及LastModified等，不返回文件内容
   - [x] SignPostPolicy	生成 Post Policy 签名
   - [x] PutObjectACL	设置Object ACL
   - [x] GetObjectACL	获取Object ACL信息

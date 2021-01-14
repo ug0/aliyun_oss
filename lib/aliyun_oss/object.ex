@@ -45,9 +45,36 @@ defmodule Aliyun.Oss.Object do
       iex> Aliyun.Oss.Object.head_object("some-bucket", "unknown-object")
       {:error, %Aliyun.Oss.Client.Error{status_code: 404, body: "", parsed_details: nil}}
   """
-  @spec head_object(String.t(), String.t(), map()) :: {:error, error()} | {:ok, Response.t()}
-  def head_object(bucket, object, headers \\ %{}) do
-    Service.head(bucket, object, headers: headers)
+  @spec head_object(String.t(), String.t(), map(), map()) :: {:error, error()} | {:ok, Response.t()}
+  def head_object(bucket, object, headers \\ %{}, sub_resources \\ %{}) do
+    Service.head(bucket, object, headers: headers, sub_resources: sub_resources)
+  end
+
+  @doc """
+  GetObjectMeta 用于获取一个文件（Object）的元数据信息，包括该Object的ETag、Size、LastModified信息，并且不返回该Object的内容。
+
+  ## Examples
+
+      iex> Aliyun.Oss.Object.get_object_meta("some-bucket", "some-object")
+      {:ok,
+      %Aliyun.Oss.Client.Response{
+        data: "",
+        headers: [
+          {"Server", "AliyunOSS"},
+          {"Date", "Wed, 05 Dec 2018 05:50:02 GMT"},
+          {"Content-Length", "0"},
+          {"Connection", "keep-alive"},
+          {"x-oss-request-id", "5C0000000000000000000000"},
+          {"ETag", "\"D4100000000000000000000000000000\""},
+          {"x-oss-hash-crc64ecma", "0"},
+          {"Last-Modified", "Mon, 15 Oct 2018 01:38:47 GMT"},
+          {"x-oss-server-time", "19"}
+        ]
+      }}
+  """
+  @spec get_object_meta(String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  def get_object_meta(bucket, object) do
+    head_object(bucket, object, %{}, %{"objectMeta" => nil})
   end
 
 

@@ -18,7 +18,7 @@ defmodule AliyunOss.MixProject do
   def application do
     [
       mod: {Aliyun.Oss, []},
-      extra_applications: [:logger]
+      extra_applications: [:logger, :eex]
     ]
   end
 

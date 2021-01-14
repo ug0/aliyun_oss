@@ -72,7 +72,7 @@ defmodule Aliyun.Oss.Bucket do
       iex> Aliyun.Oss.Bucket.get_bucket("some-bucket", %{"prefix" => "foo/"})
       {:ok, %Aliyun.Oss.Client.Response{
           data: %{
-            "ListAllMyBucketsResult" => %{
+            "ListBucketResult" => %{
               "Contents" => [
                 %{
                   "ETag" => "\"D410293F000B000D00D\"",

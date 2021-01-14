@@ -55,11 +55,6 @@ defmodule AliyunOss.MixProject do
     [
       main: "Aliyun.Oss",
       groups_for_modules: [
-        # Aliyun.Oss,
-        # Aliyun.Oss.Bucket,
-        # Aliyun.Oss.Object.MultipartUpload,
-        # Aliyun.Oss.Service,
-
         "HTTP Client": [
           Aliyun.Oss.Client,
           Aliyun.Oss.Client.Request,

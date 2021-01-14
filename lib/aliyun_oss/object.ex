@@ -1,6 +1,11 @@
 defmodule Aliyun.Oss.Object do
   @moduledoc """
-  Object 相关操作
+  Object 相关操作:
+    - `Aliyun.Oss.Object`: Object 基本操作
+    - `Aliyun.Oss.Object.MultipartUpload`: MultipartUpload 分片上传
+    - `Aliyun.Oss.Object.ACL`: ACL 权限控制
+    - `Aliyun.Oss.Object.Symlink`: Symlink 软链接
+    - `Aliyun.Oss.Object.Tagging`: Tagging 标签
   """
 
   import Aliyun.Oss.Config, only: [endpoint: 0]
@@ -64,116 +69,12 @@ defmodule Aliyun.Oss.Object do
       }
 
 
-  亦可用于获取某个 Object 指定 SubResource(GetObjectXXX)。
-
-  ## Examples
-
-      iex> Aliyun.Oss.Object.get_object("some-bucket", "some-object", %{}, %{"acl" => nil})
-      {:ok, %Aliyun.Oss.Client.Response{
-          data: %{
-            "AccessControlPolicy" => %{
-              "AccessControlList" => %{"Grant" => "default"},
-              "Owner" => %{
-                "DisplayName" => "1111111111111111",
-                "ID" => "1111111111111111"
-              }
-            }
-          },
-          headers: [
-            {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"}
-          ]
-        }
-      }
+  注：所有 SubResource 相关操作亦可由此接口实现, 即 Object.Acl.get("some-bucket", "some-object") 等同于 Object.get_object("some-bucket", "some-object", %{}, %{"acl" => nil})
   """
   @spec get_object(String.t(), String.t(), map(), map()) ::
           {:error, error()} | {:ok, Response.t()}
   def get_object(bucket, object, headers \\ %{}, sub_resources \\ %{}) do
     Service.get(bucket, object, headers: headers, sub_resources: sub_resources)
-  end
-
-  @doc """
-  GetObjectACL 用来获取某个Bucket下的某个Object的访问权限。
-
-  ## Examples
-
-      iex> Aliyun.Oss.Object.get_object_acl("some-bucket", "some-object")
-      {:ok, %Aliyun.Oss.Client.Response{
-          data: %{
-            "AccessControlPolicy" => %{
-              "AccessControlList" => %{"Grant" => "default"},
-              "Owner" => %{
-                "DisplayName" => "1111111111111111",
-                "ID" => "1111111111111111"
-              }
-            }
-          },
-          headers: [
-            {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"}
-          ]
-        }
-      }
-  """
-  @spec get_object_acl(String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
-  def get_object_acl(bucket, object) do
-    get_object(bucket, object, %{}, %{"acl" => nil})
-  end
-
-
-  @doc """
-  GetSymlink接口用于获取符号链接。此操作需要您对该符号链接有读权限。
-
-  ## Examples
-
-      iex> Aliyun.Oss.Object.get_symlink("some-bucket", "some-object")
-      {:ok, %Aliyun.Oss.Client.Response{
-          data: "",
-          headers: [
-            {"Server", "AliyunOSS"},
-            {"Date", "Fri, 01 Mar 2019 06:26:07 GMT"},
-            {"Content-Type", "text/plain"},
-            {"Content-Length", "0"},
-            {"Connection", "keep-alive"},
-            {"x-oss-request-id", "5C7000000000000000000000"},
-            {"Last-Modified", "Fri, 01 Mar 2019 06:23:13 GMT"},
-            {"ETag", "\"6751C000000000000000000000000000\""},
-            {"x-oss-symlink-target", "test.txt"},
-            {"x-oss-server-time", "1"}
-          ]
-        }
-      }
-  """
-  @spec get_symlink(String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
-  def get_symlink(bucket, object) do
-    get_object(bucket, object, %{}, %{"symlink" => nil})
-  end
-
-
-  @doc """
-  通过GetObjectTagging接口获取对象的标签信息。
-
-  ## Examples
-
-      iex> Aliyun.Oss.Object.get_object_tagging("some-bucket", "some-object")
-      {:ok, %Aliyun.Oss.Client.Response{
-          data: %{"Tagging" => %{"TagSet" => [%{"Key" => "key", "Value" => "value"}]}},
-          headers: [
-            {"Server", "AliyunOSS"},
-            {"Date", "Fri, 01 Mar 2019 06:26:07 GMT"},
-            {"Content-Type", "text/plain"},
-            {"Content-Length", "0"},
-            {"Connection", "keep-alive"},
-            {"x-oss-request-id", "5C7000000000000000000000"},
-            {"Last-Modified", "Fri, 01 Mar 2019 06:23:13 GMT"},
-            {"ETag", "\"6751C000000000000000000000000000\""},
-            {"x-oss-symlink-target", "test.txt"},
-            {"x-oss-server-time", "1"}
-          ]
-        }
-      }
-  """
-  @spec get_object_tagging(String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
-  def get_object_tagging(bucket, object) do
-    get_object(bucket, object, %{}, %{"tagging" => nil})
   end
 
   @doc """
@@ -219,8 +120,8 @@ defmodule Aliyun.Oss.Object do
 
   @doc """
   PutObject接口用于上传文件（Object）。
-   - 添加的文件大小不得超过5 GB。
-   - 如果已经存在同名的Object，并且有访问权限，则新添加的文件将覆盖原来的文件，并成功返回200 OK。
+   - 添加的文件大小不得超过 5 GB。
+   - 如果已经存在同名的Object，并且有访问权限，则新添加的文件将覆盖原来的文件，并成功返回 200 OK。
 
   ## Examples
 
@@ -239,50 +140,6 @@ defmodule Aliyun.Oss.Object do
   def put_object(bucket, object, body, headers \\ %{}, sub_resources \\ %{}) do
     Service.put(bucket, object, body, headers: headers, sub_resources: sub_resources)
   end
-
-
-  @doc """
-  PutSymlink接口用于为OSS的TargetObject创建软链接，您可以通过该软链接访问TargetObject。
-
-  ## Examples
-
-      iex> Aliyun.Oss.Object.put_symlink("some-bucket", "symlink", "target-object")
-      {:ok, %Aliyun.Oss.Client.Response{
-          data: "",
-          headers: [
-            {"Server", "AliyunOSS"},
-            {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
-            ...
-          ]
-        }
-      }
-  """
-  @spec put_symlink(String.t(), String.t(), String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
-  def put_symlink(bucket, symlink, target_object, storage_class \\ "Standard") do
-    put_object(bucket, symlink, "", %{"x-oss-symlink-target" => target_object, "x-oss-storage-class" => storage_class}, %{"symlink" => nil})
-  end
-
-  @doc """
-  PutObjectACL接口用于修改Object的访问权限。
-
-  ## Examples
-
-      iex> Aliyun.Oss.Object.put_object_acl("some-bucket", "some-object", "private")
-      {:ok, %Aliyun.Oss.Client.Response{
-          data: "",
-          headers: [
-            {"Server", "AliyunOSS"},
-            {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
-            ...
-          ]
-        }
-      }
-  """
-  @spec put_object_acl(String.t(), String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
-  def put_object_acl(bucket, object, acl) do
-    put_object(bucket, object, "", %{"x-oss-object-acl" => acl}, %{"acl" => nil})
-  end
-
 
   @doc """
   CopyObject接口用于在存储空间（Bucket ） 内或同地域的Bucket之间拷贝文件（Object）。
@@ -310,43 +167,6 @@ defmodule Aliyun.Oss.Object do
     headers = Map.put(headers, "x-oss-copy-source", "/#{source_bucket}/#{source_object}")
     put_object(target_bucket, target_object, "", headers)
   end
-
-
-  @doc """
-  通过PutObjectTagging接口设置或更新对象的标签（Object Tagging）。
-
-  ## Examples
-
-      iex> Aliyun.Oss.Object.put_object_tagging("some-bucket", "some-object", [{"key1", "value1"}, {:key2, "value2}])
-      {:ok, %Aliyun.Oss.Client.Response{
-          data: "",
-          headers: [
-            {"Server", "AliyunOSS"},
-            {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
-            ...
-          ]
-        }
-      }
-  """
-  @body_tmpl """
-  <?xml version="1.0" encoding="UTF-8"?>
-  <Tagging>
-    <TagSet>
-      <%= for {key, value} <- tags do %>
-        <Tag>
-          <Key><%= key %></Key>
-          <Value><%= value %></Value>
-        </Tag>
-      <% end %>
-    </TagSet>
-  </Tagging>
-  """
-  @spec put_object_tagging(String.t(), String.t(), [{any(), any()}, ...]) :: {:error, error()} | {:ok, Response.t()}
-  def put_object_tagging(bucket, object, tags) do
-    xml_body = EEx.eval_string(@body_tmpl, [tags: tags])
-    put_object(bucket, object, xml_body, %{}, %{"tagging" => nil})
-  end
-
 
   @doc """
   AppendObject接口用于以追加写的方式上传Object。
@@ -467,29 +287,6 @@ defmodule Aliyun.Oss.Object do
 
     Service.post(bucket, nil, body, headers: headers, sub_resources: %{"delete" => nil})
   end
-
-
-  @doc """
-  通过DeleteObjectTagging删除指定对象的标签。
-
-  ## Examples
-
-      iex> Aliyun.Oss.Object.delete_object_tagging("some-bucket", "some-object")
-      {:ok, %Aliyun.Oss.Client.Response{
-          data: "",
-          headers: [
-            {"Server", "AliyunOSS"},
-            {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
-            ...
-          ]
-        }
-      }
-  """
-  @spec delete_object_tagging(String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
-  def delete_object_tagging(bucket, object) do
-    delete_object(bucket, object, %{"tagging" => nil})
-  end
-
 
   @doc """
   签名 Post Policy 返回签名字符串及编码后的 policy

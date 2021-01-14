@@ -4,7 +4,6 @@ defmodule Aliyun.Oss do
 
   - `Aliyun.Oss.Bucket`: Bucket related operations.
   - `Aliyun.Oss.Object`: Object related operations.
-  - `Aliyun.Oss.Object.MultipartUpload`: Multipart Upload
   """
 
   use Application

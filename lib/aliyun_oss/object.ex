@@ -105,6 +105,141 @@ defmodule Aliyun.Oss.Object do
   end
 
   @doc """
+  SelectObject用于对目标文件执行SQL语句，返回执行结果。
+
+  ## Options
+
+    - `:format` - 用于设置请求语法：`:json` or `:csv`, 默认为`:csv`
+
+  ## Examples
+
+      iex> select_request = %{
+        "SelectRequest" => %{
+          "Expression" => "c2VsZWN0ICogZnJvbSBvc3NvYmplY3QuY29udGFjdHNbKl0gcyB3aGVyZSBzLmFnZSA9IDI3",
+          "InputSerialization" => %{"JSON" => %{"Type" => "DOCUMENT"}},
+          "OutputSerialization" => %{"JSON" => %{"RecordDelimiter" => "LA=="}}
+        }
+      }
+      iex> Aliyun.Oss.Object.select_object("some-bucket", "some-object", select_request, format: :json)
+      {:ok, %Aliyun.Oss.Client.Response{
+          data: <<208, 207, 17, 224, 161, 177, 26, 225, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 62, 0, 3, 0, 254, 255, 9, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 18,
+            0, 0, 0, ...>>,
+          headers: [
+            {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
+            ...
+          ]
+        }
+      }
+      iex> select_request = ~S[
+        <SelectRequest>
+            <Expression>c2VsZWN0ICogZnJvbSBvc3NvYmplY3QuY29udGFjdHNbKl0gcyB3aGVyZSBzLmFnZSA9IDI3</Expression>
+            <InputSerialization>
+            <JSON>
+                <Type>DOCUMENT</Type>
+            </JSON>
+            </InputSerialization>
+            <OutputSerialization>
+            <JSON>
+                <RecordDelimiter>LA==</RecordDelimiter>
+            </JSON>
+            </OutputSerialization>
+        </SelectRequest>
+      ]
+      iex> Aliyun.Oss.Object.select_object("some-bucket", "some-object", select_request, format: :json)
+      {:ok, %Aliyun.Oss.Client.Response{
+          data: <<208, 207, 17, 224, 161, 177, 26, 225, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 62, 0, 3, 0, 254, 255, 9, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 18,
+            0, 0, 0, ...>>,
+          headers: [
+            {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
+            ...
+          ]
+        }
+      }
+  """
+  @spec select_object(String.t(), String.t(), String.t() | map(), keyword) ::
+          {:error, error()} | {:ok, Response.t()}
+  def select_object(bucket, object, select_request, options \\ [])
+
+  def select_object(bucket, object, %{} = select_request, options) do
+    select_object(bucket, object, MapToXml.from_map(select_request), options)
+  end
+
+  def select_object(bucket, object, select_request, options) do
+    x_oss_process = case Keyword.get(options, :format, :csv) do
+      :csv -> "csv/select"
+      :json -> "json/select"
+    end
+    post_object(bucket, object, select_request, %{}, %{"x-oss-process" => x_oss_process})
+  end
+
+  @doc """
+  CreateSelectObjectMeta API用于获取目标文件总的行数，总的列数（对于CSV文件），以及Splits个数。如果该信息不存在，则会扫描整个文件，分析并记录下CSV文件的上述信息。重复调用该API则会保存上述信息而不必重新扫描整个文件。
+
+  ## Options
+
+    - `:format` - 用于设置请求语法：`:json` or `:csv`, 默认为`:csv`
+
+  ## Examples
+
+      iex> select_request = %{
+        "JsonMetaRequest" => %{
+          "InputSerialization" => %{"JSON" => %{"Type" => "LINES"}},
+          "OverwriteIfExisting" => "false"
+        }
+      }
+      iex> Aliyun.Oss.Object.select_object_meta("some-bucket", "some-object", select_request, format: :json)
+      {:ok, %Aliyun.Oss.Client.Response{
+          data: <<208, 207, 17, 224, 161, 177, 26, 225, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 62, 0, 3, 0, 254, 255, 9, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 18,
+            0, 0, 0, ...>>,
+          headers: [
+            {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
+            ...
+          ]
+        }
+      }
+      iex> select_request = ~S[
+        <?xml version="1.0"?>
+        <JsonMetaRequest>
+            <InputSerialization>
+                <JSON>
+                    <Type>LINES</Type>
+                </JSON>
+            </InputSerialization>
+            <OverwriteIfExisting>false</OverwriteIfExisting>
+        </JsonMetaRequest>
+      ]
+      iex> Aliyun.Oss.Object.select_object_meta("some-bucket", "some-object", select_request, format: :json)
+      {:ok, %Aliyun.Oss.Client.Response{
+          data: <<208, 207, 17, 224, 161, 177, 26, 225, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 62, 0, 3, 0, 254, 255, 9, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 18,
+            0, 0, 0, ...>>,
+          headers: [
+            {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
+            ...
+          ]
+        }
+      }
+  """
+  @spec select_object_meta(String.t(), String.t(), String.t() | map(), keyword) ::
+          {:error, error()} | {:ok, Response.t()}
+  def select_object_meta(bucket, object, select_request, options \\ [])
+
+  def select_object_meta(bucket, object, %{} = select_request, options) do
+    select_object_meta(bucket, object, MapToXml.from_map(select_request), options)
+  end
+
+  def select_object_meta(bucket, object, select_request, options) do
+    x_oss_process = case Keyword.get(options, :format, :csv) do
+      :csv -> "csv/meta"
+      :json -> "json/meta"
+    end
+    post_object(bucket, object, select_request, %{}, %{"x-oss-process" => x_oss_process})
+  end
+
+  @doc """
   生成包含签名的 Object URL
 
   ## Examples

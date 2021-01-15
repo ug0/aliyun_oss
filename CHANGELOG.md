@@ -6,6 +6,8 @@
     - GetBucketV2 (ListObjectsV2): `Aliyun.Oss.Bucket.list_objects`
     - GetObjectMeta: `Aliyun.Oss.Object.get_object_meta`
     - PutBucketLifecycle: `Aliyun.Oss.Lifecycle.put`
+    - SelectObject: `Aliyun.Oss.Object.select_object`
+    - CreateSelectObjectMeta: `Aliyun.Oss.Object.select_object_meta`
   - **Breaking changes**:
     - Use separated modules to scope SubResources of Bucket/Object, for example:
       - `Aliyun.Oss.Bucket.get_acl` becomes `Aliyun.Oss.Bucket.ACL.get`

@@ -107,7 +107,7 @@ config :aliyun_oss,
   - [x] PutSymlink	创建软链接
   - [x] GetSymlink	获取软链接
   - [x] RestoreObject	解冻文件
-  - [ ] SelectObject	用SQL语法查询Object内容
+  - [x] SelectObject	用SQL语法查询Object内容
   - [x] GeneratesignedURL 生成包含签名的 URL
   - [x] PutObjectTagging	设置或更新对象标签
   - [x] GetObjectTagging	获取对象标签信息

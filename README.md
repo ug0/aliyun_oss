@@ -72,8 +72,7 @@ config :aliyun_oss,
   - [ ] CompleteBucketWorm	锁定合规保留策略
   - [ ] ExtendBucketWorm	延长已锁定的合规保留策略对应Bucket中Object的保留天数
   - [ ] GetBucketWorm	查看Bucket的合规保留策略信息
-  - [ ] PutBucketLogging	开启Bucket访问日志记
-  - [x] PutBucketLogging	开启Bucket日志
+  - [x] PutBucketLogging	开启Bucket访问日志记录功能
   - [x] GetBucketLogging	查看Bucket的访问日志配置情况
   - [x] DeleteBucketLogging	关闭Bucket访问日志记录功能
   - [x] PutBucketWebsite	设置Bucket为静态网站托管模式
@@ -81,14 +80,14 @@ config :aliyun_oss,
   - [x] DeleteBucketWebsite	关闭Bucket的静态网站托管模式
   - [x] PutBucketReferer	设置Bucket的防盗链规则
   - [x] GetBucketReferer	查看Bucket的防盗链规则
-  - [ ] PutBucketTags	添加或修改Bucket标签
-  - [ ] GetBucketTags	查看Bucket标签信息
-  - [ ] DeleteBucketTags	删除Bucket标签
+  - [x] PutBucketTags	添加或修改Bucket标签
+  - [x] GetBucketTags	查看Bucket标签信息
+  - [x] DeleteBucketTags	删除Bucket标签
   - [x] PutBucketEncryption	配置Bucket的加密规则
   - [x] GetBucketEncryption	获取Bucket的加密规则
   - [x] DeleteBucketEncryption	删除Bucket的加密规则
-  - [ ] PutBucketRequestPayment	设置Bucket为请求者付费模式
-  - [ ] GetBucketRequestPayment	查看Bucket请求者付费模式配置信息
+  - [x] PutBucketRequestPayment	设置Bucket为请求者付费模式
+  - [x] GetBucketRequestPayment	查看Bucket请求者付费模式配置信息
 
 **关于Object的操作**
 

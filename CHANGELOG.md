@@ -8,6 +8,11 @@
     - PutBucketLifecycle: `Aliyun.Oss.Lifecycle.put`
     - SelectObject: `Aliyun.Oss.Object.select_object`
     - CreateSelectObjectMeta: `Aliyun.Oss.Object.select_object_meta`
+    - PutBucketTags: `Aliyun.Oss.Bucket.Tags.put`
+    - GetBucketTags: `Aliyun.Oss.Bucket.Tags.get`
+    - DeleteBucketTags: `Aliyun.Oss.Bucket.Tags.delete`
+    - GetBucketRequestPayment: `Aliyun.Oss.Bucket.RequestPayment.get`
+    - PutBucketRequestPayment: `Aliyun.Oss.Bucket.RequestPayment.put`
   - **Breaking changes**:
     - Use separated modules to scope SubResources of Bucket/Object, for example:
       - `Aliyun.Oss.Bucket.get_acl` becomes `Aliyun.Oss.Bucket.ACL.get`

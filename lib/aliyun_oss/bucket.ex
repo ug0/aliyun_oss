@@ -7,7 +7,9 @@ defmodule Aliyun.Oss.Bucket do
     - `Aliyun.Oss.Bucket.Logging`: Logging 日志管理
     - `Aliyun.Oss.Bucket.Website`: Website 静态网站
     - `Aliyun.Oss.Bucket.Referer`: Referer 防盗链
+    - `Aliyun.Oss.Bucket.Tags`: Tags 标签
     - `Aliyun.Oss.Bucket.Encryption`: Encryption 加密
+    - `Aliyun.Oss.Bucket.RequestPayment`: RequestPayment 请求者付费
   """
 
   alias Aliyun.Oss.Service

@@ -49,7 +49,7 @@ config :aliyun_oss,
   - [x] GetBucketLocation	获得Bucket所属的数据中心位置信息
   - [x] PutBucketACL	设置Bucket访问权限
   - [x] GetBucketAcl	获得Bucket访问权限
-  - [ ] PutBucketLifecycle	设置Bucket中Object的生命周期规则
+  - [x] PutBucketLifecycle	设置Bucket中Object的生命周期规则
   - [x] GetBucketLifecycle	查看Bucket中Object的生命周期规则
   - [x] DeleteBucketLifecycle	删除Bucket中Object的生命周期规则
   - [ ] PutBucketVersioning	设置Bucket的版本控制状态

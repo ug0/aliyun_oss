@@ -29,6 +29,7 @@ defmodule AliyunOss.MixProject do
       {:aliyun_util, "~> 0.3.3" },
       {:httpoison, "~> 1.7"},
       {:elixir_xml_to_map, "~> 2.0"},
+      {:elixir_map_to_xml, "~> 0.1.0"},
       {:jason, "~> 1.1"},
       {:confex, "~> 3.4"},
       {:ex_doc, "~> 0.20", only: :dev},

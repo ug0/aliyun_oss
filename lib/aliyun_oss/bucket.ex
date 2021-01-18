@@ -4,6 +4,8 @@ defmodule Aliyun.Oss.Bucket do
     - `Aliyun.Oss.Bucket`: Bucket 基本操作
     - `Aliyun.Oss.Bucket.ACL`: ACL 权限控制
     - `Aliyun.Oss.Bucket.Lifecycle`: Lifecycle 生命周期
+    - `Aliyun.Oss.Bucket.Policy`: Policy 授权策略
+    - `Aliyun.Oss.Bucket.Inventory`: Inventory 清单
     - `Aliyun.Oss.Bucket.Logging`: Logging 日志管理
     - `Aliyun.Oss.Bucket.Website`: Website 静态网站
     - `Aliyun.Oss.Bucket.Referer`: Referer 防盗链

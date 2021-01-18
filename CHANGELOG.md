@@ -13,6 +13,13 @@
     - DeleteBucketTags: `Aliyun.Oss.Bucket.Tags.delete`
     - GetBucketRequestPayment: `Aliyun.Oss.Bucket.RequestPayment.get`
     - PutBucketRequestPayment: `Aliyun.Oss.Bucket.RequestPayment.put`
+    - PutBucketPolicy: `Aliyun.Oss.Bucket.Policy.put`
+    - GetBucketPolicy: `Aliyun.Oss.Bucket.Policy.get`
+    - DeleteBucketPolicy: `Aliyun.Oss.Bucket.Policy.delete`
+    - PutBucketInventory: `Aliyun.Oss.Bucket.Inventory.put`
+    - GetBucketInventory: `Aliyun.Oss.Bucket.Inventory.get`
+    - ListBucketInventory: `Aliyun.Oss.Bucket.Inventory.list`
+    - DeleteBucketInventory: `Aliyun.Oss.Bucket.Inventory.delete`
   - **Breaking changes**:
     - Use separated modules to scope SubResources of Bucket/Object, for example:
       - `Aliyun.Oss.Bucket.get_acl` becomes `Aliyun.Oss.Bucket.ACL.get`

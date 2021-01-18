@@ -22,20 +22,24 @@ defmodule Aliyun.Oss.Client.Response do
 
   def parse(body, headers \\ []) do
     %Response{
-      data: parse_body(body),
-      headers: headers,
+      data: parse_body(body, parse_content_type(headers)),
+      headers: headers
     }
   end
 
-  def parse_body(body) do
-    try do
-      body
-      |> XmlToMap.naive_map()
-      |> cast_data()
-    catch
-      {:error, _ } -> body
+  defp parse_content_type(headers) do
+    headers
+    |> Enum.find(fn {key, _value} -> String.downcase(key) == "content-type" end)
+    |> case do
+      {_, "application/json"} -> :json
+      {_, "application/xml"} -> :xml
+      _ -> nil
     end
   end
+
+  defp parse_body(body, :xml), do: body |> XmlToMap.naive_map() |> cast_data()
+  defp parse_body(body, :json), do: body |> Jason.decode!() |> cast_data()
+  defp parse_body(body, _), do: body
 
   defp cast_data(map) do
     map

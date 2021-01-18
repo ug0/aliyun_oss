@@ -60,13 +60,13 @@ config :aliyun_oss,
   - [ ] GetBucketReplicationLocation	查看可复制到的目标Bucket所在的地域
   - [ ] GetBucketReplicationProgress	查看Bucket的跨区域复制进度
   - [ ] DeleteBucketReplication	停止Bucket的跨区域复制任务并删除Bucket的复制配置
-  - [ ] PutBucketPolicy	设置Bucket Policy
-  - [ ] GetBucketPolicy	获取Bucket Policy
-  - [ ] DeleteBucketPolicy	删除Bucket Policy
-  - [ ] PutBucketInventory	设置Bucket清单规则
-  - [ ] GetBucketInventory	查看Bucket中指定的清单任务
-  - [ ] ListBucketInventory	查看Bucket中所有的清单任务
-  - [ ] DeleteBucketInventory	删除Bucket中指定的清单任务
+  - [x] PutBucketPolicy	设置Bucket Policy
+  - [x] GetBucketPolicy	获取Bucket Policy
+  - [x] DeleteBucketPolicy	删除Bucket Policy
+  - [x] PutBucketInventory	设置Bucket清单规则
+  - [x] GetBucketInventory	查看Bucket中指定的清单任务
+  - [x] ListBucketInventory	查看Bucket中所有的清单任务
+  - [x] DeleteBucketInventory	删除Bucket中指定的清单任务
   - [ ] InitiateBucketWorm	新建合规保留策略
   - [ ] AbortBucketWorm	删除未锁定的合规保留策略
   - [ ] CompleteBucketWorm	锁定合规保留策略

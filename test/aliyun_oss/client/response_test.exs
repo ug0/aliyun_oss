@@ -6,13 +6,13 @@ defmodule Aliyun.Oss.Client.ResponseTest do
   alias Aliyun.Oss.Client.Response
 
   describe "parse/1" do
-    test "parse invalid xml" do
+    test "parse plain text" do
       assert %Response{
-        data: "invalid xml",
+        data: "plain text",
         headers: [
-          {"Content-Length", "250"}
+          {"Content-Length", "250"},
         ]
-      } = Response.parse("invalid xml", [{"Content-Length", "250"}])
+      } = Response.parse("plain text", [{"Content-Length", "250"}])
     end
 
     @xml """
@@ -62,9 +62,20 @@ defmodule Aliyun.Oss.Client.ResponseTest do
           "Buckets" => %{ "Bucket" => [^bucket1, ^bucket2] }
         }},
         headers: [
-          {"Content-Length", "250"}
+          {"Content-Length", "250"},
+          {"Content-Type", "application/xml"}
         ]
-      } = Response.parse(@xml, [{"Content-Length", "250"}])
+      } = Response.parse(@xml, [{"Content-Length", "250"}, {"Content-Type", "application/xml"}])
+    end
+
+    test "parse json to map" do
+      assert %Response{
+        data: %{"foo" => "bar"},
+        headers: [
+          {"Content-Length", "250"},
+          {"Content-Type", "application/json"}
+        ]
+      } = Response.parse(~S[{"foo":"bar"}], [{"Content-Length", "250"}, {"Content-Type", "application/json"}])
     end
   end
 end

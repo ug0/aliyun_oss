@@ -20,6 +20,19 @@
     - GetBucketInventory: `Aliyun.Oss.Bucket.Inventory.get`
     - ListBucketInventory: `Aliyun.Oss.Bucket.Inventory.list`
     - DeleteBucketInventory: `Aliyun.Oss.Bucket.Inventory.delete`
+    - PutBucketVersioning: `Aliyun.Oss.Bucket.Versioning.put`
+    - GetBucketVersioning: `Aliyun.Oss.Bucket.Versioning.get`
+    - ListObjectVersions: `Aliyun.Oss.Bucket.Versioning.list_object_versions`
+    - PutBucketReplication: `Aliyun.Oss.Bucket.Replication.put`
+    - GetBucketReplication: `Aliyun.Oss.Bucket.Replication.get`
+    - GetBucketReplicationLocation: `Aliyun.Oss.Bucket.Replication.get_location`
+    - GetBucketReplicationProgress: `Aliyun.Oss.Bucket.Replication.get_progress`
+    - DeleteBucketReplication: `Aliyun.Oss.Bucket.Replication.delete`
+    - InitiateBucketWorm: `Aliyun.Oss.Bucket.WORM.initiate`
+    - AbortBucketWormLocation: `Aliyun.Oss.Bucket.WORM.abort`
+    - CompleteBucketWormProgress: `Aliyun.Oss.Bucket.WORM.complete`
+    - ExtendBucketWorm: `Aliyun.Oss.Bucket.WORM.extend`
+    - GetBucketWorm: `Aliyun.Oss.Bucket.WORM.get`
   - **Breaking changes**:
     - Use separated modules to scope SubResources of Bucket/Object, for example:
       - `Aliyun.Oss.Bucket.get_acl` becomes `Aliyun.Oss.Bucket.ACL.get`

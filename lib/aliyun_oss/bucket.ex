@@ -2,8 +2,11 @@ defmodule Aliyun.Oss.Bucket do
   @moduledoc """
   Bucket 相关操作:
     - `Aliyun.Oss.Bucket`: Bucket 基本操作
+    - `Aliyun.Oss.Bucket.WORM`: WORM 合规保留策略
     - `Aliyun.Oss.Bucket.ACL`: ACL 权限控制
     - `Aliyun.Oss.Bucket.Lifecycle`: Lifecycle 生命周期
+    - `Aliyun.Oss.Bucket.Versioning`: Versioning 版本控制
+    - `Aliyun.Oss.Bucket.Replication`: Replication 跨区域复制
     - `Aliyun.Oss.Bucket.Policy`: Policy 授权策略
     - `Aliyun.Oss.Bucket.Inventory`: Inventory 清单
     - `Aliyun.Oss.Bucket.Logging`: Logging 日志管理

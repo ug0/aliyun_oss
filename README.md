@@ -52,14 +52,14 @@ config :aliyun_oss,
   - [x] PutBucketLifecycle	设置Bucket中Object的生命周期规则
   - [x] GetBucketLifecycle	查看Bucket中Object的生命周期规则
   - [x] DeleteBucketLifecycle	删除Bucket中Object的生命周期规则
-  - [ ] PutBucketVersioning	设置Bucket的版本控制状态
-  - [ ] GetBucketVersioning	获取Bucket的版本控制状态
-  - [ ] GetBucketVersions(ListObjectVersions)	列举Bucket中所有Object的版本信息
-  - [ ] PutBucketReplication	设置Bucket的跨区域复制规则
-  - [ ] GetBucketReplication	查看Bucket已设置的跨区域复制规则
-  - [ ] GetBucketReplicationLocation	查看可复制到的目标Bucket所在的地域
-  - [ ] GetBucketReplicationProgress	查看Bucket的跨区域复制进度
-  - [ ] DeleteBucketReplication	停止Bucket的跨区域复制任务并删除Bucket的复制配置
+  - [x] PutBucketVersioning	设置Bucket的版本控制状态
+  - [x] GetBucketVersioning	获取Bucket的版本控制状态
+  - [x] GetBucketVersions(ListObjectVersions)	列举Bucket中所有Object的版本信息
+  - [x] PutBucketReplication	设置Bucket的跨区域复制规则
+  - [x] GetBucketReplication	查看Bucket已设置的跨区域复制规则
+  - [x] GetBucketReplicationLocation	查看可复制到的目标Bucket所在的地域
+  - [x] GetBucketReplicationProgress	查看Bucket的跨区域复制进度
+  - [x] DeleteBucketReplication	停止Bucket的跨区域复制任务并删除Bucket的复制配置
   - [x] PutBucketPolicy	设置Bucket Policy
   - [x] GetBucketPolicy	获取Bucket Policy
   - [x] DeleteBucketPolicy	删除Bucket Policy
@@ -67,11 +67,11 @@ config :aliyun_oss,
   - [x] GetBucketInventory	查看Bucket中指定的清单任务
   - [x] ListBucketInventory	查看Bucket中所有的清单任务
   - [x] DeleteBucketInventory	删除Bucket中指定的清单任务
-  - [ ] InitiateBucketWorm	新建合规保留策略
-  - [ ] AbortBucketWorm	删除未锁定的合规保留策略
-  - [ ] CompleteBucketWorm	锁定合规保留策略
-  - [ ] ExtendBucketWorm	延长已锁定的合规保留策略对应Bucket中Object的保留天数
-  - [ ] GetBucketWorm	查看Bucket的合规保留策略信息
+  - [x] InitiateBucketWorm	新建合规保留策略
+  - [x] AbortBucketWorm	删除未锁定的合规保留策略
+  - [x] CompleteBucketWorm	锁定合规保留策略
+  - [x] ExtendBucketWorm	延长已锁定的合规保留策略对应Bucket中Object的保留天数
+  - [x] GetBucketWorm	查看Bucket的合规保留策略信息
   - [x] PutBucketLogging	开启Bucket访问日志记录功能
   - [x] GetBucketLogging	查看Bucket的访问日志配置情况
   - [x] DeleteBucketLogging	关闭Bucket访问日志记录功能

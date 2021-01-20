@@ -15,6 +15,7 @@ defmodule Aliyun.Oss.Bucket do
     - `Aliyun.Oss.Bucket.Tags`: Tags 标签
     - `Aliyun.Oss.Bucket.Encryption`: Encryption 加密
     - `Aliyun.Oss.Bucket.RequestPayment`: RequestPayment 请求者付费
+    - `Aliyun.Oss.Bucket.CORS`: CORS 跨域资源共享
   """
 
   alias Aliyun.Oss.Service

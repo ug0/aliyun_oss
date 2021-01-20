@@ -33,6 +33,9 @@
     - CompleteBucketWormProgress: `Aliyun.Oss.Bucket.WORM.complete`
     - ExtendBucketWorm: `Aliyun.Oss.Bucket.WORM.extend`
     - GetBucketWorm: `Aliyun.Oss.Bucket.WORM.get`
+    - PutBucketCors: `Aliyun.Oss.Bucket.CORS.put`
+    - GetBucketCors: `Aliyun.Oss.Bucket.CORS.get`
+    - DeleteBucketCors: `Aliyun.Oss.Bucket.CORS.delete`
   - **Breaking changes**:
     - Use separated modules to scope SubResources of Bucket/Object, for example:
       - `Aliyun.Oss.Bucket.get_acl` becomes `Aliyun.Oss.Bucket.ACL.get`

@@ -124,13 +124,12 @@ config :aliyun_oss,
   - [x] ListParts	列举指定UploadID所属的所有已上传成功的Part
 
 
-- [ ] CORS
-  - [ ] PutBucketcors	在指定Bucket设定一个CORS的规则
-  - [ ] GetBucketcors	获取指定的Bucket目前的CORS规则
-  - [ ] DeleteBucketcors	关闭指定Bucket对应的CORS功能并清空所有规则
-  - [ ] OptionObject	跨域访问preflight请求
+**跨域资源共享（CORS）**
+  - [x] PutBucketcors	在指定Bucket设定一个CORS的规则
+  - [x] GetBucketcors	获取指定的Bucket目前的CORS规则
+  - [x] DeleteBucketcors	关闭指定Bucket对应的CORS功能并清空所有规则
 
-- [ ] live Channel
+**关于Live Channel的操作**
   - [ ] PutLiveChannelStatus	切换LiveChannel的状态
   - [ ] PutLiveChannel	创建LiveChannel
   - [ ] GetVodPlaylist	获取播放列表

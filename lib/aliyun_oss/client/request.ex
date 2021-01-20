@@ -8,6 +8,7 @@ defmodule Aliyun.Oss.Client.Request do
   defstruct verb: "GET",
             host: nil,
             path: nil,
+            scheme: "https",
             resource: nil,
             query_params: %{},
             sub_resources: %{},
@@ -36,7 +37,7 @@ defmodule Aliyun.Oss.Client.Request do
 
   def query_url(%__MODULE__{} = req) do
     URI.to_string(%URI{
-      scheme: "https",
+      scheme: req.scheme,
       host: req.host,
       path: req.path,
       query: Map.merge(req.query_params, req.sub_resources) |> URI.encode_query()
@@ -90,10 +91,19 @@ defmodule Aliyun.Oss.Client.Request do
     (h |> to_string() |> String.downcase()) <> ":" <> to_string(v)
   end
 
+  defp canonicalize_query_params(%{query_params: query_params}) do
+    query_params
+    |> Stream.map(fn {k, v} -> "#{k}:#{v}\n" end)
+    |> Enum.join("&")
+  end
+
   defp canonicalize_resource(%{resource: resource, sub_resources: nil}), do: resource
   defp canonicalize_resource(%{resource: resource, sub_resources: sub_resources}) do
     sub_resources
-    |> Stream.map(&encode_param/1)
+    |> Stream.map(fn
+      {k, nil} -> k
+      {k, v} -> "#{k}=#{v}"
+    end)
     |> Enum.join("&")
     |> case do
       "" -> resource
@@ -101,14 +111,16 @@ defmodule Aliyun.Oss.Client.Request do
     end
   end
 
-  defp encode_param({k, nil}), do: k
-  defp encode_param({k, v}), do: "#{k}=#{v}"
-
   defp parse_content_type(%{resource: resource}) do
     case Path.extname(resource) do
       "." <> name -> MIME.type(name)
       _ -> @default_content_type
     end
+  end
+
+  defp string_to_sign(%__MODULE__{scheme: "rtmp"} = req) do
+    expires_time(req) <> "\n" <>
+    canonicalize_query_params(req) <> canonicalize_resource(req)
   end
 
   defp string_to_sign(%__MODULE__{} = req) do

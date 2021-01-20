@@ -1,6 +1,10 @@
 # Changelog
 
 ## v0.7.0(WIP)
+  - **Breaking changes**:
+    - Use separated modules to scope SubResources of Bucket/Object, for example:
+      - `Aliyun.Oss.Bucket.get_acl` becomes `Aliyun.Oss.Bucket.ACL.get`
+      - `Aliyun.Oss.Object.get_acl` becomes `Aliyun.Oss.Object.ACL.get`
   - Update dependencies
   - New APIs:
     - GetBucketV2 (ListObjectsV2): `Aliyun.Oss.Bucket.list_objects`
@@ -36,10 +40,15 @@
     - PutBucketCors: `Aliyun.Oss.Bucket.CORS.put`
     - GetBucketCors: `Aliyun.Oss.Bucket.CORS.get`
     - DeleteBucketCors: `Aliyun.Oss.Bucket.CORS.delete`
-  - **Breaking changes**:
-    - Use separated modules to scope SubResources of Bucket/Object, for example:
-      - `Aliyun.Oss.Bucket.get_acl` becomes `Aliyun.Oss.Bucket.ACL.get`
-      - `Aliyun.Oss.Object.get_acl` becomes `Aliyun.Oss.Object.ACL.get`
+    - PutLiveChannelStatus:	`Aliyun.Oss.LiveChannel.put_status`
+    - PutLiveChannel: `Aliyun.Oss.LiveChannel.put`
+    - GetVodPlaylist: `Aliyun.Oss.LiveChannel.get_playlist`
+    - PostVodPlaylist: `Aliyun.Oss.LiveChannel.post_playlist`
+    - Get LiveChannelStat: `Aliyun.Oss.LiveChannel.get_stat`
+    - GetLiveChannelInfo:	`Aliyun.Oss.LiveChannel.get_info`
+    - GetLiveChannelHistory: `Aliyun.Oss.LiveChannel.get_history`
+    - ListLiveChannel: `Aliyun.Oss.LiveChannel.list`
+    - DeleteLiveChannel: `Aliyun.Oss.LiveChannel.delete`
 
 ## v0.6.3
   - Use Supervised Task

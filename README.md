@@ -130,12 +130,12 @@ config :aliyun_oss,
   - [x] DeleteBucketcors	关闭指定Bucket对应的CORS功能并清空所有规则
 
 **关于Live Channel的操作**
-  - [ ] PutLiveChannelStatus	切换LiveChannel的状态
-  - [ ] PutLiveChannel	创建LiveChannel
-  - [ ] GetVodPlaylist	获取播放列表
-  - [ ] PostVodPlaylist	生成播放列表
-  - [ ] Get LiveChannelStat	获取LiveChannel的推流状态信息
-  - [ ] GetLiveChannelInfo	获取LiveChannel的配置信息
-  - [ ] GetLiveChannelHistory	获取LiveChannel的推流记录
-  - [ ] ListLiveChannel	列举LiveChannel
-  - [ ] DeleteLiveChannel	删除LiveChannel
+  - [x] PutLiveChannelStatus	切换LiveChannel的状态
+  - [x] PutLiveChannel	创建LiveChannel
+  - [x] GetVodPlaylist	获取播放列表
+  - [x] PostVodPlaylist	生成播放列表
+  - [x] Get LiveChannelStat	获取LiveChannel的推流状态信息
+  - [x] GetLiveChannelInfo	获取LiveChannel的配置信息
+  - [x] GetLiveChannelHistory	获取LiveChannel的推流记录
+  - [x] ListLiveChannel	列举LiveChannel
+  - [x] DeleteLiveChannel	删除LiveChannel

@@ -4,6 +4,7 @@ defmodule Aliyun.Oss do
 
   - `Aliyun.Oss.Bucket`: Bucket related operations.
   - `Aliyun.Oss.Object`: Object related operations.
+  - `Aliyun.Oss.LiveChannel`: LiveChannel related operations.
   """
 
   use Application

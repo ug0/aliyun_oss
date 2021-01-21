@@ -12,7 +12,7 @@ Add `aliyun_oss` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:aliyun_oss, "~> 0.6.3"}
+    {:aliyun_oss, "~> 1.0"}
   ]
 end
 ```
@@ -41,7 +41,7 @@ config :aliyun_oss,
 
 更多请参考[阿里云官方文档](https://help.aliyun.com/document_detail/31948.html?spm=a2c4g.11186623.6.1037.520869cbKcHFcL)
 
-**关于Bucket的操作**
+**关于 Bucket 的操作**
   - [x] PutBucket	创建Bucket
   - [x] DeleteBucket	删除Bucket
   - [x] GetBucket(ListObjects)	获得Bucket中所有Object的信息
@@ -89,7 +89,7 @@ config :aliyun_oss,
   - [x] PutBucketRequestPayment	设置Bucket为请求者付费模式
   - [x] GetBucketRequestPayment	查看Bucket请求者付费模式配置信息
 
-**关于Object的操作**
+**关于 Object 的操作**
 
   - [x] PutObject	上传object
   - [x] CopyObject	拷贝一个object成另外一个object
@@ -113,7 +113,7 @@ config :aliyun_oss,
   - [x] DeleteObjectTagging	删除指定的对象标签
 
 
-**关于Multipart Upload的操作**
+**关于 Multipart Upload 的操作**
 
   - [x] InitiateMultipartUpload	初始化MultipartUpload事件
   - [x] UploadPart	分块上传文件
@@ -129,7 +129,7 @@ config :aliyun_oss,
   - [x] GetBucketcors	获取指定的Bucket目前的CORS规则
   - [x] DeleteBucketcors	关闭指定Bucket对应的CORS功能并清空所有规则
 
-**关于Live Channel的操作**
+**关于 Live Channel 的操作**
   - [x] PutLiveChannelStatus	切换LiveChannel的状态
   - [x] PutLiveChannel	创建LiveChannel
   - [x] GetVodPlaylist	获取播放列表

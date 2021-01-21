@@ -1,54 +1,57 @@
 # Changelog
 
-## v0.7.0(WIP)
+## v1.0.0
   - **Breaking changes**:
     - Use separated modules to scope SubResources of Bucket/Object, for example:
       - `Aliyun.Oss.Bucket.get_acl` becomes `Aliyun.Oss.Bucket.ACL.get`
       - `Aliyun.Oss.Object.get_acl` becomes `Aliyun.Oss.Object.ACL.get`
   - Update dependencies
   - New APIs:
-    - GetBucketV2 (ListObjectsV2): `Aliyun.Oss.Bucket.list_objects`
-    - GetObjectMeta: `Aliyun.Oss.Object.get_object_meta`
-    - PutBucketLifecycle: `Aliyun.Oss.Lifecycle.put`
-    - SelectObject: `Aliyun.Oss.Object.select_object`
-    - CreateSelectObjectMeta: `Aliyun.Oss.Object.select_object_meta`
-    - PutBucketTags: `Aliyun.Oss.Bucket.Tags.put`
-    - GetBucketTags: `Aliyun.Oss.Bucket.Tags.get`
-    - DeleteBucketTags: `Aliyun.Oss.Bucket.Tags.delete`
-    - GetBucketRequestPayment: `Aliyun.Oss.Bucket.RequestPayment.get`
-    - PutBucketRequestPayment: `Aliyun.Oss.Bucket.RequestPayment.put`
-    - PutBucketPolicy: `Aliyun.Oss.Bucket.Policy.put`
-    - GetBucketPolicy: `Aliyun.Oss.Bucket.Policy.get`
-    - DeleteBucketPolicy: `Aliyun.Oss.Bucket.Policy.delete`
-    - PutBucketInventory: `Aliyun.Oss.Bucket.Inventory.put`
-    - GetBucketInventory: `Aliyun.Oss.Bucket.Inventory.get`
-    - ListBucketInventory: `Aliyun.Oss.Bucket.Inventory.list`
-    - DeleteBucketInventory: `Aliyun.Oss.Bucket.Inventory.delete`
-    - PutBucketVersioning: `Aliyun.Oss.Bucket.Versioning.put`
-    - GetBucketVersioning: `Aliyun.Oss.Bucket.Versioning.get`
-    - ListObjectVersions: `Aliyun.Oss.Bucket.Versioning.list_object_versions`
-    - PutBucketReplication: `Aliyun.Oss.Bucket.Replication.put`
-    - GetBucketReplication: `Aliyun.Oss.Bucket.Replication.get`
-    - GetBucketReplicationLocation: `Aliyun.Oss.Bucket.Replication.get_location`
-    - GetBucketReplicationProgress: `Aliyun.Oss.Bucket.Replication.get_progress`
-    - DeleteBucketReplication: `Aliyun.Oss.Bucket.Replication.delete`
-    - InitiateBucketWorm: `Aliyun.Oss.Bucket.WORM.initiate`
-    - AbortBucketWormLocation: `Aliyun.Oss.Bucket.WORM.abort`
-    - CompleteBucketWormProgress: `Aliyun.Oss.Bucket.WORM.complete`
-    - ExtendBucketWorm: `Aliyun.Oss.Bucket.WORM.extend`
-    - GetBucketWorm: `Aliyun.Oss.Bucket.WORM.get`
-    - PutBucketCors: `Aliyun.Oss.Bucket.CORS.put`
-    - GetBucketCors: `Aliyun.Oss.Bucket.CORS.get`
-    - DeleteBucketCors: `Aliyun.Oss.Bucket.CORS.delete`
-    - PutLiveChannelStatus:	`Aliyun.Oss.LiveChannel.put_status`
-    - PutLiveChannel: `Aliyun.Oss.LiveChannel.put`
-    - GetVodPlaylist: `Aliyun.Oss.LiveChannel.get_playlist`
-    - PostVodPlaylist: `Aliyun.Oss.LiveChannel.post_playlist`
-    - Get LiveChannelStat: `Aliyun.Oss.LiveChannel.get_stat`
-    - GetLiveChannelInfo:	`Aliyun.Oss.LiveChannel.get_info`
-    - GetLiveChannelHistory: `Aliyun.Oss.LiveChannel.get_history`
-    - ListLiveChannel: `Aliyun.Oss.LiveChannel.list`
-    - DeleteLiveChannel: `Aliyun.Oss.LiveChannel.delete`
+    - Bucket:
+      - GetBucketV2 (ListObjectsV2): `Aliyun.Oss.Bucket.list_objects`
+      - PutBucketLifecycle: `Aliyun.Oss.Bucket.Lifecycle.put`
+      - PutBucketTags: `Aliyun.Oss.Bucket.Tags.put`
+      - GetBucketTags: `Aliyun.Oss.Bucket.Tags.get`
+      - DeleteBucketTags: `Aliyun.Oss.Bucket.Tags.delete`
+      - GetBucketRequestPayment: `Aliyun.Oss.Bucket.RequestPayment.get`
+      - PutBucketRequestPayment: `Aliyun.Oss.Bucket.RequestPayment.put`
+      - PutBucketPolicy: `Aliyun.Oss.Bucket.Policy.put`
+      - GetBucketPolicy: `Aliyun.Oss.Bucket.Policy.get`
+      - DeleteBucketPolicy: `Aliyun.Oss.Bucket.Policy.delete`
+      - PutBucketInventory: `Aliyun.Oss.Bucket.Inventory.put`
+      - GetBucketInventory: `Aliyun.Oss.Bucket.Inventory.get`
+      - ListBucketInventory: `Aliyun.Oss.Bucket.Inventory.list`
+      - DeleteBucketInventory: `Aliyun.Oss.Bucket.Inventory.delete`
+      - PutBucketVersioning: `Aliyun.Oss.Bucket.Versioning.put`
+      - GetBucketVersioning: `Aliyun.Oss.Bucket.Versioning.get`
+      - ListObjectVersions: `Aliyun.Oss.Bucket.Versioning.list_object_versions`
+      - PutBucketReplication: `Aliyun.Oss.Bucket.Replication.put`
+      - GetBucketReplication: `Aliyun.Oss.Bucket.Replication.get`
+      - GetBucketReplicationLocation: `Aliyun.Oss.Bucket.Replication.get_location`
+      - GetBucketReplicationProgress: `Aliyun.Oss.Bucket.Replication.get_progress`
+      - DeleteBucketReplication: `Aliyun.Oss.Bucket.Replication.delete`
+      - InitiateBucketWorm: `Aliyun.Oss.Bucket.WORM.initiate`
+      - AbortBucketWormLocation: `Aliyun.Oss.Bucket.WORM.abort`
+      - CompleteBucketWormProgress: `Aliyun.Oss.Bucket.WORM.complete`
+      - ExtendBucketWorm: `Aliyun.Oss.Bucket.WORM.extend`
+      - GetBucketWorm: `Aliyun.Oss.Bucket.WORM.get`
+      - PutBucketCors: `Aliyun.Oss.Bucket.CORS.put`
+      - GetBucketCors: `Aliyun.Oss.Bucket.CORS.get`
+      - DeleteBucketCors: `Aliyun.Oss.Bucket.CORS.delete`
+    - Object:
+      - GetObjectMeta: `Aliyun.Oss.Object.get_object_meta`
+      - SelectObject: `Aliyun.Oss.Object.select_object`
+      - CreateSelectObjectMeta: `Aliyun.Oss.Object.select_object_meta`
+    - LiveChannel:
+      - PutLiveChannelStatus:	`Aliyun.Oss.LiveChannel.put_status`
+      - PutLiveChannel: `Aliyun.Oss.LiveChannel.put`
+      - GetVodPlaylist: `Aliyun.Oss.LiveChannel.get_playlist`
+      - PostVodPlaylist: `Aliyun.Oss.LiveChannel.post_playlist`
+      - Get LiveChannelStat: `Aliyun.Oss.LiveChannel.get_stat`
+      - GetLiveChannelInfo:	`Aliyun.Oss.LiveChannel.get_info`
+      - GetLiveChannelHistory: `Aliyun.Oss.LiveChannel.get_history`
+      - ListLiveChannel: `Aliyun.Oss.LiveChannel.list`
+      - DeleteLiveChannel: `Aliyun.Oss.LiveChannel.delete`
 
 ## v0.6.3
   - Use Supervised Task

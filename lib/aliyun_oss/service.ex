@@ -1,7 +1,5 @@
 defmodule Aliyun.Oss.Service do
-  @moduledoc """
-  Internal module
-  """
+  @moduledoc false
 
   alias Aliyun.Oss.Client
   alias Aliyun.Oss.Client.{Response, Error}

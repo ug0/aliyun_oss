@@ -56,6 +56,33 @@ defmodule AliyunOss.MixProject do
     [
       main: "Aliyun.Oss",
       groups_for_modules: [
+        "Bucket": [
+          Aliyun.Oss.Bucket,
+          Aliyun.Oss.Bucket.WORM,
+          Aliyun.Oss.Bucket.ACL,
+          Aliyun.Oss.Bucket.Lifecycle,
+          Aliyun.Oss.Bucket.Versioning,
+          Aliyun.Oss.Bucket.Replication,
+          Aliyun.Oss.Bucket.Policy,
+          Aliyun.Oss.Bucket.Inventory,
+          Aliyun.Oss.Bucket.Logging,
+          Aliyun.Oss.Bucket.Website,
+          Aliyun.Oss.Bucket.Referer,
+          Aliyun.Oss.Bucket.Tags,
+          Aliyun.Oss.Bucket.Encryption,
+          Aliyun.Oss.Bucket.RequestPayment,
+          Aliyun.Oss.Bucket.CORS,
+        ],
+        "Object": [
+          Aliyun.Oss.Object,
+          Aliyun.Oss.Object.MultipartUpload,
+          Aliyun.Oss.Object.ACL,
+          Aliyun.Oss.Object.Symlink,
+          Aliyun.Oss.Object.Tagging,
+        ],
+        "LiveChannel": [
+          Aliyun.Oss.LiveChannel
+        ],
         "HTTP Client": [
           Aliyun.Oss.Client,
           Aliyun.Oss.Client.Request,

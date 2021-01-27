@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.0.1
+  - Improve doc
+
 ## v1.0.0
   - **Breaking changes**:
     - Use separated modules to scope SubResources of Bucket/Object, for example:

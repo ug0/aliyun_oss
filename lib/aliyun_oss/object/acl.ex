@@ -52,8 +52,8 @@ defmodule Aliyun.Oss.Object.ACL do
         }
       }
   """
-  @spec put_object_acl(String.t(), String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
-  def put_object_acl(bucket, object, acl) do
+  @spec put(String.t(), String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  def put(bucket, object, acl) do
     put_object(bucket, object, "", %{"x-oss-object-acl" => acl}, %{"acl" => nil})
   end
 end

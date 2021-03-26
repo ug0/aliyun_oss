@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.0.2
+  - Correct function name: `Aliyun.Oss.Object.ACL.put`
+
 ## v1.0.1
   - Improve doc
 

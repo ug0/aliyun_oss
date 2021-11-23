@@ -1,14 +1,16 @@
 defmodule AliyunOss.MixProject do
   use Mix.Project
 
+  @source_url "https://github.com/ug0/aliyun_oss"
+  @version "1.0.2"
+
   def project do
     [
       app: :aliyun_oss,
-      version: "1.0.2",
+      version: @version,
       elixir: "~> 1.7",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
-      description: description(),
       package: package(),
       docs: docs()
     ]
@@ -32,23 +34,16 @@ defmodule AliyunOss.MixProject do
       {:elixir_map_to_xml, "~> 0.1.0"},
       {:jason, "~> 1.1"},
       {:confex, "~> 3.4"},
-      {:ex_doc, "~> 0.20", only: :dev},
+      {:ex_doc, "~> 0.20", only: :dev, runtime: false},
       {:mock, "~> 0.3.2", only: :test}
     ]
   end
 
-  defp description do
-    """
-    Aliyun OSS API(阿里云对象存储 OSS API)
-    """
-  end
-
   defp package do
     [
+      description: "Aliyun OSS API(阿里云对象存储 OSS API)",
       licenses: ["MIT"],
-      links: %{"GitHub" => "https://github.com/ug0/aliyun_oss"},
-      source_urL: "https://github.com/ug0/aliyun_oss",
-      homapage_url: "https://github.com/ug0/aliyun_oss"
+      links: %{"GitHub" => @source_url},
     ]
   end
 

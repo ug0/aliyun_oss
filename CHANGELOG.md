@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.0.4
+  - Fix error when object key contains `+`
+
 ## v1.0.3
   - Update dependencies
 

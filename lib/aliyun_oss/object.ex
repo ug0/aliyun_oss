@@ -245,9 +245,9 @@ defmodule Aliyun.Oss.Object do
   ## Examples
 
       iex> expires = Timex.now() |> Timex.shift(days: 1) |> Timex.to_unix()
-      iex> Aliyun.Oss.Object.signed_url("some-bucket", "some-object", expires, "GET", %{"Content-Type" -> ""})
+      iex> Aliyun.Oss.Object.signed_url("some-bucket", "some-object", expires, "GET", %{"Content-Type" => ""})
       "http://some-bucket.oss-cn-hangzhou.aliyuncs.com/oss-api.pdf?OSSAccessKeyId=nz2pc5*******9l&Expires=1141889120&Signature=vjbyPxybdZ*****************v4%3D"
-      iex> Aliyun.Oss.Object.signed_url("some-bucket", "some-object", expires, "PUT", %{"Content-Type" -> "text/plain"})
+      iex> Aliyun.Oss.Object.signed_url("some-bucket", "some-object", expires, "PUT", %{"Content-Type" => "text/plain"})
       "http://some-bucket.oss-cn-hangzhou.aliyuncs.com/oss-api.pdf?OSSAccessKeyId=nz2pc5*******9l&Expires=1141889120&Signature=vjbyPxybdZ*****************v4%3D"
   """
   @spec signed_url(String.t(), String.t(), integer(), String.t(), map(), map()) :: String.t()

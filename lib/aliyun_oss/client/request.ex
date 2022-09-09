@@ -39,10 +39,12 @@ defmodule Aliyun.Oss.Client.Request do
     URI.to_string(%URI{
       scheme: req.scheme,
       host: req.host,
-      path: req.path,
+      path: encode_path(req.path),
       query: Map.merge(req.query_params, req.sub_resources) |> URI.encode_query()
     })
   end
+
+  defp encode_path(path), do: String.replace(path, "+", "%2B")
 
   def signed_query_url(%__MODULE__{} = req) do
     req

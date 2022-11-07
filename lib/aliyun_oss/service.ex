@@ -1,49 +1,53 @@
 defmodule Aliyun.Oss.Service do
   @moduledoc false
 
+  alias Aliyun.Oss.ConfigAlt, as: Config
   alias Aliyun.Oss.Client
   alias Aliyun.Oss.Client.{Response, Error}
-  import Aliyun.Oss.Config, only: [endpoint: 0]
 
   @type error() ::
           %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
 
-  @spec get(String.t() | nil, String.t() | nil, keyword()) ::
+  @spec get(Config.t(), String.t() | nil, String.t() | nil, keyword()) ::
           {:error, error()} | {:ok, Response.t()}
-  def get(bucket, object, opts \\ []) do
-    request("GET", bucket, object, "", opts)
+  def get(%Config{} = config, bucket, object, opts \\ []) do
+    request(config, "GET", bucket, object, "", opts)
   end
 
-  @spec post(String.t(), String.t() | nil, String.t(), keyword()) ::
+  @spec post(Config.t(), String.t(), String.t() | nil, String.t(), keyword()) ::
           {:error, error()} | {:ok, Response.t()}
-  def post(bucket, object, body, opts \\ []) do
-    request("POST", bucket, object, body, opts)
+  def post(%Config{} = config, bucket, object, body, opts \\ []) do
+    request(config, "POST", bucket, object, body, opts)
   end
 
-  @spec put(String.t(), String.t() | nil, String.t(), keyword()) ::
+  @spec put(Config.t(), String.t(), String.t() | nil, String.t(), keyword()) ::
           {:error, error()} | {:ok, Response.t()}
-  def put(bucket, object, body, opts \\ []) do
-    request("PUT", bucket, object, body, opts)
+  def put(%Config{} = config, bucket, object, body, opts \\ []) do
+    request(config, "PUT", bucket, object, body, opts)
   end
 
-  @spec delete(String.t(), String.t() | nil, keyword()) :: {:error, error()} | {:ok, Response.t()}
-  def delete(bucket, object, opts \\ []) do
-    request("DELETE", bucket, object, "", opts)
+  @spec delete(Config.t(), String.t(), String.t() | nil, keyword()) ::
+          {:error, error()} | {:ok, Response.t()}
+  def delete(%Config{} = config, bucket, object, opts \\ []) do
+    request(config, "DELETE", bucket, object, "", opts)
   end
 
-  @spec head(String.t(), String.t() | nil, keyword()) :: {:error, error()} | {:ok, Response.t()}
-  def head(bucket, object, opts \\ []) do
-    request("HEAD", bucket, object, "", opts)
+  @spec head(Config.t(), String.t(), String.t() | nil, keyword()) ::
+          {:error, error()} | {:ok, Response.t()}
+  def head(%Config{} = config, bucket, object, opts \\ []) do
+    request(config, "HEAD", bucket, object, "", opts)
   end
 
-  defp request(verb, bucket, object, body, opts) do
+  defp request(%Config{} = config, verb, bucket, object, body, opts) do
+    %{endpoint: endpoint} = config
+
     {host, resource} =
       case bucket do
-        <<_, _::binary>> -> {"#{bucket}.#{endpoint()}", "/#{bucket}/#{object}"}
-        _ -> {endpoint(), "/"}
+        <<_, _::binary>> -> {"#{bucket}.#{endpoint}", "/#{bucket}/#{object}"}
+        _ -> {endpoint, "/"}
       end
 
-    Client.request(%{
+    Client.request(config, %{
       verb: verb,
       body: body,
       host: host,

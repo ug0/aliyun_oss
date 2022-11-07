@@ -1,6 +1,4 @@
 defmodule Aliyun.Oss.Client.Response do
-  alias Aliyun.Oss.Client.Response
-
   defstruct [:data, :headers]
 
   @value_casting_rules %{
@@ -21,7 +19,7 @@ defmodule Aliyun.Oss.Client.Response do
   }
 
   def parse(body, headers \\ []) do
-    %Response{
+    %__MODULE__{
       data: parse_body(body, parse_content_type(headers)),
       headers: headers
     }

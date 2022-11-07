@@ -21,7 +21,8 @@ defmodule Aliyun.Oss.Bucket do
   alias Aliyun.Oss.Service
   alias Aliyun.Oss.Client.{Response, Error}
 
-  @type error() :: %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
+  @type error() ::
+          %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
 
   @doc """
   GetService (ListBuckets) 对于服务地址作Get请求可以返回请求者拥有的所有Bucket。
@@ -307,8 +308,10 @@ defmodule Aliyun.Oss.Bucket do
     <StorageClass>Standard</StorageClass>
   </CreateBucketConfiguration>
   """
-  @spec put_bucket(String.t(), map(), map(), String.t()) :: {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
-  def put_bucket(bucket, headers = %{} \\ %{}, sub_resources = %{} \\ %{}, body \\ @body) when is_binary(body) do
+  @spec put_bucket(String.t(), map(), map(), String.t()) ::
+          {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
+  def put_bucket(bucket, headers = %{} \\ %{}, sub_resources = %{} \\ %{}, body \\ @body)
+      when is_binary(body) do
     Service.put(bucket, nil, body, headers: headers, sub_resources: sub_resources)
   end
 
@@ -353,7 +356,8 @@ defmodule Aliyun.Oss.Bucket do
 
     注：所有 SubResource 相关操作亦可由此接口实现, 即 Bucket.Logging.delete("some-bucket") 等同于 Bucket.delete_bucket("some-bucket", %{"logging" => nil})
   """
-  @spec delete_bucket(String.t(), map()) :: {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
+  @spec delete_bucket(String.t(), map()) ::
+          {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
   def delete_bucket(bucket, sub_resources \\ %{}) do
     Service.delete(bucket, nil, sub_resources: sub_resources)
   end

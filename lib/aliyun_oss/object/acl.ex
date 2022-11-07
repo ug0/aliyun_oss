@@ -7,7 +7,8 @@ defmodule Aliyun.Oss.Object.ACL do
 
   alias Aliyun.Oss.Client.{Response, Error}
 
-  @type error() :: %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
+  @type error() ::
+          %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
 
   @doc """
   GetObjectACL 用来获取某个Bucket下的某个Object的访问权限。

@@ -7,7 +7,8 @@ defmodule Aliyun.Oss.Bucket.Logging do
 
   alias Aliyun.Oss.Client.{Response, Error}
 
-  @type error() :: %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
+  @type error() ::
+          %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
 
   @doc """
   GetBucketLogging 用于查看Bucket的访问日志配置情况。
@@ -64,12 +65,16 @@ defmodule Aliyun.Oss.Bucket.Logging do
     </LoggingEnabled>
   </BucketLoggingStatus>
   """
-  @spec put(String.t(), String.t(), String.t()) :: {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
+  @spec put(String.t(), String.t(), String.t()) ::
+          {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
   def put(bucket, target_bucket, target_prefix \\ "oss-accesslog/") do
-    body = EEx.eval_string(
-      @body_tmpl,
-      [target_bucket: target_bucket, target_prefix: target_prefix]
-    )
+    body =
+      EEx.eval_string(
+        @body_tmpl,
+        target_bucket: target_bucket,
+        target_prefix: target_prefix
+      )
+
     put_bucket(bucket, %{}, %{"logging" => nil}, body)
   end
 

@@ -7,7 +7,8 @@ defmodule Aliyun.Oss.Object.Tagging do
 
   alias Aliyun.Oss.Client.{Response, Error}
 
-  @type error() :: %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
+  @type error() ::
+          %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
 
   @doc """
   通过GetObjectTagging接口获取对象的标签信息。
@@ -66,9 +67,10 @@ defmodule Aliyun.Oss.Object.Tagging do
     </TagSet>
   </Tagging>
   """
-  @spec put(String.t(), String.t(), [{any(), any()}, ...]) :: {:error, error()} | {:ok, Response.t()}
+  @spec put(String.t(), String.t(), [{any(), any()}, ...]) ::
+          {:error, error()} | {:ok, Response.t()}
   def put(bucket, object, tags) do
-    xml_body = EEx.eval_string(@body_tmpl, [tags: tags])
+    xml_body = EEx.eval_string(@body_tmpl, tags: tags)
     put_object(bucket, object, xml_body, %{}, %{"tagging" => nil})
   end
 

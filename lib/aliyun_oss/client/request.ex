@@ -71,7 +71,9 @@ defmodule Aliyun.Oss.Client.Request do
   end
 
   defp set_authorization_header(%__MODULE__{} = req) do
-    update_in(req.headers["Authorization"], fn _ -> "OSS " <> access_key_id() <> ":" <> gen_signature(req) end)
+    update_in(req.headers["Authorization"], fn _ ->
+      "OSS " <> access_key_id() <> ":" <> gen_signature(req)
+    end)
   end
 
   defp canonicalize_oss_headers(%{headers: headers}) do
@@ -100,6 +102,7 @@ defmodule Aliyun.Oss.Client.Request do
   end
 
   defp canonicalize_resource(%{resource: resource, sub_resources: nil}), do: resource
+
   defp canonicalize_resource(%{resource: resource, sub_resources: sub_resources}) do
     sub_resources
     |> Stream.map(fn
@@ -121,16 +124,21 @@ defmodule Aliyun.Oss.Client.Request do
   end
 
   defp string_to_sign(%__MODULE__{scheme: "rtmp"} = req) do
-    expires_time(req) <> "\n" <>
-    canonicalize_query_params(req) <> canonicalize_resource(req)
+    expires_time(req) <>
+      "\n" <>
+      canonicalize_query_params(req) <> canonicalize_resource(req)
   end
 
   defp string_to_sign(%__MODULE__{} = req) do
-    req.verb <> "\n" <>
-    header_content_md5(req) <> "\n" <>
-    header_content_type(req) <> "\n" <>
-    expires_time(req) <> "\n" <>
-    canonicalize_oss_headers(req) <> canonicalize_resource(req)
+    req.verb <>
+      "\n" <>
+      header_content_md5(req) <>
+      "\n" <>
+      header_content_type(req) <>
+      "\n" <>
+      expires_time(req) <>
+      "\n" <>
+      canonicalize_oss_headers(req) <> canonicalize_resource(req)
   end
 
   defp expires_time(%{expires: expires} = req), do: (expires || header_date(req)) |> to_string()
@@ -140,6 +148,7 @@ defmodule Aliyun.Oss.Client.Request do
   defp header_date(%{headers: %{"Date" => date}}), do: date
 
   defp calc_content_md5(%{body: ""}), do: ""
+
   defp calc_content_md5(%{body: body}) do
     :crypto.hash(:md5, body) |> Base.encode64()
   end

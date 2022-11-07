@@ -7,7 +7,8 @@ defmodule Aliyun.Oss.Bucket.CORS do
 
   alias Aliyun.Oss.Client.{Response, Error}
 
-  @type error() :: %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
+  @type error() ::
+          %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
 
   @doc """
   PutBucketCors接口用于为指定的存储空间（Bucket）设置跨域资源共享CORS（Cross-Origin Resource Sharing）规则。

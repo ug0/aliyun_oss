@@ -3,7 +3,6 @@ defmodule Aliyun.Oss.Client.Error do
 
   defstruct [:status_code, :body, :parsed_details]
 
-
   def parse(error = %Error{body: body}) do
     %Error{error | parsed_details: parse_error_xml(body)}
   end

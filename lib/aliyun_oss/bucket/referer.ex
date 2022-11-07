@@ -7,7 +7,8 @@ defmodule Aliyun.Oss.Bucket.Referer do
 
   alias Aliyun.Oss.Client.{Response, Error}
 
-  @type error() :: %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
+  @type error() ::
+          %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
 
   @doc """
   GetBucketReferer 操作用于查看bucket的Referer相关配置。

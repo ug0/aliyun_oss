@@ -7,7 +7,8 @@ defmodule Aliyun.Oss.Bucket.Versioning do
 
   alias Aliyun.Oss.Client.{Response, Error}
 
-  @type error() :: %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
+  @type error() ::
+          %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
 
   @doc """
   PutBucketVersioning用于设置指定存储空间（Bucket）的版本控制状态。
@@ -33,10 +34,9 @@ defmodule Aliyun.Oss.Bucket.Versioning do
   """
   @spec put(String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
   def put(bucket, status) do
-    body_xml = EEx.eval_string(@body_tmpl, [status: status])
+    body_xml = EEx.eval_string(@body_tmpl, status: status)
     put_bucket(bucket, %{}, %{"versioning" => nil}, body_xml)
   end
-
 
   @doc """
   GetBucketVersioning接口用于获取指定Bucket的版本控制状态。

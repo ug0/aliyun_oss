@@ -7,7 +7,8 @@ defmodule Aliyun.Oss.Bucket.Inventory do
 
   alias Aliyun.Oss.Client.{Response, Error}
 
-  @type error() :: %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
+  @type error() ::
+          %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
 
   @doc """
   PutBucketInventory接口用于为某个存储空间（Bucket）配置清单（Inventory）规则。
@@ -70,7 +71,6 @@ defmodule Aliyun.Oss.Bucket.Inventory do
   def put(bucket, inventory_id, config) do
     put_bucket(bucket, %{}, %{"inventory" => nil, "inventoryId" => inventory_id}, config)
   end
-
 
   @doc """
   GetBucketInventory用于查看某个存储空间（Bucket）中指定的清单（Inventory）任务。
@@ -158,7 +158,8 @@ defmodule Aliyun.Oss.Bucket.Inventory do
         ]
       }}
   """
-  @spec delete(String.t(), String.t()) :: {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
+  @spec delete(String.t(), String.t()) ::
+          {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
   def delete(bucket, inventory_id) do
     delete_bucket(bucket, %{"inventory" => nil, "inventoryId" => inventory_id})
   end

@@ -7,7 +7,8 @@ defmodule Aliyun.Oss.Object.Symlink do
 
   alias Aliyun.Oss.Client.{Response, Error}
 
-  @type error() :: %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
+  @type error() ::
+          %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
 
   @doc """
   GetSymlink接口用于获取符号链接。此操作需要您对该符号链接有读权限。
@@ -53,8 +54,15 @@ defmodule Aliyun.Oss.Object.Symlink do
         }
       }
   """
-  @spec put(String.t(), String.t(), String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  @spec put(String.t(), String.t(), String.t(), String.t()) ::
+          {:error, error()} | {:ok, Response.t()}
   def put(bucket, symlink, target_object, storage_class \\ "Standard") do
-    put_object(bucket, symlink, "", %{"x-oss-symlink-target" => target_object, "x-oss-storage-class" => storage_class}, %{"symlink" => nil})
+    put_object(
+      bucket,
+      symlink,
+      "",
+      %{"x-oss-symlink-target" => target_object, "x-oss-storage-class" => storage_class},
+      %{"symlink" => nil}
+    )
   end
 end

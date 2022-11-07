@@ -19,7 +19,8 @@ defmodule Aliyun.Oss.Client.LiveChannelTest do
                  "test_channel",
                  1_547_105_286,
                  %{"playlistName" => "list.m3u8"}
-               ) == "rtmp://test_bucket.oss-example.oss-cn-hangzhou.aliyuncs.com/live/test_channel?Expires=1547105286&OSSAccessKeyId=44CF9590006BF252F707&Signature=JvQe2X2bOTmJ3H%2FXQcWlW7Mh4gc%3D&playlistName=list.m3u8"
+               ) ==
+                 "rtmp://test_bucket.oss-example.oss-cn-hangzhou.aliyuncs.com/live/test_channel?Expires=1547105286&OSSAccessKeyId=44CF9590006BF252F707&Signature=JvQe2X2bOTmJ3H%2FXQcWlW7Mh4gc%3D&playlistName=list.m3u8"
       end
     end
   end

@@ -28,7 +28,7 @@ defmodule AliyunOss.MixProject do
   defp deps do
     [
       {:mime, "~> 2.0"},
-      {:aliyun_util, "~> 0.3.3" },
+      {:aliyun_util, "~> 0.3.3"},
       {:httpoison, "~> 1.7"},
       {:elixir_xml_to_map, "~> 3.0"},
       {:elixir_map_to_xml, "~> 0.1.0"},
@@ -43,7 +43,7 @@ defmodule AliyunOss.MixProject do
     [
       description: "Aliyun OSS API(阿里云对象存储 OSS API)",
       licenses: ["MIT"],
-      links: %{"GitHub" => @source_url},
+      links: %{"GitHub" => @source_url}
     ]
   end
 
@@ -51,7 +51,7 @@ defmodule AliyunOss.MixProject do
     [
       main: "Aliyun.Oss",
       groups_for_modules: [
-        "Bucket": [
+        Bucket: [
           Aliyun.Oss.Bucket,
           Aliyun.Oss.Bucket.WORM,
           Aliyun.Oss.Bucket.ACL,
@@ -66,16 +66,16 @@ defmodule AliyunOss.MixProject do
           Aliyun.Oss.Bucket.Tags,
           Aliyun.Oss.Bucket.Encryption,
           Aliyun.Oss.Bucket.RequestPayment,
-          Aliyun.Oss.Bucket.CORS,
+          Aliyun.Oss.Bucket.CORS
         ],
-        "Object": [
+        Object: [
           Aliyun.Oss.Object,
           Aliyun.Oss.Object.MultipartUpload,
           Aliyun.Oss.Object.ACL,
           Aliyun.Oss.Object.Symlink,
-          Aliyun.Oss.Object.Tagging,
+          Aliyun.Oss.Object.Tagging
         ],
-        "LiveChannel": [
+        LiveChannel: [
           Aliyun.Oss.LiveChannel
         ],
         "HTTP Client": [
@@ -84,7 +84,7 @@ defmodule AliyunOss.MixProject do
           Aliyun.Oss.Client.Response,
           Aliyun.Oss.Client.Error
         ],
-        "Configuration": [
+        Configuration: [
           Aliyun.Oss.Config
         ]
       ]

@@ -7,7 +7,8 @@ defmodule Aliyun.Oss.Bucket.RequestPayment do
 
   alias Aliyun.Oss.Client.{Response, Error}
 
-  @type error() :: %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
+  @type error() ::
+          %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
 
   @doc """
   GetBucketRequestPayment接口用于获取请求者付费模式配置信息。
@@ -54,7 +55,7 @@ defmodule Aliyun.Oss.Bucket.RequestPayment do
   """
   @spec put(String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
   def put(bucket, payer) do
-    xml_body = EEx.eval_string(@body_tmpl, [payer: payer])
+    xml_body = EEx.eval_string(@body_tmpl, payer: payer)
     put_bucket(bucket, %{}, %{"requestPayment" => nil}, xml_body)
   end
 end

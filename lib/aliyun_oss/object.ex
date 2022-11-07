@@ -13,8 +13,8 @@ defmodule Aliyun.Oss.Object do
   alias Aliyun.Oss.Service
   alias Aliyun.Oss.Client.{Request, Response, Error}
 
-  @type error() :: %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
-
+  @type error() ::
+          %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
 
   @doc """
   HeadObject只返回某个Object的meta信息，不返回文件内容。
@@ -45,7 +45,8 @@ defmodule Aliyun.Oss.Object do
       iex> Aliyun.Oss.Object.head_object("some-bucket", "unknown-object")
       {:error, %Aliyun.Oss.Client.Error{status_code: 404, body: "", parsed_details: nil}}
   """
-  @spec head_object(String.t(), String.t(), map(), map()) :: {:error, error()} | {:ok, Response.t()}
+  @spec head_object(String.t(), String.t(), map(), map()) ::
+          {:error, error()} | {:ok, Response.t()}
   def head_object(bucket, object, headers \\ %{}, sub_resources \\ %{}) do
     Service.head(bucket, object, headers: headers, sub_resources: sub_resources)
   end
@@ -76,7 +77,6 @@ defmodule Aliyun.Oss.Object do
   def get_object_meta(bucket, object) do
     head_object(bucket, object, %{}, %{"objectMeta" => nil})
   end
-
 
   @doc """
   GetObject 用于获取某个 Object
@@ -167,10 +167,12 @@ defmodule Aliyun.Oss.Object do
   end
 
   def select_object(bucket, object, select_request, options) do
-    x_oss_process = case Keyword.get(options, :format, :csv) do
-      :csv -> "csv/select"
-      :json -> "json/select"
-    end
+    x_oss_process =
+      case Keyword.get(options, :format, :csv) do
+        :csv -> "csv/select"
+        :json -> "json/select"
+      end
+
     post_object(bucket, object, select_request, %{}, %{"x-oss-process" => x_oss_process})
   end
 
@@ -232,10 +234,12 @@ defmodule Aliyun.Oss.Object do
   end
 
   def select_object_meta(bucket, object, select_request, options) do
-    x_oss_process = case Keyword.get(options, :format, :csv) do
-      :csv -> "csv/meta"
-      :json -> "json/meta"
-    end
+    x_oss_process =
+      case Keyword.get(options, :format, :csv) do
+        :csv -> "csv/meta"
+        :json -> "json/meta"
+      end
+
     post_object(bucket, object, select_request, %{}, %{"x-oss-process" => x_oss_process})
   end
 
@@ -264,7 +268,6 @@ defmodule Aliyun.Oss.Object do
     |> Request.build()
     |> Request.signed_query_url()
   end
-
 
   @doc """
   生成包含签名的可用于直接访问的 Object URL
@@ -298,7 +301,8 @@ defmodule Aliyun.Oss.Object do
         }
       }
   """
-  @spec put_object(String.t(), String.t(), String.t(), map(), map()) :: {:error, error()} | {:ok, Response.t()}
+  @spec put_object(String.t(), String.t(), String.t(), map(), map()) ::
+          {:error, error()} | {:ok, Response.t()}
   def put_object(bucket, object, body, headers \\ %{}, sub_resources \\ %{}) do
     Service.put(bucket, object, body, headers: headers, sub_resources: sub_resources)
   end
@@ -324,7 +328,8 @@ defmodule Aliyun.Oss.Object do
         }
       }
   """
-  @spec copy_object({String.t(), String.t()}, {String.t(), String.t()}, map()) :: {:error, error()} | {:ok, Response.t()}
+  @spec copy_object({String.t(), String.t()}, {String.t(), String.t()}, map()) ::
+          {:error, error()} | {:ok, Response.t()}
   def copy_object({source_bucket, source_object}, {target_bucket, target_object}, headers \\ %{}) do
     headers = Map.put(headers, "x-oss-copy-source", "/#{source_bucket}/#{source_object}")
     put_object(target_bucket, target_object, "", headers)
@@ -352,7 +357,8 @@ defmodule Aliyun.Oss.Object do
         }
       }
   """
-  @spec append_object(String.t(), String.t(), String.t(), integer(), map()) :: {:error, error()} | {:ok, Response.t()}
+  @spec append_object(String.t(), String.t(), String.t(), integer(), map()) ::
+          {:error, error()} | {:ok, Response.t()}
   def append_object(bucket, object, body, position, headers \\ %{}) do
     post_object(bucket, object, body, headers, %{"append" => nil, "position" => position})
   end
@@ -380,7 +386,6 @@ defmodule Aliyun.Oss.Object do
   def restore_object(bucket, object) do
     post_object(bucket, object, "", %{}, %{"restore" => nil})
   end
-
 
   @doc """
   DeleteObject用于删除某个文件（Object）。
@@ -437,15 +442,17 @@ defmodule Aliyun.Oss.Object do
     <% end %>
   </Delete>
   """
-  @spec delete_multiple_objects(String.t(), [String.t()], [encoding_type: :url, quiet: boolean()]) :: {:error, error()} | {:ok, Response.t()}
+  @spec delete_multiple_objects(String.t(), [String.t()], encoding_type: :url, quiet: boolean()) ::
+          {:error, error()} | {:ok, Response.t()}
   def delete_multiple_objects(bucket, objects, options \\ []) do
-    headers = case options[:encoding_type] do
-      :url -> %{"encoding-type" => "url"}
-      _ -> %{}
-    end
+    headers =
+      case options[:encoding_type] do
+        :url -> %{"encoding-type" => "url"}
+        _ -> %{}
+      end
 
     quiet = Keyword.get(options, :quiet, false)
-    body = EEx.eval_string(@body_tmpl, [quiet: quiet, objects: objects])
+    body = EEx.eval_string(@body_tmpl, quiet: quiet, objects: objects)
 
     Service.post(bucket, nil, body, headers: headers, sub_resources: %{"delete" => nil})
   end
@@ -479,7 +486,6 @@ defmodule Aliyun.Oss.Object do
       signature: Aliyun.Util.Sign.sign(encoded_policy, key)
     }
   end
-
 
   defp post_object(bucket, object, body, headers, sub_resources) do
     Service.post(bucket, object, body, headers: headers, sub_resources: sub_resources)

@@ -7,7 +7,8 @@ defmodule Aliyun.Oss.Bucket.ACL do
 
   alias Aliyun.Oss.Client.{Response, Error}
 
-  @type error() :: %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
+  @type error() ::
+          %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
 
   @doc """
   GetBucketAcl 接口用来获取某个Bucket的访问权限。

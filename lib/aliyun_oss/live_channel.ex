@@ -11,8 +11,8 @@ defmodule Aliyun.Oss.LiveChannel do
   alias Aliyun.Oss.Service
   alias Aliyun.Oss.Client.{Request, Response, Error}
 
-  @type error() :: %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
-
+  @type error() ::
+          %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
 
   @doc """
   生成包含签名的 RTMP 推流地址
@@ -24,7 +24,12 @@ defmodule Aliyun.Oss.LiveChannel do
       "http://some-bucket.oss-cn-hangzhou.aliyuncs.com/oss-api.pdf?OSSAccessKeyId=nz2pc5*******9l&Expires=1141889120&Signature=vjbyPxybdZ*****************v4%3D"
   """
   @spec signed_publish_url(String.t(), String.t(), integer(), map()) :: String.t()
-  def signed_publish_url(bucket, channel, expires, query_params \\ %{"playlistName" => "playlist.m3u8"}) do
+  def signed_publish_url(
+        bucket,
+        channel,
+        expires,
+        query_params \\ %{"playlistName" => "playlist.m3u8"}
+      ) do
     %{
       host: "#{bucket}.#{endpoint()}",
       path: "/live/#{channel}",
@@ -109,7 +114,6 @@ defmodule Aliyun.Oss.LiveChannel do
     put_object(bucket, channel_name, config, %{}, %{"live" => nil})
   end
 
-
   @doc """
   ListLiveChannel接口用于列举指定的LiveChannel。
 
@@ -154,7 +158,6 @@ defmodule Aliyun.Oss.LiveChannel do
     get_bucket(bucket, query_params, %{"live" => nil})
   end
 
-
   @doc """
   DeleteLiveChannel接口用于删除指定的LiveChannel。
 
@@ -176,7 +179,6 @@ defmodule Aliyun.Oss.LiveChannel do
     delete_object(bucket, channel_name, %{"live" => nil})
   end
 
-
   @doc """
   LiveChannel分为启用（enabled）和禁用（disabled）两种状态。您可以使用PutLiveChannelStatus接口在两种状态之间进行切换。
 
@@ -197,7 +199,6 @@ defmodule Aliyun.Oss.LiveChannel do
   def put_status(bucket, channel_name, status) do
     put_object(bucket, channel_name, "", %{}, %{"live" => nil, "status" => status})
   end
-
 
   @doc """
   GetLiveChannelInfo接口用于获取指定LiveChannel的配置信息。
@@ -231,7 +232,6 @@ defmodule Aliyun.Oss.LiveChannel do
     get_object(bucket, channel_name, %{}, %{"live" => nil})
   end
 
-
   @doc """
   GetLiveChannelStat接口用于获取指定LiveChannel的推流状态信息。
 
@@ -252,7 +252,6 @@ defmodule Aliyun.Oss.LiveChannel do
   def get_stat(bucket, channel_name) do
     get_object(bucket, channel_name, %{}, %{"live" => nil, "comp" => "stat"})
   end
-
 
   @doc """
   GetLiveChannelHistory接口用于获取指定LiveChannel的推流记录。使用GetLiveChannelHistory接口最多会返回指定LiveChannel最近的10次推流记录。
@@ -279,7 +278,6 @@ defmodule Aliyun.Oss.LiveChannel do
     get_object(bucket, channel_name, %{}, %{"live" => nil, "comp" => "history"})
   end
 
-
   @doc """
   PostVodPlaylist接口用于为指定的LiveChannel生成一个点播用的播放列表。OSS会查询指定时间范围内由该LiveChannel推流生成的ts文件，并将其拼装为一个m3u8播放列表。
 
@@ -296,11 +294,13 @@ defmodule Aliyun.Oss.LiveChannel do
         }
       }
   """
-  @spec post_playlist(String.t(), String.t(), String.t() , integer(), integer()) :: {:error, error()} | {:ok, Response.t()}
+  @spec post_playlist(String.t(), String.t(), String.t(), integer(), integer()) ::
+          {:error, error()} | {:ok, Response.t()}
   def post_playlist(bucket, channel_name, list_name, start_time, end_time) do
-    Service.post(bucket, "#{channel_name}/#{list_name}", "", sub_resources: %{"vod" => nil, "startTime" => start_time, "endTime" => end_time})
+    Service.post(bucket, "#{channel_name}/#{list_name}", "",
+      sub_resources: %{"vod" => nil, "startTime" => start_time, "endTime" => end_time}
+    )
   end
-
 
   @doc """
   GetVodPlaylist接口用于查看指定LiveChannel在指定时间段内推流生成的播放列表。
@@ -318,8 +318,13 @@ defmodule Aliyun.Oss.LiveChannel do
         }
       }
   """
-  @spec get_playlist(String.t(), String.t(), integer(), integer()) :: {:error, error()} | {:ok, Response.t()}
+  @spec get_playlist(String.t(), String.t(), integer(), integer()) ::
+          {:error, error()} | {:ok, Response.t()}
   def get_playlist(bucket, channel_name, start_time, end_time) do
-    get_object(bucket, channel_name, %{}, %{"vod" => nil, "startTime" => start_time, "endTime" => end_time})
+    get_object(bucket, channel_name, %{}, %{
+      "vod" => nil,
+      "startTime" => start_time,
+      "endTime" => end_time
+    })
   end
 end

@@ -7,7 +7,8 @@ defmodule Aliyun.Oss.Bucket.Encryption do
 
   alias Aliyun.Oss.Client.{Response, Error}
 
-  @type error() :: %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
+  @type error() ::
+          %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
 
   @doc """
   GetBucketEncryption 用于获取Bucket加密规则。
@@ -75,10 +76,13 @@ defmodule Aliyun.Oss.Bucket.Encryption do
         :kms -> {"KMS", Keyword.fetch!(opts, :kms_master_key_id)}
       end
 
-    xml_body = EEx.eval_string(
-      @body_tmpl,
-      [algorithm: algorithm, kms_master_key_id: kms_master_key_id]
-    )
+    xml_body =
+      EEx.eval_string(
+        @body_tmpl,
+        algorithm: algorithm,
+        kms_master_key_id: kms_master_key_id
+      )
+
     put_bucket(bucket, %{}, %{"encryption" => nil}, xml_body)
   end
 

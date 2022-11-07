@@ -5,19 +5,23 @@ defmodule Aliyun.Oss.Service do
   alias Aliyun.Oss.Client.{Response, Error}
   import Aliyun.Oss.Config, only: [endpoint: 0]
 
-  @type error() :: %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
+  @type error() ::
+          %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
 
-  @spec get(String.t() | nil, String.t() | nil, keyword()) :: {:error, error()} | {:ok, Response.t()}
+  @spec get(String.t() | nil, String.t() | nil, keyword()) ::
+          {:error, error()} | {:ok, Response.t()}
   def get(bucket, object, opts \\ []) do
     request("GET", bucket, object, "", opts)
   end
 
-  @spec post(String.t(), String.t() | nil, String.t(), keyword()) :: {:error, error()} | {:ok, Response.t()}
+  @spec post(String.t(), String.t() | nil, String.t(), keyword()) ::
+          {:error, error()} | {:ok, Response.t()}
   def post(bucket, object, body, opts \\ []) do
     request("POST", bucket, object, body, opts)
   end
 
-  @spec put(String.t(), String.t() | nil, String.t(), keyword()) :: {:error, error()} | {:ok, Response.t()}
+  @spec put(String.t(), String.t() | nil, String.t(), keyword()) ::
+          {:error, error()} | {:ok, Response.t()}
   def put(bucket, object, body, opts \\ []) do
     request("PUT", bucket, object, body, opts)
   end

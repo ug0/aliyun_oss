@@ -8,7 +8,8 @@ defmodule Aliyun.Oss.Bucket.Replication do
 
   alias Aliyun.Oss.Client.{Response, Error}
 
-  @type error() :: %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
+  @type error() ::
+          %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
 
   @doc """
   PutBucketReplication接口用于为存储空间（Bucket）指定跨区域复制规则。
@@ -67,7 +68,6 @@ defmodule Aliyun.Oss.Bucket.Replication do
   def put(bucket, config) do
     post(bucket, nil, config, sub_resources: %{"replication" => nil, "comp" => "add"})
   end
-
 
   @doc """
   GetBucketReplication接口用来获取某个存储空间（Bucket）已设置的跨区域复制规则。
@@ -198,9 +198,10 @@ defmodule Aliyun.Oss.Bucket.Replication do
     <ID><%= rule_id %></ID>
   </ReplicationRules>
   """
-  @spec delete(String.t(), String.t()) :: {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
+  @spec delete(String.t(), String.t()) ::
+          {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
   def delete(bucket, rule_id) do
-    body_xml = EEx.eval_string(@body_tmpl, [rule_id: rule_id])
+    body_xml = EEx.eval_string(@body_tmpl, rule_id: rule_id)
     post(bucket, nil, body_xml, sub_resources: %{"replication" => nil, "comp" => "delete"})
   end
 end

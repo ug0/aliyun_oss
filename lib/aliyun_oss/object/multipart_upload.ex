@@ -30,8 +30,8 @@ defmodule Aliyun.Oss.Object.MultipartUpload do
   alias Aliyun.Oss.Client.{Response, Error}
   alias Aliyun.Oss.TaskSupervisor
 
-  @type error() :: %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
-
+  @type error() ::
+          %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
 
   @doc """
   使用 Multipart Upload 上传数据
@@ -69,12 +69,18 @@ defmodule Aliyun.Oss.Object.MultipartUpload do
             {:ok, resp}
           else
             {:error, error} ->
-              Task.Supervisor.start_child(TaskSupervisor, fn -> abort_upload(bucket, object, upload_id) end)
+              Task.Supervisor.start_child(TaskSupervisor, fn ->
+                abort_upload(bucket, object, upload_id)
+              end)
+
               {:error, error}
           end
         catch
           _, error ->
-            Task.Supervisor.start_child(TaskSupervisor, fn -> abort_upload(bucket, object, upload_id) end)
+            Task.Supervisor.start_child(TaskSupervisor, fn ->
+              abort_upload(bucket, object, upload_id)
+            end)
+
             raise(error)
         end
 
@@ -123,7 +129,8 @@ defmodule Aliyun.Oss.Object.MultipartUpload do
       iex> Aliyun.Oss.Object.MultipartUpload.init_upload("some-bucket", "some-object")
       {:ok, "UPLOAD_ID"}
   """
-  @spec init_upload(String.t(), String.t(), map(), [encoding_type: :url]) :: {:error, error()} | {:ok, String.t()}
+  @spec init_upload(String.t(), String.t(), map(), encoding_type: :url) ::
+          {:error, error()} | {:ok, String.t()}
   def init_upload(bucket, object, headers \\ %{}, opts \\ []) do
     query_params =
       case Keyword.get(opts, :encoding_type) do
@@ -131,7 +138,11 @@ defmodule Aliyun.Oss.Object.MultipartUpload do
         _ -> %{}
       end
 
-    case Service.post(bucket, object, "", query_params: query_params, headers: headers, sub_resources: %{"uploads" => nil}) do
+    case Service.post(bucket, object, "",
+           query_params: query_params,
+           headers: headers,
+           sub_resources: %{"uploads" => nil}
+         ) do
       {:ok, %{data: %{"InitiateMultipartUploadResult" => %{"UploadId" => upload_id}}}} ->
         {:ok, upload_id}
 
@@ -157,7 +168,8 @@ defmodule Aliyun.Oss.Object.MultipartUpload do
         }
       }
   """
-  @spec upload_part(String.t(), String.t(), String.t(), integer(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  @spec upload_part(String.t(), String.t(), String.t(), integer(), String.t()) ::
+          {:error, error()} | {:ok, Response.t()}
   def upload_part(bucket, object, upload_id, part_number, body) do
     sub_resources = %{"uploadId" => upload_id, "partNumber" => part_number}
     Service.put(bucket, object, body, sub_resources: sub_resources)
@@ -185,11 +197,24 @@ defmodule Aliyun.Oss.Object.MultipartUpload do
         }
       }
   """
-  @spec upload_part_copy(String.t(), String.t(), String.t(), integer(), String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
-  def upload_part_copy(bucket, object, upload_id, part_number, copy_source, copy_source_range \\ "", headers \\ %{}) do
+  @spec upload_part_copy(String.t(), String.t(), String.t(), integer(), String.t(), String.t()) ::
+          {:error, error()} | {:ok, Response.t()}
+  def upload_part_copy(
+        bucket,
+        object,
+        upload_id,
+        part_number,
+        copy_source,
+        copy_source_range \\ "",
+        headers \\ %{}
+      ) do
     sub_resources = %{"uploadId" => upload_id, "partNumber" => part_number}
-    headers = Map.merge(headers, %{"x-oss-copy-source" => copy_source, "x-oss-copy-source-range" => copy_source_range})
 
+    headers =
+      Map.merge(headers, %{
+        "x-oss-copy-source" => copy_source,
+        "x-oss-copy-source-range" => copy_source_range
+      })
 
     Service.put(bucket, object, "", sub_resources: sub_resources, headers: headers)
   end
@@ -230,7 +255,8 @@ defmodule Aliyun.Oss.Object.MultipartUpload do
     <% end %>
   </CompleteMultipartUpload>
   """
-  @spec complete_upload(String.t(), String.t(), String.t(), list({integer(), String.t()}), map()) :: {:error, error()} | {:ok, Response.t()}
+  @spec complete_upload(String.t(), String.t(), String.t(), list({integer(), String.t()}), map()) ::
+          {:error, error()} | {:ok, Response.t()}
   def complete_upload(bucket, object, upload_id, parts, headers \\ %{}) do
     body = EEx.eval_string(@body_tmpl, parts: parts)
 
@@ -254,7 +280,8 @@ defmodule Aliyun.Oss.Object.MultipartUpload do
         }
       }
   """
-  @spec abort_upload(String.t(), String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  @spec abort_upload(String.t(), String.t(), String.t()) ::
+          {:error, error()} | {:ok, Response.t()}
   def abort_upload(bucket, object, upload_id) do
     Service.delete(bucket, object, sub_resources: %{"uploadId" => upload_id})
   end
@@ -351,7 +378,8 @@ defmodule Aliyun.Oss.Object.MultipartUpload do
         }
       }
   """
-  @spec list_parts(String.t(), String.t(), String.t(), map()) :: {:error, error()} | {:ok, Response.t()}
+  @spec list_parts(String.t(), String.t(), String.t(), map()) ::
+          {:error, error()} | {:ok, Response.t()}
   def list_parts(bucket, object, upload_id, query_params \\ %{}) do
     Service.get(bucket, object,
       query_params: query_params,

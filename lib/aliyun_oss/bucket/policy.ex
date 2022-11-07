@@ -7,7 +7,8 @@ defmodule Aliyun.Oss.Bucket.Policy do
 
   alias Aliyun.Oss.Client.{Response, Error}
 
-  @type error() :: %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
+  @type error() ::
+          %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
 
   @doc """
   PutBucketPolicy接口用于为指定的存储空间（Bucket）设置授权策略（Policy)。
@@ -38,7 +39,6 @@ defmodule Aliyun.Oss.Bucket.Policy do
   def put(bucket, %{} = policy) do
     put_bucket(bucket, %{}, %{"policy" => nil}, Jason.encode!(policy))
   end
-
 
   @doc """
   GetBucketPolicy用于获取指定存储空间（Bucket）的权限策略（Policy）。

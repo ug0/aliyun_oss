@@ -7,7 +7,8 @@ defmodule Aliyun.Oss.Bucket.Website do
 
   alias Aliyun.Oss.Client.{Response, Error}
 
-  @type error() :: %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
+  @type error() ::
+          %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
 
   @doc """
   GetBucketWebsite 接口用于查看bucket的静态网站托管状态以及跳转规则。

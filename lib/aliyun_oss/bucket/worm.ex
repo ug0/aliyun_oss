@@ -8,7 +8,8 @@ defmodule Aliyun.Oss.Bucket.WORM do
 
   alias Aliyun.Oss.Client.{Response, Error}
 
-  @type error() :: %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
+  @type error() ::
+          %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
 
   @doc """
   InitiateBucketWorm用于新建一条合规保留策略。
@@ -96,7 +97,8 @@ defmodule Aliyun.Oss.Bucket.WORM do
     <RetentionPeriodInDays><%= days %></RetentionPeriodInDays>
   </ExtendWormConfiguration>
   """
-  @spec extend(String.t(), String.t(), integer()) :: {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
+  @spec extend(String.t(), String.t(), integer()) ::
+          {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
   def extend(bucket, worm_id, days) when is_integer(days) do
     body_xml = EEx.eval_string(@body_tmpl, days: days)
     post(bucket, nil, body_xml, sub_resources: %{"wormId" => worm_id, "wormExtend" => nil})

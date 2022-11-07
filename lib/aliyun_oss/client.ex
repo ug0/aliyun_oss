@@ -7,7 +7,8 @@ defmodule Aliyun.Oss.Client do
 
   def request(init_req) do
     case init_req |> Request.build_signed() |> do_request do
-      {:ok, %HTTPoison.Response{body: body, status_code: status_code, headers: headers}} when status_code in 200..299 ->
+      {:ok, %HTTPoison.Response{body: body, status_code: status_code, headers: headers}}
+      when status_code in 200..299 ->
         {:ok, Response.parse(body, headers)}
 
       {:ok, %HTTPoison.Response{body: body, status_code: status_code}} ->

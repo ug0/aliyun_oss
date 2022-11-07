@@ -7,7 +7,8 @@ defmodule Aliyun.Oss.Bucket.Tags do
 
   alias Aliyun.Oss.Client.{Response, Error}
 
-  @type error() :: %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
+  @type error() ::
+          %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
 
   @doc """
   GetBucketTags用于获取存储空间（Bucket）的标签信息。
@@ -60,9 +61,10 @@ defmodule Aliyun.Oss.Bucket.Tags do
     </TagSet>
   </Tagging>
   """
-  @spec put(String.t(), [{String.t(), String.t()}, ...]) :: {:error, error()} | {:ok, Response.t()}
+  @spec put(String.t(), [{String.t(), String.t()}, ...]) ::
+          {:error, error()} | {:ok, Response.t()}
   def put(bucket, tags) do
-    xml_body = EEx.eval_string(@body_tmpl, [tags: tags])
+    xml_body = EEx.eval_string(@body_tmpl, tags: tags)
     put_bucket(bucket, %{}, %{"tagging" => nil}, xml_body)
   end
 

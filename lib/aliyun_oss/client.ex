@@ -21,21 +21,21 @@ defmodule Aliyun.Oss.Client do
 
   defp do_request(req = %Request{verb: "GET"}) do
     HTTPoison.get(
-      Request.query_url(req),
+      Request.to_url(req),
       req.headers
     )
   end
 
   defp do_request(req = %Request{verb: "HEAD"}) do
     HTTPoison.head(
-      Request.query_url(req),
+      Request.to_url(req),
       req.headers
     )
   end
 
   defp do_request(req = %Request{verb: "POST"}) do
     HTTPoison.post(
-      Request.query_url(req),
+      Request.to_url(req),
       req.body,
       req.headers
     )
@@ -43,7 +43,7 @@ defmodule Aliyun.Oss.Client do
 
   defp do_request(req = %Request{verb: "PUT"}) do
     HTTPoison.put(
-      Request.query_url(req),
+      Request.to_url(req),
       req.body,
       req.headers
     )
@@ -51,7 +51,7 @@ defmodule Aliyun.Oss.Client do
 
   defp do_request(req = %Request{verb: "DELETE"}) do
     HTTPoison.delete(
-      Request.query_url(req),
+      Request.to_url(req),
       req.headers
     )
   end

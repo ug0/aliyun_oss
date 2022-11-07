@@ -29,7 +29,7 @@ defmodule Aliyun.Oss.Client.Request do
     |> set_authorization_header()
   end
 
-  def query_url(%__MODULE__{} = req) do
+  def to_url(%__MODULE__{} = req) do
     URI.to_string(%URI{
       scheme: req.scheme,
       host: req.host,
@@ -49,7 +49,7 @@ defmodule Aliyun.Oss.Client.Request do
         "Signature" => gen_signature(req)
       })
     end)
-    |> query_url()
+    |> to_url()
   end
 
   defp ensure_essential_headers(%__MODULE__{} = req) do

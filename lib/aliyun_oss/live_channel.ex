@@ -39,7 +39,7 @@ defmodule Aliyun.Oss.LiveChannel do
       expires: expires
     }
     |> Request.build()
-    |> Request.signed_query_url()
+    |> Request.to_signed_url()
   end
 
   @doc """

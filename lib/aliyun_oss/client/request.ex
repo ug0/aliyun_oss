@@ -40,7 +40,7 @@ defmodule Aliyun.Oss.Client.Request do
 
   defp encode_path(path), do: String.replace(path, "+", "%2B")
 
-  def signed_query_url(%__MODULE__{} = req) do
+  def to_signed_url(%__MODULE__{} = req) do
     req
     |> Map.update!(:query_params, fn params ->
       Map.merge(params, %{

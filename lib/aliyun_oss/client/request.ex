@@ -29,12 +29,6 @@ defmodule Aliyun.Oss.Client.Request do
     |> set_authorization_header()
   end
 
-  def gen_signature(%__MODULE__{} = req) do
-    req
-    |> string_to_sign()
-    |> Aliyun.Util.Sign.sign(access_key_secret())
-  end
-
   def query_url(%__MODULE__{} = req) do
     URI.to_string(%URI{
       scheme: req.scheme,
@@ -121,6 +115,12 @@ defmodule Aliyun.Oss.Client.Request do
       "." <> name -> MIME.type(name)
       _ -> @default_content_type
     end
+  end
+
+  defp gen_signature(%__MODULE__{} = req) do
+    req
+    |> string_to_sign()
+    |> Aliyun.Util.Sign.sign(access_key_secret())
   end
 
   defp string_to_sign(%__MODULE__{scheme: "rtmp"} = req) do

@@ -3,10 +3,9 @@ defmodule Aliyun.Oss.LiveChannel do
   LiveChannel-related operations.
   """
 
-  import Aliyun.Oss.Config, only: [endpoint: 0]
   import Aliyun.Oss.Bucket, only: [get_bucket: 4]
   import Aliyun.Oss.Object, only: [put_object: 6, get_object: 5, delete_object: 4]
-  alias Aliyun.Oss.ConfigAlt, as: Config
+  alias Aliyun.Oss.Config
   alias Aliyun.Oss.Service
   alias Aliyun.Oss.Client.{Request, Response, Error}
 
@@ -33,7 +32,7 @@ defmodule Aliyun.Oss.LiveChannel do
       ) do
     request =
       Request.build(%{
-        host: "#{bucket}.#{endpoint()}",
+        host: "#{bucket}.#{config.endpoint}",
         path: "/live/#{channel}",
         resource: "/#{bucket}/#{channel}",
         scheme: "rtmp",

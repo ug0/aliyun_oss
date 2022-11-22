@@ -3,7 +3,7 @@ defmodule Aliyun.Oss.Object.MultipartUpload do
   Object operations - Multipart Upload.
   """
 
-  alias Aliyun.Oss.ConfigAlt, as: Config
+  alias Aliyun.Oss.Config
   alias Aliyun.Oss.Bucket
   alias Aliyun.Oss.Service
   alias Aliyun.Oss.Client.{Response, Error}

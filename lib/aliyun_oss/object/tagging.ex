@@ -4,7 +4,7 @@ defmodule Aliyun.Oss.Object.Tagging do
   """
 
   import Aliyun.Oss.Object, only: [get_object: 5, put_object: 6, delete_object: 4]
-  alias Aliyun.Oss.ConfigAlt, as: Config
+  alias Aliyun.Oss.Config
   alias Aliyun.Oss.Client.{Response, Error}
 
   @type error() ::

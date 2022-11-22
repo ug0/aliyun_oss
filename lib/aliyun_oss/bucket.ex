@@ -21,7 +21,7 @@ defmodule Aliyun.Oss.Bucket do
 
   """
 
-  alias Aliyun.Oss.ConfigAlt, as: Config
+  alias Aliyun.Oss.Config
   alias Aliyun.Oss.Service
   alias Aliyun.Oss.Client.{Response, Error}
 

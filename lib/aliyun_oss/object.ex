@@ -12,7 +12,7 @@ defmodule Aliyun.Oss.Object do
 
   """
 
-  alias Aliyun.Oss.ConfigAlt, as: Config
+  alias Aliyun.Oss.Config
   alias Aliyun.Oss.Service
   alias Aliyun.Oss.Client.{Request, Response, Error}
 

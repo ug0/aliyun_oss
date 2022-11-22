@@ -1,7 +1,7 @@
 defmodule Aliyun.Oss.Service do
   @moduledoc false
 
-  alias Aliyun.Oss.ConfigAlt, as: Config
+  alias Aliyun.Oss.Config
   alias Aliyun.Oss.Client
   alias Aliyun.Oss.Client.{Response, Error}
 

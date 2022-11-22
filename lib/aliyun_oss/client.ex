@@ -3,7 +3,7 @@ defmodule Aliyun.Oss.Client do
   Internal module
   """
 
-  alias Aliyun.Oss.ConfigAlt, as: Config
+  alias Aliyun.Oss.Config
   alias Aliyun.Oss.Client.{Request, Response, Error}
 
   def request(%Config{} = config, init_req) when is_map(init_req) do

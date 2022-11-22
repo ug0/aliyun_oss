@@ -33,7 +33,6 @@ defmodule AliyunOss.MixProject do
       {:elixir_xml_to_map, "~> 3.0"},
       {:elixir_map_to_xml, "~> 0.1.0"},
       {:jason, "~> 1.1"},
-      {:confex, "~> 3.4"},
       {:ex_doc, "~> 0.20", only: :dev, runtime: false},
       {:mock, "~> 0.3.2", only: :test}
     ]

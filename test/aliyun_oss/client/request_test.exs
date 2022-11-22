@@ -3,7 +3,7 @@ defmodule Aliyun.Oss.Client.RequestTest do
   doctest Aliyun.Oss.Client.Request
 
   alias Aliyun.Oss.Client.Request
-  alias Aliyun.Oss.ConfigAlt, as: Config
+  alias Aliyun.Oss.Config
 
   @endpoint "oss-example.oss-cn-hangzhou.aliyuncs.com"
   @access_key_id "44CF9590006BF252F707"

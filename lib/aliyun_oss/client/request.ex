@@ -2,7 +2,7 @@ defmodule Aliyun.Oss.Client.Request do
   @moduledoc """
   Internal module
   """
-  alias Aliyun.Oss.ConfigAlt, as: Config
+  alias Aliyun.Oss.Config
 
   @enforce_keys [:host, :path, :resource]
   defstruct verb: "GET",

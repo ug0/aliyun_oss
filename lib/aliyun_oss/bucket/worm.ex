@@ -5,7 +5,7 @@ defmodule Aliyun.Oss.Bucket.WORM do
 
   import Aliyun.Oss.Bucket, only: [get_bucket: 4, delete_bucket: 3]
   import Aliyun.Oss.Service, only: [post: 5]
-  alias Aliyun.Oss.ConfigAlt, as: Config
+  alias Aliyun.Oss.Config
   alias Aliyun.Oss.Client.{Response, Error}
 
   @type error() ::

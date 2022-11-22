@@ -1,6 +1,6 @@
 defmodule Aliyun.Oss.ConfigTest do
   use ExUnit.Case
-  alias Aliyun.Oss.ConfigAlt, as: Config
+  alias Aliyun.Oss.Config
 
   describe "new!/1" do
     test "creates a %Config{} struct" do

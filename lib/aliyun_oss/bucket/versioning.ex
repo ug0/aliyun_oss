@@ -1,17 +1,17 @@
 defmodule Aliyun.Oss.Bucket.Versioning do
   @moduledoc """
-  Bucket Versioning 相关操作
+  Bucket operations - Versioning.
   """
 
-  import Aliyun.Oss.Bucket, only: [get_bucket: 3, put_bucket: 4]
-
+  import Aliyun.Oss.Bucket, only: [get_bucket: 4, put_bucket: 5]
+  alias Aliyun.Oss.ConfigAlt, as: Config
   alias Aliyun.Oss.Client.{Response, Error}
 
   @type error() ::
           %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
 
   @doc """
-  PutBucketVersioning用于设置指定存储空间（Bucket）的版本控制状态。
+  PutBucketVersioning - configures the versioning state for a bucket.
 
   ## Examples
 
@@ -25,6 +25,7 @@ defmodule Aliyun.Oss.Bucket.Versioning do
           ]
         }
       }
+
   """
   @body_tmpl """
   <?xml version="1.0" encoding="UTF-8"?>
@@ -32,14 +33,14 @@ defmodule Aliyun.Oss.Bucket.Versioning do
     <Status><%= status %></Status>
   </VersioningConfiguration>
   """
-  @spec put(String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
-  def put(bucket, status) do
+  @spec put(Config.t(), String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  def put(config, bucket, status) do
     body_xml = EEx.eval_string(@body_tmpl, status: status)
-    put_bucket(bucket, %{}, %{"versioning" => nil}, body_xml)
+    put_bucket(config, bucket, %{}, %{"versioning" => nil}, body_xml)
   end
 
   @doc """
-  GetBucketVersioning接口用于获取指定Bucket的版本控制状态。
+  GetBucketVersioning - gets the versioning state of a bucket.
 
   ## Examples
 
@@ -51,14 +52,15 @@ defmodule Aliyun.Oss.Bucket.Versioning do
           ...
         ]
       }}
+
   """
-  @spec get(String.t()) :: {:error, error()} | {:ok, Response.t()}
-  def get(bucket) do
-    get_bucket(bucket, %{}, %{"versioning" => nil})
+  @spec get(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  def get(config, bucket) do
+    get_bucket(config, bucket, %{}, %{"versioning" => nil})
   end
 
   @doc """
-  GetBucketVersions(ListObjectVersions)接口用于列出Bucket中包括删除标记（Delete Marker）在内的所有Object的版本信息。
+  GetBucketVersions (ListObjectVersions) - lists the versions of all objects and delete markers in a bucket.
 
   ## Examples
 
@@ -85,9 +87,11 @@ defmodule Aliyun.Oss.Bucket.Versioning do
           ...
         ]
       }}
+
   """
-  @spec list_object_versions(String.t(), map()) :: {:error, error()} | {:ok, Response.t()}
-  def list_object_versions(bucket, query_params \\ %{}) do
-    get_bucket(bucket, query_params, %{"versions" => nil})
+  @spec list_object_versions(Config.t(), String.t(), map()) ::
+          {:error, error()} | {:ok, Response.t()}
+  def list_object_versions(config, bucket, query_params \\ %{}) do
+    get_bucket(config, bucket, query_params, %{"versions" => nil})
   end
 end

@@ -1,21 +1,21 @@
 defmodule Aliyun.Oss.Object.Symlink do
   @moduledoc """
-  Object Symlink 相关操作
+  Object operation - Symlink.
   """
 
-  import Aliyun.Oss.Object, only: [get_object: 4, put_object: 5]
-
+  import Aliyun.Oss.Object, only: [get_object: 5, put_object: 6]
+  alias Aliyun.Oss.ConfigAlt, as: Config
   alias Aliyun.Oss.Client.{Response, Error}
 
   @type error() ::
           %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
 
   @doc """
-  GetSymlink接口用于获取符号链接。此操作需要您对该符号链接有读权限。
+  GetSymlink - gets a symbol link.
 
   ## Examples
 
-      iex> Aliyun.Oss.Object.Symlink.get("some-bucket", "some-object")
+      iex> Aliyun.Oss.Object.Symlink.get(config, "some-bucket", "some-object")
       {:ok, %Aliyun.Oss.Client.Response{
           data: "",
           headers: [
@@ -32,14 +32,15 @@ defmodule Aliyun.Oss.Object.Symlink do
           ]
         }
       }
+
   """
-  @spec get(String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
-  def get(bucket, object) do
-    get_object(bucket, object, %{}, %{"symlink" => nil})
+  @spec get(Config.t(), String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  def get(config, bucket, object) do
+    get_object(config, bucket, object, %{}, %{"symlink" => nil})
   end
 
   @doc """
-  PutSymlink接口用于为OSS的TargetObject创建软链接，您可以通过该软链接访问TargetObject。
+  PutSymlink - creates a symbolic link that points to target object.
 
   ## Examples
 
@@ -53,11 +54,13 @@ defmodule Aliyun.Oss.Object.Symlink do
           ]
         }
       }
+
   """
-  @spec put(String.t(), String.t(), String.t(), String.t()) ::
+  @spec put(Config.t(), String.t(), String.t(), String.t(), String.t()) ::
           {:error, error()} | {:ok, Response.t()}
-  def put(bucket, symlink, target_object, storage_class \\ "Standard") do
+  def put(config, bucket, symlink, target_object, storage_class \\ "Standard") do
     put_object(
+      config,
       bucket,
       symlink,
       "",

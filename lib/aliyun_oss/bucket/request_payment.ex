@@ -1,17 +1,17 @@
 defmodule Aliyun.Oss.Bucket.RequestPayment do
   @moduledoc """
-  Bucket RequestPayment 相关操作
+  Bucket operations - RequestPayment.
   """
 
-  import Aliyun.Oss.Bucket, only: [get_bucket: 3, put_bucket: 4]
-
+  import Aliyun.Oss.Bucket, only: [get_bucket: 4, put_bucket: 5]
+  alias Aliyun.Oss.ConfigAlt, as: Config
   alias Aliyun.Oss.Client.{Response, Error}
 
   @type error() ::
           %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
 
   @doc """
-  GetBucketRequestPayment接口用于获取请求者付费模式配置信息。
+  GetBucketRequestPayment - gets pay-by-requester configurations for a bucket.
 
   ## Examples
 
@@ -25,14 +25,15 @@ defmodule Aliyun.Oss.Bucket.RequestPayment do
           ]
         }
       }
+
   """
-  @spec get(String.t()) :: {:error, error()} | {:ok, Response.t()}
-  def get(bucket) do
-    get_bucket(bucket, %{}, %{"requestPayment" => nil})
+  @spec get(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  def get(config, bucket) do
+    get_bucket(config, bucket, %{}, %{"requestPayment" => nil})
   end
 
   @doc """
-  PutBucketRequestPayment接口用于设置请求者付费模式。
+  PutBucketRequestPayment - enables pay-by-requester for a bucket.
 
   ## Examples
 
@@ -46,6 +47,7 @@ defmodule Aliyun.Oss.Bucket.RequestPayment do
           ]
         }
       }
+
   """
   @body_tmpl """
   <?xml version="1.0" encoding="UTF-8"?>
@@ -53,9 +55,9 @@ defmodule Aliyun.Oss.Bucket.RequestPayment do
     <Payer><%= payer %></Payer>
   </RequestPaymentConfiguration>
   """
-  @spec put(String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
-  def put(bucket, payer) do
+  @spec put(Config.t(), String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  def put(config, bucket, payer) do
     xml_body = EEx.eval_string(@body_tmpl, payer: payer)
-    put_bucket(bucket, %{}, %{"requestPayment" => nil}, xml_body)
+    put_bucket(config, bucket, %{}, %{"requestPayment" => nil}, xml_body)
   end
 end

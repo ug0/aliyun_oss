@@ -8,16 +8,16 @@ defmodule Aliyun.Oss.Bucket do
   - `Aliyun.Oss.Bucket.ACL`
   - `Aliyun.Oss.Bucket.Lifecycle`
   - `Aliyun.Oss.Bucket.Versioning`
-  - `Aliyun.Oss.Bucket.Replication`: Replication 跨区域复制
-  - `Aliyun.Oss.Bucket.Policy`: Policy 授权策略
-  - `Aliyun.Oss.Bucket.Inventory`: Inventory 清单
-  - `Aliyun.Oss.Bucket.Logging`: Logging 日志管理
-  - `Aliyun.Oss.Bucket.Website`: Website 静态网站
-  - `Aliyun.Oss.Bucket.Referer`: Referer 防盗链
-  - `Aliyun.Oss.Bucket.Tags`: Tags 标签
-  - `Aliyun.Oss.Bucket.Encryption`: Encryption 加密
-  - `Aliyun.Oss.Bucket.RequestPayment`: RequestPayment 请求者付费
-  - `Aliyun.Oss.Bucket.CORS`: CORS 跨域资源共享
+  - `Aliyun.Oss.Bucket.Replication`
+  - `Aliyun.Oss.Bucket.Policy`
+  - `Aliyun.Oss.Bucket.Inventory`
+  - `Aliyun.Oss.Bucket.Logging`
+  - `Aliyun.Oss.Bucket.Website`
+  - `Aliyun.Oss.Bucket.Referer`
+  - `Aliyun.Oss.Bucket.Tags`
+  - `Aliyun.Oss.Bucket.Encryption`
+  - `Aliyun.Oss.Bucket.RequestPayment`
+  - `Aliyun.Oss.Bucket.CORS`
 
   """
 

@@ -1,18 +1,18 @@
 defmodule Aliyun.Oss.Bucket.Replication do
   @moduledoc """
-  Bucket Replication 相关操作
+  Bucket operations - Replication.
   """
 
-  import Aliyun.Oss.Bucket, only: [get_bucket: 3]
-  import Aliyun.Oss.Service, only: [post: 4]
-
+  import Aliyun.Oss.Bucket, only: [get_bucket: 4]
+  import Aliyun.Oss.Service, only: [post: 5]
+  alias Aliyun.Oss.ConfigAlt, as: Config
   alias Aliyun.Oss.Client.{Response, Error}
 
   @type error() ::
           %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
 
   @doc """
-  PutBucketReplication接口用于为存储空间（Bucket）指定跨区域复制规则。
+  PutBucketReplication - configures data replication rules for a bucket.
 
   ## Examples
 
@@ -59,18 +59,19 @@ defmodule Aliyun.Oss.Bucket.Replication do
           ...
         ]
       }}
+
   """
-  @spec put(String.t(), String.t() | map()) :: {:error, error()} | {:ok, Response.t()}
-  def put(bucket, %{} = config) do
-    put(bucket, MapToXml.from_map(config))
+  @spec put(Config.t(), String.t(), String.t() | map()) :: {:error, error()} | {:ok, Response.t()}
+  def put(config, bucket, %{} = config) do
+    put(config, bucket, MapToXml.from_map(config))
   end
 
-  def put(bucket, config) do
-    post(bucket, nil, config, sub_resources: %{"replication" => nil, "comp" => "add"})
+  def put(config, bucket, config) do
+    post(config, bucket, nil, config, sub_resources: %{"replication" => nil, "comp" => "add"})
   end
 
   @doc """
-  GetBucketReplication接口用来获取某个存储空间（Bucket）已设置的跨区域复制规则。
+  GetBucketReplication - gets cross-region replication (CRR) rules configured for a bucket.
 
   ## Examples
 
@@ -96,13 +97,13 @@ defmodule Aliyun.Oss.Bucket.Replication do
         ]
       }}
   """
-  @spec get(String.t()) :: {:error, error()} | {:ok, Response.t()}
-  def get(bucket) do
-    get_bucket(bucket, %{}, %{"replication" => nil})
+  @spec get(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  def get(config, bucket) do
+    get_bucket(config, bucket, %{}, %{"replication" => nil})
   end
 
   @doc """
-  GetBucketReplicationLocation接口用于获取可复制到的目标存储空间（Bucket）所在的地域。您可以根据返回结果决定将源Bucket的数据复制到哪个地域。
+  GetBucketReplicationLocation - gets the region in which the destination bucket can be located.
 
   ## Examples
 
@@ -134,14 +135,15 @@ defmodule Aliyun.Oss.Bucket.Replication do
           ...
         ]
       }}
+
   """
-  @spec get_location(String.t()) :: {:error, error()} | {:ok, Response.t()}
-  def get_location(bucket) do
-    get_bucket(bucket, %{}, %{"replicationLocation" => nil})
+  @spec get_location(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  def get_location(config, bucket) do
+    get_bucket(config, bucket, %{}, %{"replicationLocation" => nil})
   end
 
   @doc """
-  GetBucketReplicationProgress用于获取某个存储空间（Bucket）的跨区域复制进度。
+  GetBucketReplicationProgress - gets the progress of a data replication task configured for a bucket.
 
   ## Examples
 
@@ -167,14 +169,17 @@ defmodule Aliyun.Oss.Bucket.Replication do
           ...
         ]
       }}
+
   """
-  @spec get_progress(String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
-  def get_progress(bucket, rule_id) do
-    get_bucket(bucket, %{"rule-id" => rule_id}, %{"replicationProgress" => nil})
+  @spec get_progress(Config.t(), String.t(), String.t()) ::
+          {:error, error()} | {:ok, Response.t()}
+  def get_progress(config, bucket, rule_id) do
+    get_bucket(config, bucket, %{"rule-id" => rule_id}, %{"replicationProgress" => nil})
   end
 
   @doc """
-  DeleteBucketReplication接口用来停止某个存储空间（Bucket）的跨区域复制并删除Bucket的复制配置，此时源Bucket中的任何操作都不会被同步到目标Bucket。
+  DeleteBucketReplication - disables data replication for a bucket and delete the data replication
+  rule configured for the bucket.
 
   ## Examples
 
@@ -191,6 +196,7 @@ defmodule Aliyun.Oss.Bucket.Replication do
           {"x-oss-server-time", "90"}
         ]
       }}
+
   """
   @body_tmpl """
   <?xml version="1.0" encoding="UTF-8"?>
@@ -198,10 +204,11 @@ defmodule Aliyun.Oss.Bucket.Replication do
     <ID><%= rule_id %></ID>
   </ReplicationRules>
   """
-  @spec delete(String.t(), String.t()) ::
+  @spec delete(Config.t(), String.t(), String.t()) ::
           {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
-  def delete(bucket, rule_id) do
+  def delete(config, bucket, rule_id) do
     body_xml = EEx.eval_string(@body_tmpl, rule_id: rule_id)
-    post(bucket, nil, body_xml, sub_resources: %{"replication" => nil, "comp" => "delete"})
+
+    post(config, bucket, nil, body_xml, sub_resources: %{"replication" => nil, "comp" => "delete"})
   end
 end

@@ -6,7 +6,7 @@ defmodule Aliyun.Oss.Bucket do
 
   - `Aliyun.Oss.Bucket.WORM`
   - `Aliyun.Oss.Bucket.ACL`
-  - `Aliyun.Oss.Bucket.Lifecycle`: Lifecycle 生命周期
+  - `Aliyun.Oss.Bucket.Lifecycle`
   - `Aliyun.Oss.Bucket.Versioning`: Versioning 版本控制
   - `Aliyun.Oss.Bucket.Replication`: Replication 跨区域复制
   - `Aliyun.Oss.Bucket.Policy`: Policy 授权策略

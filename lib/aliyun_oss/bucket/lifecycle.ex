@@ -1,17 +1,17 @@
 defmodule Aliyun.Oss.Bucket.Lifecycle do
   @moduledoc """
-  Bucket Lifecycle 相关操作
+  Bucket operations - Lifecycle.
   """
 
-  import Aliyun.Oss.Bucket, only: [get_bucket: 3, put_bucket: 4, delete_bucket: 2]
-
+  import Aliyun.Oss.Bucket, only: [get_bucket: 4, put_bucket: 5, delete_bucket: 3]
+  alias Aliyun.Oss.ConfigAlt, as: Config
   alias Aliyun.Oss.Client.{Response, Error}
 
   @type error() ::
           %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
 
   @doc """
-  PutBucketLifecycle接口用于设置存储空间（Bucket）的生命周期规则。生命周期规则开启后，OSS将按照配置规则指定的时间，自动转换与规则相匹配的文件（Object）的存储类型或将其删除。
+  PutBucketLifecycle - configures a lifecycle rule for a bucket.
 
   ## Examples
 
@@ -58,18 +58,19 @@ defmodule Aliyun.Oss.Bucket.Lifecycle do
           ...
         ]
       }}
+
   """
-  @spec put(String.t(), String.t() | map()) :: {:error, error()} | {:ok, Response.t()}
-  def put(bucket, %{} = config) do
-    put(bucket, MapToXml.from_map(config))
+  @spec put(Config.t(), String.t(), String.t() | map()) :: {:error, error()} | {:ok, Response.t()}
+  def put(config, bucket, %{} = config) do
+    put(config, bucket, MapToXml.from_map(config))
   end
 
-  def put(bucket, config) do
-    put_bucket(bucket, %{}, %{"lifecycle" => nil}, config)
+  def put(config, bucket, config) do
+    put_bucket(config, bucket, %{}, %{"lifecycle" => nil}, config)
   end
 
   @doc """
-  GetBucketLifecycle 用于查看Bucket的Lifecycle配置。
+  GetBucketLifecycle - get the lifecycle rules that are configured for a bucket.
 
   ## Examples
 
@@ -92,14 +93,15 @@ defmodule Aliyun.Oss.Bucket.Lifecycle do
           ...
         ]
       }}
+
   """
-  @spec get(String.t()) :: {:error, error()} | {:ok, Response.t()}
-  def get(bucket) do
-    get_bucket(bucket, %{}, %{"lifecycle" => nil})
+  @spec get(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  def get(config, bucket) do
+    get_bucket(config, bucket, %{}, %{"lifecycle" => nil})
   end
 
   @doc """
-  通过DeleteBucketLifecycle接口来删除指定 Bucket 的生命周期规则。
+  DeleteBucketLifecycle - deletes lifecycle rules for a bucket.
 
   ## Examples
 
@@ -129,9 +131,11 @@ defmodule Aliyun.Oss.Bucket.Lifecycle do
         body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>...</xml>",
         status_code: 404
       }}
+
   """
-  @spec delete(String.t()) :: {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
-  def delete(bucket) do
-    delete_bucket(bucket, %{"lifecycle" => nil})
+  @spec delete(Config.t(), String.t()) ::
+          {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
+  def delete(config, bucket) do
+    delete_bucket(config, bucket, %{"lifecycle" => nil})
   end
 end

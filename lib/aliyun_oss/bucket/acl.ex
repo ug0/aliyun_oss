@@ -1,17 +1,17 @@
 defmodule Aliyun.Oss.Bucket.ACL do
   @moduledoc """
-  Bucket ACL 相关操作
+  Bucket operations - ACL.
   """
 
-  import Aliyun.Oss.Bucket, only: [get_bucket: 3, put_bucket: 4]
-
+  import Aliyun.Oss.Bucket, only: [get_bucket: 4, put_bucket: 5]
+  alias Aliyun.Oss.ConfigAlt, as: Config
   alias Aliyun.Oss.Client.{Response, Error}
 
   @type error() ::
           %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
 
   @doc """
-  GetBucketAcl 接口用来获取某个Bucket的访问权限。
+  GetBucketAcl - gets the ACL of a bucket.
 
   ## Examples
 
@@ -28,14 +28,15 @@ defmodule Aliyun.Oss.Bucket.ACL do
           ]
         }
       }
+
   """
-  @spec get(String.t()) :: {:error, error()} | {:ok, Response.t()}
-  def get(bucket) do
-    get_bucket(bucket, %{}, %{"acl" => nil})
+  @spec get(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  def get(config, bucket) do
+    get_bucket(config, bucket, %{}, %{"acl" => nil})
   end
 
   @doc """
-  PutBucketACL接口用于修改Bucket访问权限
+  PutBucketACL - modifies the ACL of a bucket.
 
   ## Examples
 
@@ -67,9 +68,11 @@ defmodule Aliyun.Oss.Bucket.ACL do
         body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>...</xml>",
         status_code: 400
       }}
+
   """
-  @spec put(String.t(), String.t()) :: {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
-  def put(bucket, acl) do
-    put_bucket(bucket, %{"x-oss-acl" => acl}, %{"acl" => acl}, "")
+  @spec put(Config.t(), String.t(), String.t()) ::
+          {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
+  def put(config, bucket, acl) do
+    put_bucket(config, bucket, %{"x-oss-acl" => acl}, %{"acl" => acl}, "")
   end
 end

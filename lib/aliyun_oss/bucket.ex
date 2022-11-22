@@ -5,7 +5,7 @@ defmodule Aliyun.Oss.Bucket do
   Other operations can be found in:
 
   - `Aliyun.Oss.Bucket.WORM`
-  - `Aliyun.Oss.Bucket.ACL`: ACL 权限控制
+  - `Aliyun.Oss.Bucket.ACL`
   - `Aliyun.Oss.Bucket.Lifecycle`: Lifecycle 生命周期
   - `Aliyun.Oss.Bucket.Versioning`: Versioning 版本控制
   - `Aliyun.Oss.Bucket.Replication`: Replication 跨区域复制

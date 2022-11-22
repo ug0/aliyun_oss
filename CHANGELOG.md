@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.0.0
+  - **Breaking changes**:
+    - Don't use global configuration any more
+    - A new argument - `config` is added to all public functions
+
 ## v1.0.4
   - Fix error when object key contains `+`
 

@@ -1,30 +1,9 @@
 defmodule Aliyun.Oss.Object.MultipartUpload do
   @moduledoc """
-  Multipart Upload
-
-  使用 Multipart Upload 模式上传数据
-
-      iex> part_bytes = 102400 # The minimum allowed size is 100KB.
-      iex> parts = File.stream!("/path/to/file", [], part_bytes)
-      iex> Aliyun.Oss.Object.MultipartUpload.upload("some-bucket", "some-object", parts)
-      {:ok, %Aliyun.Oss.Client.Response{
-          data: %{
-            "CompleteMultipartUploadResult" => %{
-            "Bucket" => "some-bucket",
-            "ETag" => "\"21000000000000000000000000000000-1\"",
-            "Key" => "some-object",
-            "Location" => "https://some-bucket.oss-cn-shenzhen.aliyuncs.com/some-object"
-            }
-          },
-          headers: [
-            {"Server", "AliyunOSS"},
-            {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
-            ...
-          ]
-        }
-      }
+  Object operation - Multipart Upload.
   """
 
+  alias Aliyun.Oss.ConfigAlt, as: Config
   alias Aliyun.Oss.Bucket
   alias Aliyun.Oss.Service
   alias Aliyun.Oss.Client.{Response, Error}
@@ -34,13 +13,13 @@ defmodule Aliyun.Oss.Object.MultipartUpload do
           %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
 
   @doc """
-  使用 Multipart Upload 上传数据
+  A shortcut for uploading streaming data.
 
   ## Examples
 
       iex> part_bytes = 102400 # The minimum allowed size is 100KB.
       iex> parts = File.stream!("/path/to/file", [], part_bytes)
-      iex> Aliyun.Oss.Object.MultipartUpload.upload("some-bucket", "some-object", parts)
+      iex> Aliyun.Oss.Object.MultipartUpload.upload(config, "some-bucket", "some-object", parts)
       {:ok, %Aliyun.Oss.Client.Response{
           data: %{
             "CompleteMultipartUploadResult" => %{
@@ -57,20 +36,23 @@ defmodule Aliyun.Oss.Object.MultipartUpload do
           ]
         }
       }
+
   """
-  @spec upload(String.t(), String.t(), Enum.t()) :: {:error, error()} | {:ok, Response.t()}
-  def upload(bucket, object, parts) do
-    case init_upload(bucket, object) do
+  @spec upload(Config.t(), String.t(), String.t(), Enum.t()) ::
+          {:error, error()} | {:ok, Response.t()}
+  def upload(config, bucket, object, parts) do
+    case init_upload(config, bucket, object) do
       {:ok, upload_id} ->
         try do
-          with {:ok, uploaded_parts} <- async_upload_parts(bucket, object, upload_id, parts),
+          with {:ok, uploaded_parts} <-
+                 async_upload_parts(config, bucket, object, upload_id, parts),
                sorted_parts <- Enum.sort_by(uploaded_parts, &elem(&1, 0)),
-               {:ok, resp} <- complete_upload(bucket, object, upload_id, sorted_parts) do
+               {:ok, resp} <- complete_upload(config, bucket, object, upload_id, sorted_parts) do
             {:ok, resp}
           else
             {:error, error} ->
               Task.Supervisor.start_child(TaskSupervisor, fn ->
-                abort_upload(bucket, object, upload_id)
+                abort_upload(config, bucket, object, upload_id)
               end)
 
               {:error, error}
@@ -78,7 +60,7 @@ defmodule Aliyun.Oss.Object.MultipartUpload do
         catch
           _, error ->
             Task.Supervisor.start_child(TaskSupervisor, fn ->
-              abort_upload(bucket, object, upload_id)
+              abort_upload(config, bucket, object, upload_id)
             end)
 
             raise(error)
@@ -89,13 +71,13 @@ defmodule Aliyun.Oss.Object.MultipartUpload do
     end
   end
 
-  defp async_upload_parts(bucket, object, upload_id, parts) do
+  defp async_upload_parts(config, bucket, object, upload_id, parts) do
     Task.Supervisor.async_stream(
       TaskSupervisor,
       Stream.with_index(parts, 1),
       fn {binary, num} ->
         try do
-          {num, upload_part(bucket, object, upload_id, num, binary)}
+          {num, upload_part(config, bucket, object, upload_id, num, binary)}
         catch
           _, _ -> {:error, {num, :failed}}
         end
@@ -118,27 +100,29 @@ defmodule Aliyun.Oss.Object.MultipartUpload do
   end
 
   @doc """
-  InitiateMultipartUpload 初始化一个 Multipart Upload 事件
+  InitiateMultipartUpload - notifies OSS to initiate a multipart upload task before you perform
+  multipart upload to upload data.
 
   ## Options
 
-    - `:encoding_type` - default is blank, accept value: `:url`
+  - `:encoding_type` - default is blank, accept value: `:url`
 
   ## Examples
 
-      iex> Aliyun.Oss.Object.MultipartUpload.init_upload("some-bucket", "some-object")
+      iex> Aliyun.Oss.Object.MultipartUpload.init_upload(config, "some-bucket", "some-object")
       {:ok, "UPLOAD_ID"}
+
   """
-  @spec init_upload(String.t(), String.t(), map(), encoding_type: :url) ::
+  @spec init_upload(Config.t(), String.t(), String.t(), map(), encoding_type: :url) ::
           {:error, error()} | {:ok, String.t()}
-  def init_upload(bucket, object, headers \\ %{}, opts \\ []) do
+  def init_upload(config, bucket, object, headers \\ %{}, opts \\ []) do
     query_params =
       case Keyword.get(opts, :encoding_type) do
         :url -> %{"encoding-type" => "url"}
         _ -> %{}
       end
 
-    case Service.post(bucket, object, "",
+    case Service.post(config, bucket, object, "",
            query_params: query_params,
            headers: headers,
            sub_resources: %{"uploads" => nil}
@@ -152,12 +136,12 @@ defmodule Aliyun.Oss.Object.MultipartUpload do
   end
 
   @doc """
-  UploadPart
-  初始化一个 MultipartUpload 之后，可以根据指定的 Object 名和 Upload ID 来分块（Part）上传数据。
+  UploadPart - uploads data by part based on the specified object name and upload ID after you
+  initiate a multipart upload operation.
 
   ## Examples
 
-      iex> Aliyun.Oss.Object.MultipartUpload.upload_part("some-bucket", "some-object", "UPLOAD_ID", 1, "CONTENT")
+      iex> Aliyun.Oss.Object.MultipartUpload.upload_part(config, "some-bucket", "some-object", "UPLOAD_ID", 1, "CONTENT")
       {:ok, %Aliyun.Oss.Client.Response{
           data: "",
           headers: [
@@ -167,21 +151,22 @@ defmodule Aliyun.Oss.Object.MultipartUpload do
           ]
         }
       }
+
   """
-  @spec upload_part(String.t(), String.t(), String.t(), integer(), String.t()) ::
+  @spec upload_part(Config.t(), String.t(), String.t(), String.t(), integer(), String.t()) ::
           {:error, error()} | {:ok, Response.t()}
-  def upload_part(bucket, object, upload_id, part_number, body) do
+  def upload_part(config, bucket, object, upload_id, part_number, body) do
     sub_resources = %{"uploadId" => upload_id, "partNumber" => part_number}
-    Service.put(bucket, object, body, sub_resources: sub_resources)
+    Service.put(config, bucket, object, body, sub_resources: sub_resources)
   end
 
   @doc """
-  UploadPartCopy
-  通过从一个已存在的 Object 中拷贝数据来上传一个 Part。
+  UploadPartCopy - copies data from an existing object to upload a part by adding a `x-oss-copy-request`
+  header to UploadPart.
 
   ## Examples
 
-      iex> Aliyun.Oss.Object.MultipartUpload.upload_part_copy("some-bucket", "some-object", "UPLOAD_ID", 1, "/SourceBucketName/SourceObjectName")
+      iex> Aliyun.Oss.Object.MultipartUpload.upload_part_copy(config, "some-bucket", "some-object", "UPLOAD_ID", 1, "/SourceBucketName/SourceObjectName")
       {:ok, %Aliyun.Oss.Client.Response{
           data: %{
             "CopyPartResult" => %{
@@ -196,10 +181,20 @@ defmodule Aliyun.Oss.Object.MultipartUpload do
           ]
         }
       }
+
   """
-  @spec upload_part_copy(String.t(), String.t(), String.t(), integer(), String.t(), String.t()) ::
+  @spec upload_part_copy(
+          Config.t(),
+          String.t(),
+          String.t(),
+          String.t(),
+          integer(),
+          String.t(),
+          String.t()
+        ) ::
           {:error, error()} | {:ok, Response.t()}
   def upload_part_copy(
+        config,
         bucket,
         object,
         upload_id,
@@ -216,17 +211,17 @@ defmodule Aliyun.Oss.Object.MultipartUpload do
         "x-oss-copy-source-range" => copy_source_range
       })
 
-    Service.put(bucket, object, "", sub_resources: sub_resources, headers: headers)
+    Service.put(config, bucket, object, "", sub_resources: sub_resources, headers: headers)
   end
 
   @doc """
-  CompleteMultiUpload
-  在将所有数据 Part 都上传完成后，必须调用 CompleteMultipartUpload 接口来完成整个文件的 MultipartUpload。
+  CompleteMultiUpload - completes the multipart upload task of an object after all parts of the
+  object are uploaded.
 
   ## Examples
 
       iex> uploaded_parts = [{1, "ETAG_FOR_PART1}, {2, "ETAG_FOR_PART2}]
-      iex> Aliyun.Oss.Object.MultipartUpload.complete_upload("some-bucket", "some-object", "UPLOAD_ID", uploaded_parts)
+      iex> Aliyun.Oss.Object.MultipartUpload.complete_upload(config, "some-bucket", "some-object", "UPLOAD_ID", uploaded_parts)
       {:ok, %Aliyun.Oss.Client.Response{
           data: %{
             "CompleteMultipartUploadResult" => %{
@@ -243,6 +238,7 @@ defmodule Aliyun.Oss.Object.MultipartUpload do
           ]
         }
       }
+
   """
   @body_tmpl """
   <?xml version="1.0" encoding="UTF-8"?>
@@ -255,21 +251,30 @@ defmodule Aliyun.Oss.Object.MultipartUpload do
     <% end %>
   </CompleteMultipartUpload>
   """
-  @spec complete_upload(String.t(), String.t(), String.t(), list({integer(), String.t()}), map()) ::
+  @spec complete_upload(
+          Config.t(),
+          String.t(),
+          String.t(),
+          String.t(),
+          list({integer(), String.t()}),
+          map()
+        ) ::
           {:error, error()} | {:ok, Response.t()}
-  def complete_upload(bucket, object, upload_id, parts, headers \\ %{}) do
+  def complete_upload(config, bucket, object, upload_id, parts, headers \\ %{}) do
     body = EEx.eval_string(@body_tmpl, parts: parts)
 
-    Service.post(bucket, object, body, headers: headers, sub_resources: %{"uploadId" => upload_id})
+    Service.post(config, bucket, object, body,
+      headers: headers,
+      sub_resources: %{"uploadId" => upload_id}
+    )
   end
 
   @doc """
-  AbortMultipartUpload
-  用于终止 MultipartUpload 事件。您需要提供 MultipartUpload 事件相应的 Upload ID。
+  AbortMultipartUpload - cancels a multipart upload task and deletes the parts uploaded in the task.
 
   ## Examples
 
-      iex> Aliyun.Oss.Object.MultipartUpload.abort_upload("some-bucket", "some-object", "UPLOAD_ID")
+      iex> Aliyun.Oss.Object.MultipartUpload.abort_upload(config, "some-bucket", "some-object", "UPLOAD_ID")
       {:ok, %Aliyun.Oss.Client.Response{
           data: "",
           headers: [
@@ -279,20 +284,22 @@ defmodule Aliyun.Oss.Object.MultipartUpload do
           ]
         }
       }
+
   """
-  @spec abort_upload(String.t(), String.t(), String.t()) ::
+  @spec abort_upload(Config.t(), String.t(), String.t(), String.t()) ::
           {:error, error()} | {:ok, Response.t()}
-  def abort_upload(bucket, object, upload_id) do
-    Service.delete(bucket, object, sub_resources: %{"uploadId" => upload_id})
+  def abort_upload(config, bucket, object, upload_id) do
+    Service.delete(config, bucket, object, sub_resources: %{"uploadId" => upload_id})
   end
 
   @doc """
-  ListMultipartUploads
-  来列举所有执行中的 Multipart Upload 事件，即已经初始化但还未 Complete 或者 Abort 的 Multipart Upload 事件。
+  ListMultipartUploads - lists all multipart upload tasks in progress.
+
+  The result includes the tasks are not completed or canceled.
 
   ## Examples
 
-      iex> Aliyun.Oss.Object.MultipartUpload.list_uploads("some-bucket")
+      iex> Aliyun.Oss.Object.MultipartUpload.list_uploads(config, "some-bucket")
       {:ok, %Aliyun.Oss.Client.Response{
           data: %{
             "ListMultipartUploadsResult" => %{
@@ -328,19 +335,19 @@ defmodule Aliyun.Oss.Object.MultipartUpload do
           ]
         }
       }
+
   """
-  @spec list_uploads(String.t(), map()) :: {:error, error()} | {:ok, Response.t()}
-  def list_uploads(bucket, query_params \\ %{}) do
-    Bucket.get_bucket(bucket, query_params, %{"uploads" => nil})
+  @spec list_uploads(Config.t(), String.t(), map()) :: {:error, error()} | {:ok, Response.t()}
+  def list_uploads(config, bucket, query_params \\ %{}) do
+    Bucket.get_bucket(config, bucket, query_params, %{"uploads" => nil})
   end
 
   @doc """
-  ListParts
-  用于列举指定 Upload ID 所属的所有已经上传成功 Part。
+  ListParts - Lists all parts that are uploaded by using a specified upload ID.
 
   ## Examples
 
-      iex> Aliyun.Oss.Object.MultipartUpload.list_parts("some-bucket", "some-object", "UPLOAD_ID")
+      iex> Aliyun.Oss.Object.MultipartUpload.list_parts(config, "some-bucket", "some-object", "UPLOAD_ID")
       {:ok, %Aliyun.Oss.Client.Response{
           data:  %{
             "ListPartsResult" => %{
@@ -377,11 +384,12 @@ defmodule Aliyun.Oss.Object.MultipartUpload do
           ]
         }
       }
+
   """
-  @spec list_parts(String.t(), String.t(), String.t(), map()) ::
+  @spec list_parts(Config.t(), String.t(), String.t(), String.t(), map()) ::
           {:error, error()} | {:ok, Response.t()}
-  def list_parts(bucket, object, upload_id, query_params \\ %{}) do
-    Service.get(bucket, object,
+  def list_parts(config, bucket, object, upload_id, query_params \\ %{}) do
+    Service.get(config, bucket, object,
       query_params: query_params,
       sub_resources: %{"uploadId" => upload_id}
     )

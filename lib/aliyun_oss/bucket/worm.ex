@@ -1,18 +1,18 @@
 defmodule Aliyun.Oss.Bucket.WORM do
   @moduledoc """
-  Bucket WORM 相关操作
+  Bucket operations - Retention policy.
   """
 
-  import Aliyun.Oss.Bucket, only: [get_bucket: 3, delete_bucket: 2]
-  import Aliyun.Oss.Service, only: [post: 4]
-
+  import Aliyun.Oss.Bucket, only: [get_bucket: 4, delete_bucket: 3]
+  import Aliyun.Oss.Service, only: [post: 5]
+  alias Aliyun.Oss.ConfigAlt, as: Config
   alias Aliyun.Oss.Client.{Response, Error}
 
   @type error() ::
           %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
 
   @doc """
-  InitiateBucketWorm用于新建一条合规保留策略。
+  InitiateBucketWorm - creates a retention policy.
 
   ## Examples
 
@@ -25,6 +25,7 @@ defmodule Aliyun.Oss.Bucket.WORM do
           ...
         ]
       }}
+
   """
   @body_tmpl """
   <?xml version="1.0" encoding="UTF-8"?>
@@ -32,14 +33,14 @@ defmodule Aliyun.Oss.Bucket.WORM do
     <RetentionPeriodInDays><%= days %></RetentionPeriodInDays>
   </InitiateWormConfiguration>
   """
-  @spec initiate(String.t(), integer()) :: {:error, error()} | {:ok, Response.t()}
-  def initiate(bucket, days) when is_integer(days) do
+  @spec initiate(Config.t(), String.t(), integer()) :: {:error, error()} | {:ok, Response.t()}
+  def initiate(config, bucket, days) when is_integer(days) do
     body_xml = EEx.eval_string(@body_tmpl, days: days)
-    post(bucket, nil, body_xml, sub_resources: %{"worm" => nil})
+    post(config, bucket, nil, body_xml, sub_resources: %{"worm" => nil})
   end
 
   @doc """
-  AbortBucketWorm用于删除未锁定的合规保留策略。
+  AbortBucketWorm - deletes an unlocked retention policy.
 
   ## Examples
 
@@ -51,14 +52,15 @@ defmodule Aliyun.Oss.Bucket.WORM do
           ...
         ]
       }}
+
   """
-  @spec abort(String.t()) :: {:error, error()} | {:ok, Response.t()}
-  def abort(bucket) do
-    delete_bucket(bucket, %{"worm" => nil})
+  @spec abort(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  def abort(config, bucket) do
+    delete_bucket(config, bucket, %{"worm" => nil})
   end
 
   @doc """
-  CompleteBucketWorm用于锁定合规保留策略。
+  CompleteBucketWorm - locks a retention policy.
 
   ## Examples
 
@@ -70,14 +72,15 @@ defmodule Aliyun.Oss.Bucket.WORM do
           ...
         ]
       }}
+
   """
-  @spec complete(String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
-  def complete(bucket, worm_id) do
-    post(bucket, nil, "", sub_resources: %{"wormId" => worm_id})
+  @spec complete(Config.t(), String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  def complete(config, bucket, worm_id) do
+    post(config, bucket, nil, "", sub_resources: %{"wormId" => worm_id})
   end
 
   @doc """
-  ExtendBucketWorm用于延长已锁定的合规保留策略对应Bucket中Object的保留天数。
+  ExtendBucketWorm - extends the retention period of objects in an bucket whose retention policy is locked.
 
   ## Examples
 
@@ -90,6 +93,7 @@ defmodule Aliyun.Oss.Bucket.WORM do
           ...
         ]
       }}
+
   """
   @body_tmpl """
   <?xml version="1.0" encoding="UTF-8"?>
@@ -97,15 +101,16 @@ defmodule Aliyun.Oss.Bucket.WORM do
     <RetentionPeriodInDays><%= days %></RetentionPeriodInDays>
   </ExtendWormConfiguration>
   """
-  @spec extend(String.t(), String.t(), integer()) ::
+  @spec extend(Config.t(), String.t(), String.t(), integer()) ::
           {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
-  def extend(bucket, worm_id, days) when is_integer(days) do
+  def extend(config, bucket, worm_id, days) when is_integer(days) do
     body_xml = EEx.eval_string(@body_tmpl, days: days)
-    post(bucket, nil, body_xml, sub_resources: %{"wormId" => worm_id, "wormExtend" => nil})
+
+    post(config, bucket, nil, body_xml, sub_resources: %{"wormId" => worm_id, "wormExtend" => nil})
   end
 
   @doc """
-  GetBucketWorm用于获取指定存储空间（Bucket）的合规保留策略信息。
+  GetBucketWorm - gets the retention policy configured for the specified bucket.
 
   ## Examples
 
@@ -125,9 +130,10 @@ defmodule Aliyun.Oss.Bucket.WORM do
           ...
         ]
       }}
+
   """
-  @spec get(String.t()) :: {:error, error()} | {:ok, Response.t()}
-  def get(bucket) do
-    get_bucket(bucket, %{}, %{"worm" => nil})
+  @spec get(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  def get(config, bucket) do
+    get_bucket(config, bucket, %{}, %{"worm" => nil})
   end
 end

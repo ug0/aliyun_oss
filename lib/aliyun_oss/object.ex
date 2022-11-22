@@ -1,6 +1,6 @@
 defmodule Aliyun.Oss.Object do
   @moduledoc """
-  Object operation - basic operations.
+  Object operations - basic operations.
 
   Other operations can be found in:
 

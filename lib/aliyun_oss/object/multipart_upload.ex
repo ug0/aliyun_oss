@@ -1,6 +1,6 @@
 defmodule Aliyun.Oss.Object.MultipartUpload do
   @moduledoc """
-  Object operation - Multipart Upload.
+  Object operations - Multipart Upload.
   """
 
   alias Aliyun.Oss.ConfigAlt, as: Config

@@ -1,6 +1,6 @@
 defmodule Aliyun.Oss.Object.Symlink do
   @moduledoc """
-  Object operation - Symlink.
+  Object operations - Symlink.
   """
 
   import Aliyun.Oss.Object, only: [get_object: 5, put_object: 6]

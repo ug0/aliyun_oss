@@ -1,6 +1,6 @@
 defmodule Aliyun.Oss.Object.ACL do
   @moduledoc """
-  Object operation - ACL.
+  Object operations - ACL.
   """
 
   import Aliyun.Oss.Object, only: [get_object: 5, put_object: 6]

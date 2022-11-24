@@ -1,13 +1,11 @@
 defmodule Aliyun.Oss.LiveChannel do
   @moduledoc """
-  LiveChannel 相关操作:
-    - `Aliyun.Oss.LiveChannel`: LiveChannel 基本操作
+  LiveChannel-related operations.
   """
 
-  import Aliyun.Oss.Config, only: [endpoint: 0]
-  import Aliyun.Oss.Bucket, only: [get_bucket: 3]
-  import Aliyun.Oss.Object, only: [put_object: 5, get_object: 4, delete_object: 3]
-
+  import Aliyun.Oss.Bucket, only: [get_bucket: 4]
+  import Aliyun.Oss.Object, only: [put_object: 6, get_object: 5, delete_object: 4]
+  alias Aliyun.Oss.Config
   alias Aliyun.Oss.Service
   alias Aliyun.Oss.Client.{Request, Response, Error}
 
@@ -15,35 +13,38 @@ defmodule Aliyun.Oss.LiveChannel do
           %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
 
   @doc """
-  生成包含签名的 RTMP 推流地址
+  Creates a signed RTMP ingest URL.
 
   ## Examples
 
       iex> expires = Timex.now() |> Timex.shift(days: 1) |> Timex.to_unix()
       iex> Aliyun.Oss.Object.signed_url("some-bucket", "some-object", expires, "GET", %{"Content-Type" -> ""})
       "http://some-bucket.oss-cn-hangzhou.aliyuncs.com/oss-api.pdf?OSSAccessKeyId=nz2pc5*******9l&Expires=1141889120&Signature=vjbyPxybdZ*****************v4%3D"
+
   """
-  @spec signed_publish_url(String.t(), String.t(), integer(), map()) :: String.t()
+  @spec signed_publish_url(Config.t(), String.t(), String.t(), integer(), map()) :: String.t()
   def signed_publish_url(
+        config,
         bucket,
         channel,
         expires,
         query_params \\ %{"playlistName" => "playlist.m3u8"}
       ) do
-    %{
-      host: "#{bucket}.#{endpoint()}",
-      path: "/live/#{channel}",
-      resource: "/#{bucket}/#{channel}",
-      scheme: "rtmp",
-      query_params: query_params,
-      expires: expires
-    }
-    |> Request.build()
-    |> Request.signed_query_url()
+    request =
+      Request.build(%{
+        host: "#{bucket}.#{config.endpoint}",
+        path: "/live/#{channel}",
+        resource: "/#{bucket}/#{channel}",
+        scheme: "rtmp",
+        query_params: query_params,
+        expires: expires
+      })
+
+    Request.to_signed_url(config, request)
   end
 
   @doc """
-  通过RTMP协议上传音视频数据前，必须先调用该接口创建一个LiveChannel。调用PutLiveChannel接口会返回RTMP推流地址，以及对应的播放地址。
+  PutLiveChannel - creates a LiveChannel.
 
   ## Examples
 
@@ -104,18 +105,20 @@ defmodule Aliyun.Oss.LiveChannel do
           ]
         }
       }
+
   """
-  @spec put(String.t(), String.t(), map() | String.t()) :: {:error, error()} | {:ok, Response.t()}
-  def put(bucket, channel_name, %{} = config) do
-    put(bucket, channel_name, MapToXml.from_map(config))
+  @spec put(Config.t(), String.t(), String.t(), map() | String.t()) ::
+          {:error, error()} | {:ok, Response.t()}
+  def put(config, bucket, channel_name, %{} = config) do
+    put(config, bucket, channel_name, MapToXml.from_map(config))
   end
 
-  def put(bucket, channel_name, config) do
-    put_object(bucket, channel_name, config, %{}, %{"live" => nil})
+  def put(config, bucket, channel_name, config) do
+    put_object(config, bucket, channel_name, config, %{}, %{"live" => nil})
   end
 
   @doc """
-  ListLiveChannel接口用于列举指定的LiveChannel。
+  ListLiveChannel - lists specified LiveChannels.
 
   ## Examples
 
@@ -152,14 +155,15 @@ defmodule Aliyun.Oss.LiveChannel do
           ]
         }
       }
+
   """
-  @spec list(String.t(), map()) :: {:error, error()} | {:ok, Response.t()}
-  def list(bucket, query_params \\ %{}) do
-    get_bucket(bucket, query_params, %{"live" => nil})
+  @spec list(Config.t(), String.t(), map()) :: {:error, error()} | {:ok, Response.t()}
+  def list(config, bucket, query_params \\ %{}) do
+    get_bucket(config, bucket, query_params, %{"live" => nil})
   end
 
   @doc """
-  DeleteLiveChannel接口用于删除指定的LiveChannel。
+  DeleteLiveChannel - deletes a specified LiveChannel.
 
   ## Examples
 
@@ -173,14 +177,15 @@ defmodule Aliyun.Oss.LiveChannel do
           ]
         }
       }
+
   """
-  @spec delete(String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
-  def delete(bucket, channel_name) do
-    delete_object(bucket, channel_name, %{"live" => nil})
+  @spec delete(Config.t(), String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  def delete(config, bucket, channel_name) do
+    delete_object(config, bucket, channel_name, %{"live" => nil})
   end
 
   @doc """
-  LiveChannel分为启用（enabled）和禁用（disabled）两种状态。您可以使用PutLiveChannelStatus接口在两种状态之间进行切换。
+  PutLiveChannelStatus - sets a LiveChannel to one of the states - enabled or disabled.
 
   ## Examples
 
@@ -194,14 +199,16 @@ defmodule Aliyun.Oss.LiveChannel do
           ]
         }
       }
+
   """
-  @spec put_status(String.t(), String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
-  def put_status(bucket, channel_name, status) do
-    put_object(bucket, channel_name, "", %{}, %{"live" => nil, "status" => status})
+  @spec put_status(Config.t(), String.t(), String.t(), String.t()) ::
+          {:error, error()} | {:ok, Response.t()}
+  def put_status(config, bucket, channel_name, status) do
+    put_object(config, bucket, channel_name, "", %{}, %{"live" => nil, "status" => status})
   end
 
   @doc """
-  GetLiveChannelInfo接口用于获取指定LiveChannel的配置信息。
+  GetLiveChannelInfo - gets the configuration information about a specified LiveChannel.
 
   ## Examples
 
@@ -226,14 +233,15 @@ defmodule Aliyun.Oss.LiveChannel do
           ]
         }
       }
+
   """
-  @spec get_info(String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
-  def get_info(bucket, channel_name) do
-    get_object(bucket, channel_name, %{}, %{"live" => nil})
+  @spec get_info(Config.t(), String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  def get_info(config, bucket, channel_name) do
+    get_object(config, bucket, channel_name, %{}, %{"live" => nil})
   end
 
   @doc """
-  GetLiveChannelStat接口用于获取指定LiveChannel的推流状态信息。
+  GetLiveChannelStat - gets the stream ingestion status of a specified LiveChannel.
 
   ## Examples
 
@@ -247,14 +255,15 @@ defmodule Aliyun.Oss.LiveChannel do
           ]
         }
       }
+
   """
-  @spec get_stat(String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
-  def get_stat(bucket, channel_name) do
-    get_object(bucket, channel_name, %{}, %{"live" => nil, "comp" => "stat"})
+  @spec get_stat(Config.t(), String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  def get_stat(config, bucket, channel_name) do
+    get_object(config, bucket, channel_name, %{}, %{"live" => nil, "comp" => "stat"})
   end
 
   @doc """
-  GetLiveChannelHistory接口用于获取指定LiveChannel的推流记录。使用GetLiveChannelHistory接口最多会返回指定LiveChannel最近的10次推流记录。
+  GetLiveChannelHistory - gets the stream pushing record of a LiveChannel.
 
   ## Examples
 
@@ -272,14 +281,15 @@ defmodule Aliyun.Oss.LiveChannel do
           ]
         }
       }
+
   """
-  @spec get_history(String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
-  def get_history(bucket, channel_name) do
-    get_object(bucket, channel_name, %{}, %{"live" => nil, "comp" => "history"})
+  @spec get_history(Config.t(), String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  def get_history(config, bucket, channel_name) do
+    get_object(config, bucket, channel_name, %{}, %{"live" => nil, "comp" => "history"})
   end
 
   @doc """
-  PostVodPlaylist接口用于为指定的LiveChannel生成一个点播用的播放列表。OSS会查询指定时间范围内由该LiveChannel推流生成的ts文件，并将其拼装为一个m3u8播放列表。
+  PostVodPlaylist - generates a VOD playlist for the specified LiveChannel.
 
   ## Examples
 
@@ -293,17 +303,18 @@ defmodule Aliyun.Oss.LiveChannel do
           ]
         }
       }
+
   """
-  @spec post_playlist(String.t(), String.t(), String.t(), integer(), integer()) ::
+  @spec post_playlist(Config.t(), String.t(), String.t(), String.t(), integer(), integer()) ::
           {:error, error()} | {:ok, Response.t()}
-  def post_playlist(bucket, channel_name, list_name, start_time, end_time) do
-    Service.post(bucket, "#{channel_name}/#{list_name}", "",
+  def post_playlist(config, bucket, channel_name, list_name, start_time, end_time) do
+    Service.post(config, bucket, "#{channel_name}/#{list_name}", "",
       sub_resources: %{"vod" => nil, "startTime" => start_time, "endTime" => end_time}
     )
   end
 
   @doc """
-  GetVodPlaylist接口用于查看指定LiveChannel在指定时间段内推流生成的播放列表。
+  GetVodPlaylist - gets the playlist generated by the streams pushed to a specified LiveChannel in a specified time period.
 
   ## Examples
 
@@ -317,11 +328,12 @@ defmodule Aliyun.Oss.LiveChannel do
           ]
         }
       }
+
   """
-  @spec get_playlist(String.t(), String.t(), integer(), integer()) ::
+  @spec get_playlist(Config.t(), String.t(), String.t(), integer(), integer()) ::
           {:error, error()} | {:ok, Response.t()}
-  def get_playlist(bucket, channel_name, start_time, end_time) do
-    get_object(bucket, channel_name, %{}, %{
+  def get_playlist(config, bucket, channel_name, start_time, end_time) do
+    get_object(config, bucket, channel_name, %{}, %{
       "vod" => nil,
       "startTime" => start_time,
       "endTime" => end_time

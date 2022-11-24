@@ -2,7 +2,7 @@ defmodule Aliyun.Oss.Client.Request do
   @moduledoc """
   Internal module
   """
-  import Aliyun.Oss.Config, only: [access_key_id: 0, access_key_secret: 0]
+  alias Aliyun.Oss.Config
 
   @enforce_keys [:host, :path, :resource]
   defstruct verb: "GET",
@@ -24,18 +24,14 @@ defmodule Aliyun.Oss.Client.Request do
     |> ensure_essential_headers()
   end
 
-  def build_signed(fields) do
+  def build_signed(%Config{} = config, fields) do
+    %{access_key_id: access_key_id, access_key_secret: access_key_secret} = config
+
     build(fields)
-    |> set_authorization_header()
+    |> set_authorization_header(access_key_id, access_key_secret)
   end
 
-  def gen_signature(%__MODULE__{} = req) do
-    req
-    |> string_to_sign()
-    |> Aliyun.Util.Sign.sign(access_key_secret())
-  end
-
-  def query_url(%__MODULE__{} = req) do
+  def to_url(%__MODULE__{} = req) do
     URI.to_string(%URI{
       scheme: req.scheme,
       host: req.host,
@@ -46,16 +42,19 @@ defmodule Aliyun.Oss.Client.Request do
 
   defp encode_path(path), do: String.replace(path, "+", "%2B")
 
-  def signed_query_url(%__MODULE__{} = req) do
+  def to_signed_url(%Config{} = config, %__MODULE__{} = req) do
+    %{access_key_id: access_key_id, access_key_secret: access_key_secret} = config
+    signature = gen_signature(req, access_key_secret)
+
     req
     |> Map.update!(:query_params, fn params ->
       Map.merge(params, %{
         "Expires" => req.expires,
-        "OSSAccessKeyId" => access_key_id(),
-        "Signature" => gen_signature(req)
+        "OSSAccessKeyId" => access_key_id,
+        "Signature" => signature
       })
     end)
-    |> query_url()
+    |> to_url()
   end
 
   defp ensure_essential_headers(%__MODULE__{} = req) do
@@ -70,9 +69,9 @@ defmodule Aliyun.Oss.Client.Request do
     Map.put(req, :headers, headers)
   end
 
-  defp set_authorization_header(%__MODULE__{} = req) do
+  defp set_authorization_header(%__MODULE__{} = req, access_key_id, access_key_secret) do
     update_in(req.headers["Authorization"], fn _ ->
-      "OSS " <> access_key_id() <> ":" <> gen_signature(req)
+      "OSS " <> access_key_id <> ":" <> gen_signature(req, access_key_secret)
     end)
   end
 
@@ -121,6 +120,12 @@ defmodule Aliyun.Oss.Client.Request do
       "." <> name -> MIME.type(name)
       _ -> @default_content_type
     end
+  end
+
+  defp gen_signature(%__MODULE__{} = req, secret) do
+    req
+    |> string_to_sign()
+    |> Aliyun.Util.Sign.sign(secret)
   end
 
   defp string_to_sign(%__MODULE__{scheme: "rtmp"} = req) do

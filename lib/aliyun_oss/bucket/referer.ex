@@ -1,17 +1,17 @@
 defmodule Aliyun.Oss.Bucket.Referer do
   @moduledoc """
-  Bucket Referer 相关操作
+  Bucket operations - Referer.
   """
 
-  import Aliyun.Oss.Bucket, only: [get_bucket: 3, put_bucket: 4]
-
+  import Aliyun.Oss.Bucket, only: [get_bucket: 4, put_bucket: 5]
+  alias Aliyun.Oss.Config
   alias Aliyun.Oss.Client.{Response, Error}
 
   @type error() ::
           %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
 
   @doc """
-  GetBucketReferer 操作用于查看bucket的Referer相关配置。
+  GetBucketReferer - gets the Referer configurations of a bucket.
 
   ## Examples
 
@@ -28,15 +28,16 @@ defmodule Aliyun.Oss.Bucket.Referer do
           ...
         ]
       }}
+
   """
 
-  @spec get(String.t()) :: {:error, error()} | {:ok, Response.t()}
-  def get(bucket) do
-    get_bucket(bucket, %{}, %{"referer" => nil})
+  @spec get(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  def get(config, bucket) do
+    get_bucket(config, bucket, %{}, %{"referer" => nil})
   end
 
   @doc """
-  PutBucketReferer接口用于设置Bucket的Referer访问白名单以及允许Referer字段是否为空。
+  PutBucketReferer - configures the Referer whitelist of a bucket.
 
   ## Examples
 
@@ -65,9 +66,11 @@ defmodule Aliyun.Oss.Bucket.Referer do
           {"x-oss-server-time", "63"}
         ]
       }}
+
   """
-  @spec put(String.t(), String.t()) :: {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
-  def put(bucket, xml_body) do
-    put_bucket(bucket, %{}, %{"referer" => nil}, xml_body)
+  @spec put(Config.t(), String.t(), String.t()) ::
+          {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
+  def put(config, bucket, xml_body) do
+    put_bucket(config, bucket, %{}, %{"referer" => nil}, xml_body)
   end
 end

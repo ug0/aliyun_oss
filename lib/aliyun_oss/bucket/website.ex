@@ -1,17 +1,17 @@
 defmodule Aliyun.Oss.Bucket.Website do
   @moduledoc """
-  Bucket Website 相关操作
+  Bucket operations - Static websites.
   """
 
-  import Aliyun.Oss.Bucket, only: [get_bucket: 3, put_bucket: 4, delete_bucket: 2]
-
+  import Aliyun.Oss.Bucket, only: [get_bucket: 4, put_bucket: 5, delete_bucket: 3]
+  alias Aliyun.Oss.Config
   alias Aliyun.Oss.Client.{Response, Error}
 
   @type error() ::
           %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
 
   @doc """
-  GetBucketWebsite 接口用于查看bucket的静态网站托管状态以及跳转规则。
+  GetBucketWebsite - gets the static website hosting status and redirection rules configured for a bucket.
 
   ## Examples
 
@@ -40,14 +40,15 @@ defmodule Aliyun.Oss.Bucket.Website do
           body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>...</xml>"
         }
       }
+
   """
-  @spec get(String.t()) :: {:error, error()} | {:ok, Response.t()}
-  def get(bucket) do
-    get_bucket(bucket, %{}, %{"website" => nil})
+  @spec get(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  def get(config, bucket) do
+    get_bucket(config, bucket, %{}, %{"website" => nil})
   end
 
   @doc """
-  PutBucketWebsite接口用于将一个bucket设置成静态网站托管模式，以及设置跳转规则。
+  PutBucketWebsite - sets a bucket to the static website hosting mode and configures redirection rules.
 
   ## Examples
 
@@ -74,14 +75,16 @@ defmodule Aliyun.Oss.Bucket.Website do
           {"x-oss-server-time", "63"}
         ]
       }}
+
   """
-  @spec put(String.t(), String.t()) :: {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
-  def put(bucket, xml_body) do
-    put_bucket(bucket, %{}, %{"website" => nil}, xml_body)
+  @spec put(Config.t(), String.t(), String.t()) ::
+          {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
+  def put(config, bucket, xml_body) do
+    put_bucket(config, bucket, %{}, %{"website" => nil}, xml_body)
   end
 
   @doc """
-  DeleteBucketWebsite操作用于关闭Bucket的静态网站托管模式以及跳转规则。
+  DeleteBucketWebsite - disables the static website hosting mode and clears the redirection rules for a bucket.
 
   ## Examples
 
@@ -111,9 +114,11 @@ defmodule Aliyun.Oss.Bucket.Website do
         body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>...</xml>",
         status_code: 404
       }}
+
   """
-  @spec delete(String.t()) :: {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
-  def delete(bucket) do
-    delete_bucket(bucket, %{"website" => nil})
+  @spec delete(Config.t(), String.t()) ::
+          {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
+  def delete(config, bucket) do
+    delete_bucket(config, bucket, %{"website" => nil})
   end
 end

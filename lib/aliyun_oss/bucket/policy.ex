@@ -1,17 +1,17 @@
 defmodule Aliyun.Oss.Bucket.Policy do
   @moduledoc """
-  Bucket Policy 相关操作
+  Bucket operations - Authorization policy.
   """
 
-  import Aliyun.Oss.Bucket, only: [get_bucket: 3, put_bucket: 4, delete_bucket: 2]
-
+  import Aliyun.Oss.Bucket, only: [get_bucket: 4, put_bucket: 5, delete_bucket: 3]
+  alias Aliyun.Oss.Config
   alias Aliyun.Oss.Client.{Response, Error}
 
   @type error() ::
           %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
 
   @doc """
-  PutBucketPolicy接口用于为指定的存储空间（Bucket）设置授权策略（Policy)。
+  PutBucketPolicy - configures policies for a specified bucket.
 
   ## Examples
 
@@ -34,14 +34,15 @@ defmodule Aliyun.Oss.Bucket.Policy do
           ...
         ]
       }}
+
   """
-  @spec put(String.t(), map()) :: {:error, error()} | {:ok, Response.t()}
-  def put(bucket, %{} = policy) do
-    put_bucket(bucket, %{}, %{"policy" => nil}, Jason.encode!(policy))
+  @spec put(Config.t(), String.t(), map()) :: {:error, error()} | {:ok, Response.t()}
+  def put(config, bucket, %{} = policy) do
+    put_bucket(config, bucket, %{}, %{"policy" => nil}, Jason.encode!(policy))
   end
 
   @doc """
-  GetBucketPolicy用于获取指定存储空间（Bucket）的权限策略（Policy）。
+  GetBucketPolicy - gets the policies configured for a specified bucket.
 
   ## Examples
 
@@ -63,14 +64,15 @@ defmodule Aliyun.Oss.Bucket.Policy do
           ...
         ]
       }}
+
   """
-  @spec get(String.t()) :: {:error, error()} | {:ok, Response.t()}
-  def get(bucket) do
-    get_bucket(bucket, %{}, %{"policy" => nil})
+  @spec get(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  def get(config, bucket) do
+    get_bucket(config, bucket, %{}, %{"policy" => nil})
   end
 
   @doc """
-  DeleteBucketPolicy用于删除指定存储空间（Bucket）的权限策略（Policy）。
+  DeleteBucketPolicy - deletes the policies configured for a specified bucket.
 
   ## Examples
 
@@ -87,9 +89,11 @@ defmodule Aliyun.Oss.Bucket.Policy do
           {"x-oss-server-time", "90"}
         ]
       }}
+
   """
-  @spec delete(String.t()) :: {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
-  def delete(bucket) do
-    delete_bucket(bucket, %{"policy" => nil})
+  @spec delete(Config.t(), String.t()) ::
+          {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
+  def delete(config, bucket) do
+    delete_bucket(config, bucket, %{"policy" => nil})
   end
 end

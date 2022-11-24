@@ -1,17 +1,17 @@
 defmodule Aliyun.Oss.Bucket.Encryption do
   @moduledoc """
-  Bucket Encryption 相关操作
+  Bucket operations - Encryption.
   """
 
-  import Aliyun.Oss.Bucket, only: [get_bucket: 3, put_bucket: 4, delete_bucket: 2]
-
+  import Aliyun.Oss.Bucket, only: [get_bucket: 4, put_bucket: 5, delete_bucket: 3]
+  alias Aliyun.Oss.Config
   alias Aliyun.Oss.Client.{Response, Error}
 
   @type error() ::
           %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
 
   @doc """
-  GetBucketEncryption 用于获取Bucket加密规则。
+  GetBucketEncryption - gets the encryption rules configured for a bucket.
 
   ## Examples
 
@@ -29,19 +29,20 @@ defmodule Aliyun.Oss.Bucket.Encryption do
           ...
         ]
       }}
+
   """
-  @spec get(String.t()) :: {:error, error()} | {:ok, Response.t()}
-  def get(bucket) do
-    get_bucket(bucket, %{}, %{"encryption" => nil})
+  @spec get(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  def get(config, bucket) do
+    get_bucket(config, bucket, %{}, %{"encryption" => nil})
   end
 
   @doc """
-  PutBucketEncryption接口用于配置Bucket的加密规则。
+  PutBucketEncryption - configures encryption rules for a bucket.
 
   ## Options
 
-    - `:algorithm` - Accept value: `:aes256`, `:kms`, default is `:aes256`
-    - `:kms_master_key_id` - Should and only be set if algorithm is `:kms`
+  - `:algorithm` - Accept value: `:aes256`, `:kms`, default is `:aes256`
+  - `:kms_master_key_id` - Should and only be set if algorithm is `:kms`
 
   ## Examples
 
@@ -58,6 +59,7 @@ defmodule Aliyun.Oss.Bucket.Encryption do
           {"x-oss-server-time", "63"}
         ]
       }}
+
   """
   @body_tmpl """
   <?xml version="1.0" encoding="UTF-8"?>
@@ -68,8 +70,9 @@ defmodule Aliyun.Oss.Bucket.Encryption do
     </ApplyServerSideEncryptionByDefault>
   </ServerSideEncryptionRule>
   """
-  @spec put(String.t(), Keyword.t()) :: {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
-  def put(bucket, opts \\ []) do
+  @spec put(Config.t(), String.t(), Keyword.t()) ::
+          {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
+  def put(config, bucket, opts \\ []) do
     {algorithm, kms_master_key_id} =
       case Keyword.get(opts, :algorithm, :aes256) do
         :aes256 -> {"AES256", nil}
@@ -83,11 +86,11 @@ defmodule Aliyun.Oss.Bucket.Encryption do
         kms_master_key_id: kms_master_key_id
       )
 
-    put_bucket(bucket, %{}, %{"encryption" => nil}, xml_body)
+    put_bucket(config, bucket, %{}, %{"encryption" => nil}, xml_body)
   end
 
   @doc """
-  DeleteBucketEncryption接口用于删除Bucket加密规则。
+  DeleteBucketEncryption - deletes encryption rules configured for a bucket.
 
   ## Examples
 
@@ -104,9 +107,11 @@ defmodule Aliyun.Oss.Bucket.Encryption do
           {"x-oss-server-time", "90"}
         ]
       }}
+
   """
-  @spec delete(String.t()) :: {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
-  def delete(bucket) do
-    delete_bucket(bucket, %{"encryption" => nil})
+  @spec delete(Config.t(), String.t()) ::
+          {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
+  def delete(config, bucket) do
+    delete_bucket(config, bucket, %{"encryption" => nil})
   end
 end

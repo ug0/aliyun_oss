@@ -1,17 +1,17 @@
 defmodule Aliyun.Oss.Bucket.Tags do
   @moduledoc """
-  Bucket Tags 相关操作
+  Bucket operations - Tags.
   """
 
-  import Aliyun.Oss.Bucket, only: [get_bucket: 3, put_bucket: 4, delete_bucket: 2]
-
+  import Aliyun.Oss.Bucket, only: [get_bucket: 4, put_bucket: 5, delete_bucket: 3]
+  alias Aliyun.Oss.Config
   alias Aliyun.Oss.Client.{Response, Error}
 
   @type error() ::
           %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
 
   @doc """
-  GetBucketTags用于获取存储空间（Bucket）的标签信息。
+  GetBucketTags - gets the tags configured for a bucket.
 
   ## Examples
 
@@ -25,14 +25,15 @@ defmodule Aliyun.Oss.Bucket.Tags do
           ]
         }
       }
+
   """
-  @spec get(String.t()) :: {:error, error()} | {:ok, Response.t()}
-  def get(bucket) do
-    get_bucket(bucket, %{}, %{"tagging" => nil})
+  @spec get(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  def get(config, bucket) do
+    get_bucket(config, bucket, %{}, %{"tagging" => nil})
   end
 
   @doc """
-  PutBucketTags接口用来给某个存储空间（Bucket）添加或修改标签。
+  PutBucketTags - adds tags to a bucket or modifies the tags of a bucket.
 
   ## Examples
 
@@ -46,6 +47,7 @@ defmodule Aliyun.Oss.Bucket.Tags do
           ]
         }
       }
+
   """
 
   @body_tmpl """
@@ -61,15 +63,15 @@ defmodule Aliyun.Oss.Bucket.Tags do
     </TagSet>
   </Tagging>
   """
-  @spec put(String.t(), [{String.t(), String.t()}, ...]) ::
+  @spec put(Config.t(), String.t(), [{String.t(), String.t()}, ...]) ::
           {:error, error()} | {:ok, Response.t()}
-  def put(bucket, tags) do
+  def put(config, bucket, tags) do
     xml_body = EEx.eval_string(@body_tmpl, tags: tags)
-    put_bucket(bucket, %{}, %{"tagging" => nil}, xml_body)
+    put_bucket(config, bucket, %{}, %{"tagging" => nil}, xml_body)
   end
 
   @doc """
-  DeleteBucketTags接口用于删除存储空间（Bucket）标签。
+  DeleteBucketTags - deletes tags configured for a bucket.
 
   ## Examples
 
@@ -96,9 +98,11 @@ defmodule Aliyun.Oss.Bucket.Tags do
         body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>...</xml>",
         status_code: 404
       }}
+
   """
-  @spec delete(String.t()) :: {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
-  def delete(bucket) do
-    delete_bucket(bucket, %{"tagging" => nil})
+  @spec delete(Config.t(), String.t()) ::
+          {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
+  def delete(config, bucket) do
+    delete_bucket(config, bucket, %{"tagging" => nil})
   end
 end

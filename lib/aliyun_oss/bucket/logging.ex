@@ -1,17 +1,17 @@
 defmodule Aliyun.Oss.Bucket.Logging do
   @moduledoc """
-  Bucket Logging 相关操作
+  Bucket Inventory - Logging.
   """
 
-  import Aliyun.Oss.Bucket, only: [get_bucket: 3, put_bucket: 4, delete_bucket: 2]
-
+  import Aliyun.Oss.Bucket, only: [get_bucket: 4, put_bucket: 5, delete_bucket: 3]
+  alias Aliyun.Oss.Config
   alias Aliyun.Oss.Client.{Response, Error}
 
   @type error() ::
           %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
 
   @doc """
-  GetBucketLogging 用于查看Bucket的访问日志配置情况。
+  GetBucketLogging - gets the access logging configuration of a bucket.
 
   ## Examples
 
@@ -30,14 +30,15 @@ defmodule Aliyun.Oss.Bucket.Logging do
           ...
         ]
       }}
+
   """
-  @spec get(String.t()) :: {:error, error()} | {:ok, Response.t()}
-  def get(bucket) do
-    get_bucket(bucket, %{}, %{"logging" => nil})
+  @spec get(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  def get(config, bucket) do
+    get_bucket(config, bucket, %{}, %{"logging" => nil})
   end
 
   @doc """
-  PutBucketLogging接口用于为 Bucket 开启访问日志记录功能。
+  PutBucketLogging - enables logging for a bucket.
 
   ## Examples
 
@@ -54,6 +55,7 @@ defmodule Aliyun.Oss.Bucket.Logging do
           {"x-oss-server-time", "63"}
         ]
       }}
+
   """
 
   @body_tmpl """
@@ -65,9 +67,9 @@ defmodule Aliyun.Oss.Bucket.Logging do
     </LoggingEnabled>
   </BucketLoggingStatus>
   """
-  @spec put(String.t(), String.t(), String.t()) ::
+  @spec put(Config.t(), String.t(), String.t(), String.t()) ::
           {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
-  def put(bucket, target_bucket, target_prefix \\ "oss-accesslog/") do
+  def put(config, bucket, target_bucket, target_prefix \\ "oss-accesslog/") do
     body =
       EEx.eval_string(
         @body_tmpl,
@@ -75,11 +77,11 @@ defmodule Aliyun.Oss.Bucket.Logging do
         target_prefix: target_prefix
       )
 
-    put_bucket(bucket, %{}, %{"logging" => nil}, body)
+    put_bucket(config, bucket, %{}, %{"logging" => nil}, body)
   end
 
   @doc """
-  DeleteBucketLogging接口用于关闭bucket访问日志记录功能
+  DeleteBucketLogging - deletes the logging configurations for a bucket.
 
   ## Examples
 
@@ -109,9 +111,11 @@ defmodule Aliyun.Oss.Bucket.Logging do
         body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>...</xml>",
         status_code: 404
       }}
+
   """
-  @spec delete(String.t()) :: {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
-  def delete(bucket) do
-    delete_bucket(bucket, %{"logging" => nil})
+  @spec delete(Config.t(), String.t()) ::
+          {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
+  def delete(config, bucket) do
+    delete_bucket(config, bucket, %{"logging" => nil})
   end
 end

@@ -1,17 +1,17 @@
 defmodule Aliyun.Oss.Bucket.Inventory do
   @moduledoc """
-  Bucket Inventory 相关操作
+  Bucket operations - Inventory.
   """
 
-  import Aliyun.Oss.Bucket, only: [get_bucket: 3, put_bucket: 4, delete_bucket: 2]
-
+  import Aliyun.Oss.Bucket, only: [get_bucket: 4, put_bucket: 5, delete_bucket: 3]
+  alias Aliyun.Oss.Config
   alias Aliyun.Oss.Client.{Response, Error}
 
   @type error() ::
           %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
 
   @doc """
-  PutBucketInventory接口用于为某个存储空间（Bucket）配置清单（Inventory）规则。
+  PutBucketInventory - configures inventories for a bucket.
 
   ## Examples
 
@@ -62,18 +62,20 @@ defmodule Aliyun.Oss.Bucket.Inventory do
           ...
         ]
       }}
+
   """
-  @spec put(String.t(), String.t(), String.t() | map()) :: {:error, error()} | {:ok, Response.t()}
-  def put(bucket, inventory_id, %{} = config) do
-    put(bucket, inventory_id, MapToXml.from_map(config))
+  @spec put(Config.t(), String.t(), String.t(), String.t() | map()) ::
+          {:error, error()} | {:ok, Response.t()}
+  def put(config, bucket, inventory_id, %{} = config) do
+    put(config, bucket, inventory_id, MapToXml.from_map(config))
   end
 
-  def put(bucket, inventory_id, config) do
-    put_bucket(bucket, %{}, %{"inventory" => nil, "inventoryId" => inventory_id}, config)
+  def put(config, bucket, inventory_id, config) do
+    put_bucket(config, bucket, %{}, %{"inventory" => nil, "inventoryId" => inventory_id}, config)
   end
 
   @doc """
-  GetBucketInventory用于查看某个存储空间（Bucket）中指定的清单（Inventory）任务。
+  GetBucketInventory - gets the specified inventory task configured for a bucket.
 
   ## Examples
 
@@ -106,14 +108,15 @@ defmodule Aliyun.Oss.Bucket.Inventory do
           ...
         ]
       }}
+
   """
-  @spec get(String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
-  def get(bucket, inventory_id) do
-    get_bucket(bucket, %{}, %{"inventory" => nil, "inventoryId" => inventory_id})
+  @spec get(Config.t(), String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  def get(config, bucket, inventory_id) do
+    get_bucket(config, bucket, %{}, %{"inventory" => nil, "inventoryId" => inventory_id})
   end
 
   @doc """
-  ListBucketInventory用于批量获取某个存储空间（Bucket）中的所有清单（Inventory）任务。
+  ListBucketInventory - gets all inventory tasks configured for a bucket.
 
   ## Examples
 
@@ -134,13 +137,16 @@ defmodule Aliyun.Oss.Bucket.Inventory do
         ]
       }}
   """
-  @spec list(String.t(), nil | String.t()) :: {:error, error()} | {:ok, Response.t()}
-  def list(bucket, continuation_token \\ nil) do
-    get_bucket(bucket, %{}, %{"inventory" => nil, "continuation-token" => continuation_token})
+  @spec list(Config.t(), String.t(), nil | String.t()) :: {:error, error()} | {:ok, Response.t()}
+  def list(config, bucket, continuation_token \\ nil) do
+    get_bucket(config, bucket, %{}, %{
+      "inventory" => nil,
+      "continuation-token" => continuation_token
+    })
   end
 
   @doc """
-  DeleteBucketInventory用于删除某个存储空间（Bucket）中指定的清单（Inventory）任务。
+  DeleteBucketInventory - deletes a specified inventory task of a bucket.
 
   ## Examples
 
@@ -157,10 +163,11 @@ defmodule Aliyun.Oss.Bucket.Inventory do
           {"x-oss-server-time", "90"}
         ]
       }}
+
   """
-  @spec delete(String.t(), String.t()) ::
+  @spec delete(Config.t(), String.t(), String.t()) ::
           {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
-  def delete(bucket, inventory_id) do
-    delete_bucket(bucket, %{"inventory" => nil, "inventoryId" => inventory_id})
+  def delete(config, bucket, inventory_id) do
+    delete_bucket(config, bucket, %{"inventory" => nil, "inventoryId" => inventory_id})
   end
 end

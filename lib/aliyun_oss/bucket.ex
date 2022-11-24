@@ -1,23 +1,27 @@
 defmodule Aliyun.Oss.Bucket do
   @moduledoc """
-  Bucket 相关操作:
-    - `Aliyun.Oss.Bucket`: Bucket 基本操作
-    - `Aliyun.Oss.Bucket.WORM`: WORM 合规保留策略
-    - `Aliyun.Oss.Bucket.ACL`: ACL 权限控制
-    - `Aliyun.Oss.Bucket.Lifecycle`: Lifecycle 生命周期
-    - `Aliyun.Oss.Bucket.Versioning`: Versioning 版本控制
-    - `Aliyun.Oss.Bucket.Replication`: Replication 跨区域复制
-    - `Aliyun.Oss.Bucket.Policy`: Policy 授权策略
-    - `Aliyun.Oss.Bucket.Inventory`: Inventory 清单
-    - `Aliyun.Oss.Bucket.Logging`: Logging 日志管理
-    - `Aliyun.Oss.Bucket.Website`: Website 静态网站
-    - `Aliyun.Oss.Bucket.Referer`: Referer 防盗链
-    - `Aliyun.Oss.Bucket.Tags`: Tags 标签
-    - `Aliyun.Oss.Bucket.Encryption`: Encryption 加密
-    - `Aliyun.Oss.Bucket.RequestPayment`: RequestPayment 请求者付费
-    - `Aliyun.Oss.Bucket.CORS`: CORS 跨域资源共享
+  Bucket operations - basic operations.
+
+  Other operations can be found in:
+
+  - `Aliyun.Oss.Bucket.WORM`
+  - `Aliyun.Oss.Bucket.ACL`
+  - `Aliyun.Oss.Bucket.Lifecycle`
+  - `Aliyun.Oss.Bucket.Versioning`
+  - `Aliyun.Oss.Bucket.Replication`
+  - `Aliyun.Oss.Bucket.Policy`
+  - `Aliyun.Oss.Bucket.Inventory`
+  - `Aliyun.Oss.Bucket.Logging`
+  - `Aliyun.Oss.Bucket.Website`
+  - `Aliyun.Oss.Bucket.Referer`
+  - `Aliyun.Oss.Bucket.Tags`
+  - `Aliyun.Oss.Bucket.Encryption`
+  - `Aliyun.Oss.Bucket.RequestPayment`
+  - `Aliyun.Oss.Bucket.CORS`
+
   """
 
+  alias Aliyun.Oss.Config
   alias Aliyun.Oss.Service
   alias Aliyun.Oss.Client.{Response, Error}
 
@@ -25,11 +29,11 @@ defmodule Aliyun.Oss.Bucket do
           %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
 
   @doc """
-  GetService (ListBuckets) 对于服务地址作Get请求可以返回请求者拥有的所有Bucket。
+  ListBuckets - lists the information about all buckets.
 
   ## Examples
 
-      iex> Aliyun.Oss.Bucket.list_buckets(%{"max-keys" => 5})
+      iex> Aliyun.Oss.Bucket.list_buckets(config, %{"max-keys" => 5})
       {:ok, %Aliyun.Oss.Client.Response{
           data: %{
             "Buckets" => %{
@@ -59,7 +63,7 @@ defmodule Aliyun.Oss.Bucket do
         }
       }
 
-      iex> Aliyun.Oss.Bucket.list_buckets(%{"max-keys" => 100000})
+      iex> Aliyun.Oss.Bucket.list_buckets(config, %{"max-keys" => 100000})
       {:error,
         %Aliyun.Oss.Client.Error{
           status_code: 400,
@@ -74,22 +78,19 @@ defmodule Aliyun.Oss.Bucket do
           body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>...</xml>"
         }
       }
+
   """
-  @spec list_buckets(map()) :: {:error, error()} | {:ok, Response.t()}
-  def list_buckets(query_params \\ %{}) do
-    Service.get(nil, nil, query_params: query_params)
+  @spec list_buckets(Config.t(), map()) :: {:error, error()} | {:ok, Response.t()}
+  def list_buckets(%Config{} = config, query_params \\ %{}) do
+    Service.get(config, nil, nil, query_params: query_params)
   end
 
   @doc """
-  GetBucket(ListObject) 接口可用来列出 Bucket中所有Object的信息。
-
-  **注意：**
-    - 建议使用 `Bucket.list_objects` 来获取所有 Object 信息
-    - 所有 SubResource 相关操作亦可由此接口实现, 即 Bucket.Acl.get("some-bucket") 等同于 Bucket.get_bucket("some-bucket", %{}, %{"acl" => nil})
+  GetBucket (ListObjects) - lists the information about all objects in a bucket.
 
   ## Examples
 
-      iex> Aliyun.Oss.Bucket.get_bucket("some-bucket", %{"prefix" => "foo/"})
+      iex> Aliyun.Oss.Bucket.get_bucket(config, "some-bucket", %{"prefix" => "foo/"})
       {:ok, %Aliyun.Oss.Client.Response{
           data: %{
             "ListBucketResult" => %{
@@ -121,7 +122,7 @@ defmodule Aliyun.Oss.Bucket do
         }
       }
 
-      iex> Aliyun.Oss.Bucket.get_bucket("unknown-bucket")
+      iex> Aliyun.Oss.Bucket.get_bucket(config, "unknown-bucket")
       {:error,
         %Aliyun.Oss.Client.Error{
           status_code: 404,
@@ -137,18 +138,20 @@ defmodule Aliyun.Oss.Bucket do
           body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>...</xml>"
         }
       }
+
   """
-  @spec get_bucket(String.t(), map(), map()) :: {:error, error()} | {:ok, Response.t()}
-  def get_bucket(bucket, query_params \\ %{}, sub_resources \\ %{}) do
-    Service.get(bucket, nil, query_params: query_params, sub_resources: sub_resources)
+  @spec get_bucket(Config.t(), String.t(), map(), map()) ::
+          {:error, error()} | {:ok, Response.t()}
+  def get_bucket(%Config{} = config, bucket, query_params \\ %{}, sub_resources \\ %{}) do
+    Service.get(config, bucket, nil, query_params: query_params, sub_resources: sub_resources)
   end
 
   @doc """
-  GetBucketV2(ListObjectsV2) 接口用于列举存储空间（Bucket）中所有文件（Object）的信息。
+  GetBucketV2 (ListObjectsV2) - lists the information about all objects in a bucket.
 
   ## Examples
 
-      iex> Aliyun.Oss.Bucket.list_objects("some-bucket", %{"prefix" => "foo/"})
+      iex> Aliyun.Oss.Bucket.list_objects(config, "some-bucket", %{"prefix" => "foo/"})
       {:ok, %Aliyun.Oss.Client.Response{
           data: %{
             "ListBucketResult" => %{
@@ -181,7 +184,7 @@ defmodule Aliyun.Oss.Bucket do
         }
       }
 
-      iex> Aliyun.Oss.Bucket.list_objects("unknown-bucket")
+      iex> Aliyun.Oss.Bucket.list_objects(config, "unknown-bucket")
       {:error,
         %Aliyun.Oss.Client.Error{
           status_code: 404,
@@ -197,25 +200,20 @@ defmodule Aliyun.Oss.Bucket do
           body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>...</xml>"
         }
       }
+
   """
-  @spec list_objects(String.t(), map(), map()) :: {:error, error()} | {:ok, Response.t()}
-  def list_objects(bucket, query_params \\ %{}, sub_resources \\ %{}) do
-    get_bucket(bucket, Map.merge(query_params, %{"list-type" => 2}), sub_resources)
+  @spec list_objects(Config.t(), String.t(), map(), map()) ::
+          {:error, error()} | {:ok, Response.t()}
+  def list_objects(%Config{} = config, bucket, query_params \\ %{}, sub_resources \\ %{}) do
+    get_bucket(config, bucket, Map.merge(query_params, %{"list-type" => 2}), sub_resources)
   end
 
   @doc """
-  GetBucketInfo 接口用于查看bucket的相关信息。
-  可查看内容包含如下：
-
-    - 创建时间
-    - 外网访问Endpoint
-    - 内网访问Endpoint
-    - bucket的拥有者信息
-    - bucket的ACL（AccessControlList）
+  GetBucketInfo - gets the information about a bucket.
 
   ## Examples
 
-      iex> Aliyun.Oss.Bucket.get_bucket_info("some-bucket")
+      iex> Aliyun.Oss.Bucket.get_bucket_info(config, "some-bucket")
       {:ok, %Aliyun.Oss.Client.Response{
         data: %{
           "BucketInfo" => %{
@@ -240,19 +238,19 @@ defmodule Aliyun.Oss.Bucket do
           {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"}
         ]
       }
+
   """
-  @spec get_bucket_info(String.t()) :: {:error, error()} | {:ok, Response.t()}
-  def get_bucket_info(bucket) do
-    get_bucket(bucket, %{}, %{"bucketInfo" => nil})
+  @spec get_bucket_info(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  def get_bucket_info(%Config{} = config, bucket) do
+    get_bucket(config, bucket, %{}, %{"bucketInfo" => nil})
   end
 
   @doc """
-  GetBucketLocation
-  GetBucketLocation用于查看Bucket所属的数据中心位置信息。
+  GetBucketLocation - views the location information of a bucket.
 
   ## Examples
 
-      iex> Aliyun.Oss.Bucket.get_bucket_location("some-bucket")
+      iex> Aliyun.Oss.Bucket.get_bucket_location(config, "some-bucket")
       {:ok, %Aliyun.Oss.Client.Response{
           data: %{"LocationConstraint" => "oss-cn-shenzhen"},
           headers: [
@@ -261,17 +259,17 @@ defmodule Aliyun.Oss.Bucket do
         }
       }
   """
-  @spec get_bucket_location(String.t()) :: {:error, error()} | {:ok, Response.t()}
-  def get_bucket_location(bucket) do
-    get_bucket(bucket, %{}, %{"location" => nil})
+  @spec get_bucket_location(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  def get_bucket_location(%Config{} = config, bucket) do
+    get_bucket(config, bucket, %{}, %{"location" => nil})
   end
 
   @doc """
-  PutBucket接口用于创建 Bucket
+  PutBucket - creates a bucket.
 
   ## Examples
 
-      iex> Aliyun.Oss.Bucket.put_bucket("new-bucket", %{"x-oss-acl" => "private"})
+      iex> Aliyun.Oss.Bucket.put_bucket(config, "new-bucket", %{"x-oss-acl" => "private"})
       {:ok,
       %Aliyun.Oss.Client.Response{
         data: "",
@@ -285,7 +283,7 @@ defmodule Aliyun.Oss.Bucket do
           {"x-oss-server-time", "438"}
         ]
       }}
-      iex> Aliyun.Oss.Bucket.put_bucket("new-bucket", %{"x-oss-acl" => "invalid-permission"}) # get error
+      iex> Aliyun.Oss.Bucket.put_bucket(config, "new-bucket", %{"x-oss-acl" => "invalid-permission"}) # get error
       {:error,
       %Aliyun.Oss.Client.Error{
         parsed_details: %{
@@ -300,7 +298,6 @@ defmodule Aliyun.Oss.Bucket do
         status_code: 400
       }}
 
-    注：所有 SubResource 相关操作亦可由此接口实现, 即 Bucket.Acl.put("some-bucket", "private") 等同于 Bucket.put_bucket("some-bucket", %{"x-oss-acl" => "private"}, %{"acl" => "private"}, "")
   """
   @body """
   <?xml version="1.0" encoding="UTF-8"?>
@@ -308,19 +305,25 @@ defmodule Aliyun.Oss.Bucket do
     <StorageClass>Standard</StorageClass>
   </CreateBucketConfiguration>
   """
-  @spec put_bucket(String.t(), map(), map(), String.t()) ::
+  @spec put_bucket(Config.t(), String.t(), map(), map(), String.t()) ::
           {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
-  def put_bucket(bucket, headers = %{} \\ %{}, sub_resources = %{} \\ %{}, body \\ @body)
+  def put_bucket(
+        %Config{} = config,
+        bucket,
+        headers = %{} \\ %{},
+        sub_resources = %{} \\ %{},
+        body \\ @body
+      )
       when is_binary(body) do
-    Service.put(bucket, nil, body, headers: headers, sub_resources: sub_resources)
+    Service.put(config, bucket, nil, body, headers: headers, sub_resources: sub_resources)
   end
 
   @doc """
-  DeleteBucket用于删除某个Bucket
+  DeleteBucket - deletes a bucket.
 
   ## Examples
 
-      iex> Aliyun.Oss.Bucket.delete_bucket("some-bucket")
+      iex> Aliyun.Oss.Bucket.delete_bucket(config, "some-bucket")
       {:ok,
       %Aliyun.Oss.Client.Response{
         data: "",
@@ -333,7 +336,7 @@ defmodule Aliyun.Oss.Bucket do
           {"x-oss-server-time", "230"}
         ]
       }}
-      iex> Aliyun.Oss.Bucket.delete_bucket("unknown-bucket")
+      iex> Aliyun.Oss.Bucket.delete_bucket(config, "unknown-bucket")
       {:error,
       %Aliyun.Oss.Client.Error{
         body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
@@ -354,11 +357,10 @@ defmodule Aliyun.Oss.Bucket do
         status_code: 404
       }}
 
-    注：所有 SubResource 相关操作亦可由此接口实现, 即 Bucket.Logging.delete("some-bucket") 等同于 Bucket.delete_bucket("some-bucket", %{"logging" => nil})
   """
-  @spec delete_bucket(String.t(), map()) ::
+  @spec delete_bucket(Config.t(), String.t(), map()) ::
           {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
-  def delete_bucket(bucket, sub_resources \\ %{}) do
-    Service.delete(bucket, nil, sub_resources: sub_resources)
+  def delete_bucket(%Config{} = config, bucket, sub_resources \\ %{}) do
+    Service.delete(config, bucket, nil, sub_resources: sub_resources)
   end
 end

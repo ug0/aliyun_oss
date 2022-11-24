@@ -1,21 +1,21 @@
 defmodule Aliyun.Oss.Object.Tagging do
   @moduledoc """
-  Object Tagging 相关操作
+  Object operations - Tagging.
   """
 
-  import Aliyun.Oss.Object, only: [get_object: 4, put_object: 5, delete_object: 3]
-
+  import Aliyun.Oss.Object, only: [get_object: 5, put_object: 6, delete_object: 4]
+  alias Aliyun.Oss.Config
   alias Aliyun.Oss.Client.{Response, Error}
 
   @type error() ::
           %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
 
   @doc """
-  通过GetObjectTagging接口获取对象的标签信息。
+  GetObjectTagging - gets the tags of an object.
 
   ## Examples
 
-      iex> Aliyun.Oss.Object.Tagging.get("some-bucket", "some-object")
+      iex> Aliyun.Oss.Object.Tagging.get(config, "some-bucket", "some-object")
       {:ok, %Aliyun.Oss.Client.Response{
           data: %{"Tagging" => %{"TagSet" => [%{"Key" => "key", "Value" => "value"}]}},
           headers: [
@@ -32,18 +32,19 @@ defmodule Aliyun.Oss.Object.Tagging do
           ]
         }
       }
+
   """
-  @spec get(String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
-  def get(bucket, object) do
-    get_object(bucket, object, %{}, %{"tagging" => nil})
+  @spec get(Config.t(), String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  def get(config, bucket, object) do
+    get_object(config, bucket, object, %{}, %{"tagging" => nil})
   end
 
   @doc """
-  通过PutObjectTagging接口设置或更新对象的标签（Object Tagging）。
+  PutObjectTagging - adds tags to an object or updates the tags added to the object.
 
   ## Examples
 
-      iex> Aliyun.Oss.Object.Tagging.put("some-bucket", "some-object", [{"key1", "value1"}, {:key2, "value2}])
+      iex> Aliyun.Oss.Object.Tagging.put(config, "some-bucket", "some-object", [{"key1", "value1"}, {:key2, "value2}])
       {:ok, %Aliyun.Oss.Client.Response{
           data: "",
           headers: [
@@ -53,6 +54,7 @@ defmodule Aliyun.Oss.Object.Tagging do
           ]
         }
       }
+
   """
   @body_tmpl """
   <?xml version="1.0" encoding="UTF-8"?>
@@ -67,15 +69,15 @@ defmodule Aliyun.Oss.Object.Tagging do
     </TagSet>
   </Tagging>
   """
-  @spec put(String.t(), String.t(), [{any(), any()}, ...]) ::
+  @spec put(Config.t(), String.t(), String.t(), [{any(), any()}, ...]) ::
           {:error, error()} | {:ok, Response.t()}
-  def put(bucket, object, tags) do
+  def put(config, bucket, object, tags) do
     xml_body = EEx.eval_string(@body_tmpl, tags: tags)
-    put_object(bucket, object, xml_body, %{}, %{"tagging" => nil})
+    put_object(config, bucket, object, xml_body, %{}, %{"tagging" => nil})
   end
 
   @doc """
-  通过DeleteObjectTagging删除指定对象的标签。
+  DeleteObjectTagging - deletes the tags of an object.
 
   ## Examples
 
@@ -89,9 +91,10 @@ defmodule Aliyun.Oss.Object.Tagging do
           ]
         }
       }
+
   """
-  @spec delete(String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
-  def delete(bucket, object) do
-    delete_object(bucket, object, %{"tagging" => nil})
+  @spec delete(Config.t(), String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  def delete(config, bucket, object) do
+    delete_object(config, bucket, object, %{"tagging" => nil})
   end
 end

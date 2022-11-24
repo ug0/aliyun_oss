@@ -1,17 +1,17 @@
 defmodule Aliyun.Oss.Bucket.CORS do
   @moduledoc """
-  Bucket CORS 相关操作
+  Bucket operations - CORS.
   """
 
-  import Aliyun.Oss.Bucket, only: [get_bucket: 3, put_bucket: 4, delete_bucket: 2]
-
+  import Aliyun.Oss.Bucket, only: [get_bucket: 4, put_bucket: 5, delete_bucket: 3]
+  alias Aliyun.Oss.Config
   alias Aliyun.Oss.Client.{Response, Error}
 
   @type error() ::
           %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
 
   @doc """
-  PutBucketCors接口用于为指定的存储空间（Bucket）设置跨域资源共享CORS（Cross-Origin Resource Sharing）规则。
+  PutBucketCors - configures cross-origin resource sharing (CORS) rules for a bucket.
 
   ## Examples
 
@@ -56,18 +56,19 @@ defmodule Aliyun.Oss.Bucket.CORS do
           ...
         ]
       }}
+
   """
-  @spec put(String.t(), String.t() | map()) :: {:error, error()} | {:ok, Response.t()}
-  def put(bucket, %{} = config) do
-    put(bucket, MapToXml.from_map(config))
+  @spec put(Config.t(), String.t(), String.t() | map()) :: {:error, error()} | {:ok, Response.t()}
+  def put(config, bucket, %{} = config) do
+    put(config, bucket, MapToXml.from_map(config))
   end
 
-  def put(bucket, config) do
-    put_bucket(bucket, %{}, %{"cors" => nil}, config)
+  def put(config, bucket, config) do
+    put_bucket(config, bucket, %{}, %{"cors" => nil}, config)
   end
 
   @doc """
-  GetBucketCors接口用于获取指定存储空间（Bucket）当前的跨域资源共享CORS（Cross-Origin Resource Sharing）规则。
+  GetBucketCors - gets the cross-origin resource sharing (CORS) rules configured for a specific bucket.
 
   ## Examples
 
@@ -97,14 +98,16 @@ defmodule Aliyun.Oss.Bucket.CORS do
           ...
         ]
       }}
+
   """
-  @spec get(String.t()) :: {:error, error()} | {:ok, Response.t()}
-  def get(bucket) do
-    get_bucket(bucket, %{}, %{"cors" => nil})
+  @spec get(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  def get(config, bucket) do
+    get_bucket(config, bucket, %{}, %{"cors" => nil})
   end
 
   @doc """
-  DeleteBucketCors用于关闭指定存储空间（Bucket）对应的跨域资源共享CORS（Cross-Origin Resource Sharing）功能并清空所有规则。
+  DeleteBucketCors - disables cross-origin resource sharing (CORS) for a specific bucket and delete
+  all CORS rules configured for the bucket.
 
   ## Examples
 
@@ -121,9 +124,11 @@ defmodule Aliyun.Oss.Bucket.CORS do
           {"x-oss-server-time", "90"}
         ]
       }}
+
   """
-  @spec delete(String.t()) :: {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
-  def delete(bucket) do
-    delete_bucket(bucket, %{"cors" => nil})
+  @spec delete(Config.t(), String.t()) ::
+          {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
+  def delete(config, bucket) do
+    delete_bucket(config, bucket, %{"cors" => nil})
   end
 end

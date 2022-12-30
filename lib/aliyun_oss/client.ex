@@ -7,11 +7,23 @@ defmodule Aliyun.Oss.Client do
   alias Aliyun.Oss.Client.{Request, Response, Error}
 
   def request(%Config{} = config, init_req) when is_map(init_req) do
+    type = Map.pop(init_req.headers, "Content-Type", nil)
+
     Request.build_signed(config, init_req)
     |> do_request()
     |> case do
       {:ok, %HTTPoison.Response{body: body, status_code: status_code, headers: headers}}
       when status_code in 200..299 ->
+        headers =
+          if is_nil(type) do
+            headers
+          else
+            Enum.map(headers, fn
+              {"Content-Type", _} -> {"Content-Type", type}
+              other -> other
+            end)
+          end
+
         {:ok, Response.parse(body, headers)}
 
       {:ok, %HTTPoison.Response{body: body, status_code: status_code}} ->

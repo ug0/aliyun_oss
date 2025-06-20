@@ -4,11 +4,13 @@ defmodule Aliyun.Oss.Client.ObjectTest do
   alias Aliyun.Oss.Object
   alias Aliyun.Oss.Config
 
+  @region "cn-hangzhou"
   @endpoint "oss-example.oss-cn-hangzhou.aliyuncs.com"
   @access_key_id "44CF9590006BF252F707"
   @access_key_secret "OtxrzxIsfpFjA7SwPzILwy8Bw21TLhquhboDYROV"
 
   @config Config.new!(%{
+            region: @region,
             endpoint: @endpoint,
             access_key_id: @access_key_id,
             access_key_secret: @access_key_secret

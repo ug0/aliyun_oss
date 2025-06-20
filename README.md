@@ -12,7 +12,7 @@ Add `aliyun_oss` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:aliyun_oss, "~> 2.0"}
+    {:aliyun_oss, "~> 3.0"}
   ]
 end
 ```
@@ -39,9 +39,11 @@ end
 
 # In the config/runtime.exs
 config :my_app, MyApp.Oss,
-  endpoint: "...",
-  access_key_id: "...",
-  access_key_secret: "..."
+  region: "cn-hangzhou",
+  endpoint: "oss-cn-hangzhou.aliyuncs.com",
+  access_key_id: "YOUR_ACCESS_KEY_ID",
+  access_key_secret: "YOUR_ACCESS_KEY_SECRET",
+  security_token: "YOUR_STS_SECURITY_TOKEN" # for using STS token
 ```
 
 ## Documentation

@@ -3,7 +3,7 @@ defmodule Aliyun.Oss.LiveChannel do
   LiveChannel-related operations.
   """
 
-  import Aliyun.Oss.Bucket, only: [get_bucket: 4]
+  import Aliyun.Oss.Bucket, only: [get_bucket: 3]
   import Aliyun.Oss.Object, only: [put_object: 6, get_object: 5, delete_object: 4]
   alias Aliyun.Oss.Config
   alias Aliyun.Oss.Service
@@ -159,7 +159,7 @@ defmodule Aliyun.Oss.LiveChannel do
   """
   @spec list(Config.t(), String.t(), map()) :: {:error, error()} | {:ok, Response.t()}
   def list(config, bucket, query_params \\ %{}) do
-    get_bucket(config, bucket, query_params, %{"live" => nil})
+    get_bucket(config, bucket, Map.put(query_params, "live", nil))
   end
 
   @doc """

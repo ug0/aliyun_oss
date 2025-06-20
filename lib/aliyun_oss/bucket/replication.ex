@@ -3,7 +3,7 @@ defmodule Aliyun.Oss.Bucket.Replication do
   Bucket operations - Replication.
   """
 
-  import Aliyun.Oss.Bucket, only: [get_bucket: 4]
+  import Aliyun.Oss.Bucket, only: [get_bucket: 3]
   import Aliyun.Oss.Service, only: [post: 5]
   alias Aliyun.Oss.Config
   alias Aliyun.Oss.Client.{Response, Error}
@@ -99,7 +99,7 @@ defmodule Aliyun.Oss.Bucket.Replication do
   """
   @spec get(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
   def get(config, bucket) do
-    get_bucket(config, bucket, %{}, %{"replication" => nil})
+    get_bucket(config, bucket, %{"replication" => nil})
   end
 
   @doc """
@@ -139,7 +139,7 @@ defmodule Aliyun.Oss.Bucket.Replication do
   """
   @spec get_location(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
   def get_location(config, bucket) do
-    get_bucket(config, bucket, %{}, %{"replicationLocation" => nil})
+    get_bucket(config, bucket, %{"replicationLocation" => nil})
   end
 
   @doc """
@@ -174,7 +174,7 @@ defmodule Aliyun.Oss.Bucket.Replication do
   @spec get_progress(Config.t(), String.t(), String.t()) ::
           {:error, error()} | {:ok, Response.t()}
   def get_progress(config, bucket, rule_id) do
-    get_bucket(config, bucket, %{"rule-id" => rule_id}, %{"replicationProgress" => nil})
+    get_bucket(config, bucket, %{"rule-id" => rule_id, "replicationProgress" => nil})
   end
 
   @doc """

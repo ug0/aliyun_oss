@@ -30,32 +30,33 @@ defmodule Aliyun.Oss.Object do
       {:ok,
       %Aliyun.Oss.Client.Response{
         data: "",
-        headers: [
-          {"Server", "AliyunOSS"},
-          {"Date", "Wed, 05 Dec 2018 05:50:02 GMT"},
-          {"Content-Type", "application/octet-stream"},
-          {"Content-Length", "0"},
-          {"Connection", "keep-alive"},
-          {"x-oss-request-id", "5C0000000000000000000000"},
-          {"Accept-Ranges", "bytes"},
-          {"ETag", "\"D4100000000000000000000000000000\""},
-          {"Last-Modified", "Mon, 15 Oct 2018 01:38:47 GMT"},
-          {"x-oss-object-type", "Normal"},
-          {"x-oss-hash-crc64ecma", "0"},
-          {"x-oss-storage-class", "IA"},
-          {"Content-MD5", "1B2M2Y8AsgTpgAmY7PhCfg=="},
-          {"x-oss-server-time", "19"}
-        ]
+        headers: %{
+          "accept-ranges" => ["bytes"],
+          "connection" => ["keep-alive"],
+          "content-length" => ["19"],
+          "content-md5" => ["wpqajJtzJSpf8lOY/W4Hqg=="],
+          "content-type" => ["text/plain"],
+          "date" => ["Fri, 04 Jul 2025 03:10:24 GMT"],
+          "etag" => ["\"D4100000000000000000000000000000\""],
+          "last-modified" => ["Fri, 15 Jan 2021 09:16:13 GMT"],
+          "server" => ["AliyunOSS"],
+          "x-oss-hash-crc64ecma" => ["587015626014620604"],
+          "x-oss-object-type" => ["Normal"],
+          "x-oss-request-id" => ["680000000000000000000CE1"],
+          "x-oss-server-time" => ["24"],
+          "x-oss-storage-class" => ["Standard"],
+          "x-oss-version-id" => ["null"]
+        }
       }}
 
       iex> Aliyun.Oss.Object.head_object(config, "some-bucket", "unknown-object")
       {:error, %Aliyun.Oss.Client.Error{status_code: 404, body: "", parsed_details: nil}}
 
   """
-  @spec head_object(Config.t(), String.t(), String.t(), map(), map()) ::
+  @spec head_object(Config.t(), String.t(), String.t(), map()) ::
           {:error, error()} | {:ok, Response.t()}
-  def head_object(%Config{} = config, bucket, object, headers \\ %{}, sub_resources \\ %{}) do
-    Service.head(config, bucket, object, headers: headers, sub_resources: sub_resources)
+  def head_object(%Config{} = config, bucket, object, headers \\ %{}) do
+    Service.head(config, bucket, object, headers: headers)
   end
 
   @doc """
@@ -69,24 +70,25 @@ defmodule Aliyun.Oss.Object do
       {:ok,
       %Aliyun.Oss.Client.Response{
         data: "",
-        headers: [
-          {"Server", "AliyunOSS"},
-          {"Date", "Wed, 05 Dec 2018 05:50:02 GMT"},
-          {"Content-Length", "0"},
-          {"Connection", "keep-alive"},
-          {"x-oss-request-id", "5C0000000000000000000000"},
-          {"ETag", "\"D4100000000000000000000000000000\""},
-          {"x-oss-hash-crc64ecma", "0"},
-          {"Last-Modified", "Mon, 15 Oct 2018 01:38:47 GMT"},
-          {"x-oss-server-time", "19"}
-        ]
+        headers: %{
+          "connection" => ["keep-alive"],
+          "content-length" => ["19"],
+          "date" => ["Fri, 04 Jul 2025 03:16:45 GMT"],
+          "etag" => ["\"D4100000000000000000000000000000\""],
+          "last-modified" => ["Fri, 15 Jan 2021 09:16:13 GMT"],
+          "server" => ["AliyunOSS"],
+          "x-oss-hash-crc64ecma" => ["587015626014620604"],
+          "x-oss-request-id" => ["680000000000000000000F52"],
+          "x-oss-server-time" => ["39"],
+          "x-oss-version-id" => ["null"]
+        }
       }}
 
   """
   @spec get_object_meta(Config.t(), String.t(), String.t()) ::
           {:error, error()} | {:ok, Response.t()}
   def get_object_meta(%Config{} = config, bucket, object) do
-    head_object(config, bucket, object, %{}, %{"objectMeta" => nil})
+    Service.head(config, bucket, object, query_params: %{"objectMeta" => nil})
   end
 
   @doc """
@@ -99,18 +101,54 @@ defmodule Aliyun.Oss.Object do
           data: <<208, 207, 17, 224, 161, 177, 26, 225, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 62, 0, 3, 0, 254, 255, 9, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 18,
             0, 0, 0, ...>>,
-          headers: [
-            {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
-            ...
-          ]
+          headers: %{
+            "accept-ranges" => ["bytes"],
+            "connection" => ["keep-alive"],
+            "content-md5" => ["wpqajJtzJSpf8lOY/W4Hqg=="],
+            "content-type" => ["text/plain"],
+            "date" => ["Fri, 04 Jul 2025 05:45:44 GMT"],
+            "etag" => ["\"C29000000000000000000000000000AA\""],
+            "last-modified" => ["Fri, 15 Jan 2021 09:16:13 GMT"],
+            "server" => ["AliyunOSS"],
+            "x-oss-hash-crc64ecma" => ["587015626014620604"],
+            "x-oss-object-type" => ["Normal"],
+            "x-oss-request-id" => ["6860000000000000000000A3"],
+            "x-oss-server-time" => ["41"],
+            "x-oss-storage-class" => ["Standard"],
+            "x-oss-version-id" => ["null"]
+          }
+        }
+      }
+      iex> Aliyun.Oss.Object.get_object(config, "some-bucket", "some-object", %{}, %{"response-cache-control" => "no-cache"})
+      {:ok, %Aliyun.Oss.Client.Response{
+          data: <<208, 207, 17, 224, 161, 177, 26, 225, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 62, 0, 3, 0, 254, 255, 9, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 18,
+            0, 0, 0, ...>>,
+          headers: %{
+            "accept-ranges" => ["bytes"],
+            "connection" => ["keep-alive"],
+            "cache-control" => ["no-cache],
+            "content-md5" => ["wpqajJtzJSpf8lOY/W4Hqg=="],
+            "content-type" => ["text/plain"],
+            "date" => ["Fri, 04 Jul 2025 05:45:44 GMT"],
+            "etag" => ["\"C29000000000000000000000000000AA\""],
+            "last-modified" => ["Fri, 15 Jan 2021 09:16:13 GMT"],
+            "server" => ["AliyunOSS"],
+            "x-oss-hash-crc64ecma" => ["587015626014620604"],
+            "x-oss-object-type" => ["Normal"],
+            "x-oss-request-id" => ["6860000000000000000000A3"],
+            "x-oss-server-time" => ["41"],
+            "x-oss-storage-class" => ["Standard"],
+            "x-oss-version-id" => ["null"]
+          }
         }
       }
 
   """
   @spec get_object(Config.t(), String.t(), String.t(), map(), map()) ::
           {:error, error()} | {:ok, Response.t()}
-  def get_object(%Config{} = config, bucket, object, headers \\ %{}, sub_resources \\ %{}) do
-    Service.get(config, bucket, object, headers: headers, sub_resources: sub_resources)
+  def get_object(%Config{} = config, bucket, object, headers \\ %{}, query_params \\ %{}) do
+    Service.get(config, bucket, object, headers: headers, query_params: query_params)
   end
 
   @doc """

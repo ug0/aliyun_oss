@@ -3,7 +3,7 @@ defmodule Aliyun.Oss.Bucket.Referer do
   Bucket operations - Referer.
   """
 
-  import Aliyun.Oss.Bucket, only: [get_bucket: 4, put_bucket: 5]
+  import Aliyun.Oss.Bucket, only: [get_bucket: 3, put_bucket: 4]
   alias Aliyun.Oss.Config
   alias Aliyun.Oss.Client.{Response, Error}
 
@@ -33,7 +33,7 @@ defmodule Aliyun.Oss.Bucket.Referer do
 
   @spec get(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
   def get(config, bucket) do
-    get_bucket(config, bucket, %{}, %{"referer" => nil})
+    get_bucket(config, bucket, %{"referer" => nil})
   end
 
   @doc """
@@ -71,6 +71,6 @@ defmodule Aliyun.Oss.Bucket.Referer do
   @spec put(Config.t(), String.t(), String.t()) ::
           {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
   def put(config, bucket, xml_body) do
-    put_bucket(config, bucket, %{}, %{"referer" => nil}, xml_body)
+    put_bucket(config, bucket, %{"referer" => nil}, xml_body)
   end
 end

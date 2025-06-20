@@ -3,7 +3,7 @@ defmodule Aliyun.Oss.Bucket.WORM do
   Bucket operations - Retention policy.
   """
 
-  import Aliyun.Oss.Bucket, only: [get_bucket: 4, delete_bucket: 3]
+  import Aliyun.Oss.Bucket, only: [get_bucket: 3, delete_bucket: 3]
   import Aliyun.Oss.Service, only: [post: 5]
   alias Aliyun.Oss.Config
   alias Aliyun.Oss.Client.{Response, Error}
@@ -36,7 +36,7 @@ defmodule Aliyun.Oss.Bucket.WORM do
   @spec initiate(Config.t(), String.t(), integer()) :: {:error, error()} | {:ok, Response.t()}
   def initiate(config, bucket, days) when is_integer(days) do
     body_xml = EEx.eval_string(@body_tmpl, days: days)
-    post(config, bucket, nil, body_xml, sub_resources: %{"worm" => nil})
+    post(config, bucket, nil, body_xml, query_params: %{"worm" => nil})
   end
 
   @doc """
@@ -76,7 +76,7 @@ defmodule Aliyun.Oss.Bucket.WORM do
   """
   @spec complete(Config.t(), String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
   def complete(config, bucket, worm_id) do
-    post(config, bucket, nil, "", sub_resources: %{"wormId" => worm_id})
+    post(config, bucket, nil, "", query_params: %{"wormId" => worm_id})
   end
 
   @doc """
@@ -106,7 +106,7 @@ defmodule Aliyun.Oss.Bucket.WORM do
   def extend(config, bucket, worm_id, days) when is_integer(days) do
     body_xml = EEx.eval_string(@body_tmpl, days: days)
 
-    post(config, bucket, nil, body_xml, sub_resources: %{"wormId" => worm_id, "wormExtend" => nil})
+    post(config, bucket, nil, body_xml, query_params: %{"wormId" => worm_id, "wormExtend" => nil})
   end
 
   @doc """
@@ -134,6 +134,6 @@ defmodule Aliyun.Oss.Bucket.WORM do
   """
   @spec get(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
   def get(config, bucket) do
-    get_bucket(config, bucket, %{}, %{"worm" => nil})
+    get_bucket(config, bucket, %{"worm" => nil})
   end
 end

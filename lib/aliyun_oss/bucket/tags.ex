@@ -3,7 +3,7 @@ defmodule Aliyun.Oss.Bucket.Tags do
   Bucket operations - Tags.
   """
 
-  import Aliyun.Oss.Bucket, only: [get_bucket: 4, put_bucket: 5, delete_bucket: 3]
+  import Aliyun.Oss.Bucket, only: [get_bucket: 3, put_bucket: 4, delete_bucket: 3]
   alias Aliyun.Oss.Config
   alias Aliyun.Oss.Client.{Response, Error}
 
@@ -29,7 +29,7 @@ defmodule Aliyun.Oss.Bucket.Tags do
   """
   @spec get(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
   def get(config, bucket) do
-    get_bucket(config, bucket, %{}, %{"tagging" => nil})
+    get_bucket(config, bucket, %{"tagging" => nil})
   end
 
   @doc """
@@ -67,7 +67,7 @@ defmodule Aliyun.Oss.Bucket.Tags do
           {:error, error()} | {:ok, Response.t()}
   def put(config, bucket, tags) do
     xml_body = EEx.eval_string(@body_tmpl, tags: tags)
-    put_bucket(config, bucket, %{}, %{"tagging" => nil}, xml_body)
+    put_bucket(config, bucket, %{"tagging" => nil}, xml_body)
   end
 
   @doc """

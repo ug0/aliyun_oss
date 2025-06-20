@@ -3,7 +3,7 @@ defmodule Aliyun.Oss.Bucket.CORS do
   Bucket operations - CORS.
   """
 
-  import Aliyun.Oss.Bucket, only: [get_bucket: 4, put_bucket: 5, delete_bucket: 3]
+  import Aliyun.Oss.Bucket, only: [get_bucket: 3, put_bucket: 4, delete_bucket: 3]
   alias Aliyun.Oss.Config
   alias Aliyun.Oss.Client.{Response, Error}
 
@@ -64,7 +64,7 @@ defmodule Aliyun.Oss.Bucket.CORS do
   end
 
   def put(config, bucket, config) do
-    put_bucket(config, bucket, %{}, %{"cors" => nil}, config)
+    put_bucket(config, bucket, %{"cors" => nil}, config)
   end
 
   @doc """
@@ -102,7 +102,7 @@ defmodule Aliyun.Oss.Bucket.CORS do
   """
   @spec get(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
   def get(config, bucket) do
-    get_bucket(config, bucket, %{}, %{"cors" => nil})
+    get_bucket(config, bucket, %{"cors" => nil})
   end
 
   @doc """

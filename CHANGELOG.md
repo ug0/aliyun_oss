@@ -1,5 +1,42 @@
 # Changelog
 
+## v3.0.0
+  V3 replaced `httpoison` with `req` and rewrites the function to build request and generate signature.
+  Now it supports [Aliyun OSS V4 signature](https://help.aliyun.com/zh/oss/developer-reference/guidelines-for-upgrading-v1-signatures-to-v4-signatures).
+
+  - **Breaking changes**:
+    - `Aliyun.Oss.Client.Response` has a new structure of `headers` as same as `req`.
+      ```elixir
+      # old
+      %Aliyun.Oss.Client.Response{headers: [
+        {"Server", "AliyunOSS"},
+        {"Date", "Fri, 11 Jan 2019 04:35:39 GMT"},
+        {"Content-Length", "0"},
+        {"Connection", "keep-alive"},
+        {"x-oss-request-id", "5C381D000000000000000000"},
+        {"Location", "/new-bucket"},
+        {"x-oss-server-time", "438"}
+      ]}
+      # new
+      %Aliyun.Oss.Client.Response{headers: %{
+        "connection" => ["keep-alive"],
+        "content-length" => ["0"],
+        "date" => ["Fri, 11 Jan 2019 04:35:39 GMT"],
+        "location" => ["/new-bucket"],
+        "server" => ["AliyunOSS"],
+        "x-oss-request-id" => ["5C381D000000000000000000"],
+        "x-oss-server-time" => ["438"]
+      }}
+      ```
+    - `Aliyun.Oss.Config` now requires to also set `region`
+    - Arguments such as `headers` are now passed via `options` keyword list:
+      - `Aliyun.Oss.Bucket.get_bucket`
+      - `Aliyun.Oss.Bucket.list_objects`
+      - `Aliyun.Oss.Bucket.put_bucket`
+      - `Aliyun.Oss.Bucket.delete_bucket`
+  - New APIs:
+    - `Aliyun.Oss.Bucket.get_bucket_stat`
+
 ## v2.0.0
   - **Breaking changes**:
     - Don't use global configuration any more

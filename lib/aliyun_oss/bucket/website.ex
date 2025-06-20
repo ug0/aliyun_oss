@@ -3,7 +3,7 @@ defmodule Aliyun.Oss.Bucket.Website do
   Bucket operations - Static websites.
   """
 
-  import Aliyun.Oss.Bucket, only: [get_bucket: 4, put_bucket: 5, delete_bucket: 3]
+  import Aliyun.Oss.Bucket, only: [get_bucket: 3, put_bucket: 4, delete_bucket: 3]
   alias Aliyun.Oss.Config
   alias Aliyun.Oss.Client.{Response, Error}
 
@@ -44,7 +44,7 @@ defmodule Aliyun.Oss.Bucket.Website do
   """
   @spec get(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
   def get(config, bucket) do
-    get_bucket(config, bucket, %{}, %{"website" => nil})
+    get_bucket(config, bucket, %{"website" => nil})
   end
 
   @doc """
@@ -80,7 +80,7 @@ defmodule Aliyun.Oss.Bucket.Website do
   @spec put(Config.t(), String.t(), String.t()) ::
           {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
   def put(config, bucket, xml_body) do
-    put_bucket(config, bucket, %{}, %{"website" => nil}, xml_body)
+    put_bucket(config, bucket, %{"website" => nil}, xml_body)
   end
 
   @doc """

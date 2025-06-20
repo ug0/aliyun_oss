@@ -3,7 +3,7 @@ defmodule Aliyun.Oss.Bucket.Inventory do
   Bucket operations - Inventory.
   """
 
-  import Aliyun.Oss.Bucket, only: [get_bucket: 4, put_bucket: 5, delete_bucket: 3]
+  import Aliyun.Oss.Bucket, only: [get_bucket: 3, put_bucket: 4, delete_bucket: 3]
   alias Aliyun.Oss.Config
   alias Aliyun.Oss.Client.{Response, Error}
 
@@ -71,7 +71,7 @@ defmodule Aliyun.Oss.Bucket.Inventory do
   end
 
   def put(config, bucket, inventory_id, config) do
-    put_bucket(config, bucket, %{}, %{"inventory" => nil, "inventoryId" => inventory_id}, config)
+    put_bucket(config, bucket, %{"inventory" => nil, "inventoryId" => inventory_id}, config)
   end
 
   @doc """
@@ -112,7 +112,7 @@ defmodule Aliyun.Oss.Bucket.Inventory do
   """
   @spec get(Config.t(), String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
   def get(config, bucket, inventory_id) do
-    get_bucket(config, bucket, %{}, %{"inventory" => nil, "inventoryId" => inventory_id})
+    get_bucket(config, bucket, %{"inventory" => nil, "inventoryId" => inventory_id})
   end
 
   @doc """
@@ -139,7 +139,7 @@ defmodule Aliyun.Oss.Bucket.Inventory do
   """
   @spec list(Config.t(), String.t(), nil | String.t()) :: {:error, error()} | {:ok, Response.t()}
   def list(config, bucket, continuation_token \\ nil) do
-    get_bucket(config, bucket, %{}, %{
+    get_bucket(config, bucket, %{
       "inventory" => nil,
       "continuation-token" => continuation_token
     })

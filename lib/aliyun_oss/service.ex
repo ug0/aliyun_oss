@@ -10,52 +10,111 @@ defmodule Aliyun.Oss.Service do
 
   @spec get(Config.t(), String.t() | nil, String.t() | nil, keyword()) ::
           {:error, error()} | {:ok, Response.t()}
-  def get(%Config{} = config, bucket, object, opts \\ []) do
-    request(config, "GET", bucket, object, "", opts)
+  def get(%Config{} = config, bucket, object, options \\ []) do
+    request(config, :get, bucket, object, "", options)
   end
 
   @spec post(Config.t(), String.t(), String.t() | nil, String.t(), keyword()) ::
           {:error, error()} | {:ok, Response.t()}
-  def post(%Config{} = config, bucket, object, body, opts \\ []) do
-    request(config, "POST", bucket, object, body, opts)
+  def post(%Config{} = config, bucket, object, body, options \\ []) do
+    request(config, :post, bucket, object, body, options)
   end
 
   @spec put(Config.t(), String.t(), String.t() | nil, String.t(), keyword()) ::
           {:error, error()} | {:ok, Response.t()}
-  def put(%Config{} = config, bucket, object, body, opts \\ []) do
-    request(config, "PUT", bucket, object, body, opts)
+  def put(%Config{} = config, bucket, object, body, options \\ []) do
+    request(config, :put, bucket, object, body, options)
   end
 
   @spec delete(Config.t(), String.t(), String.t() | nil, keyword()) ::
           {:error, error()} | {:ok, Response.t()}
-  def delete(%Config{} = config, bucket, object, opts \\ []) do
-    request(config, "DELETE", bucket, object, "", opts)
+  def delete(%Config{} = config, bucket, object, options \\ []) do
+    request(config, :delete, bucket, object, "", options)
   end
 
   @spec head(Config.t(), String.t(), String.t() | nil, keyword()) ::
           {:error, error()} | {:ok, Response.t()}
-  def head(%Config{} = config, bucket, object, opts \\ []) do
-    request(config, "HEAD", bucket, object, "", opts)
+  def head(%Config{} = config, bucket, object, options \\ []) do
+    request(config, :head, bucket, object, "", options)
   end
 
-  defp request(%Config{} = config, verb, bucket, object, body, opts) do
-    %{endpoint: endpoint} = config
+  defp request(%Config{} = config, method, bucket, object, body, options) do
+    Client.request(
+      config,
+      method,
+      bucket,
+      object,
+      Keyword.get(options, :headers, %{}),
+      Keyword.get(options, :query_params, %{}),
+      body
+    )
+  end
 
-    {host, resource} =
-      case bucket do
-        <<_, _::binary>> -> {"#{bucket}.#{endpoint}", "/#{bucket}/#{object}"}
-        _ -> {endpoint, "/"}
-      end
+  @doc """
+  ListBuckets - lists the information about all buckets.
 
-    Client.request(config, %{
-      verb: verb,
-      body: body,
-      host: host,
-      path: "/#{object}",
-      resource: resource,
-      query_params: Keyword.get(opts, :query_params, %{}),
-      headers: Keyword.get(opts, :headers, %{}),
-      sub_resources: Keyword.get(opts, :sub_resources, %{})
-    })
+  ## Options
+
+  - `:query_params` - Defaults to `%{}`
+  - `:headers` - Defaults to `%{}`
+
+  ## Examples
+
+      iex> Aliyun.Oss.Service.list_buckets(config)
+      {:ok, %Aliyun.Oss.Client.Response{
+          data: %{
+            "ListAllMyBucketResult" => %{
+              "Buckets" => %{
+                "Bucket" => [
+                  %{
+                    "CreationDate" => "2018-10-12T07:57:51.000Z",
+                    "ExtranetEndpoint" => "oss-cn-shenzhen.aliyuncs.com",
+                    "IntranetEndpoint" => "oss-cn-shenzhen-internal.aliyuncs.com",
+                    "Location" => "oss-cn-shenzhen",
+                    "Name" => "XXXXX",
+                    "Region" => "cn-shenzhen",
+                    "StorageClass" => "Standard"
+                  },
+                  ...
+                ]
+              },
+              "IsTruncated" => true,
+              "Marker" => nil,
+              "MaxKeys" => 5,
+              "NextMarker" => "XXXXX",
+              "Owner" => %{"DislayName" => "11111111", "ID" => "11111111"},
+              "Prefix" => nil
+            }
+          },
+          headers: %{
+            "connection" => ["keep-alive"],
+            ...
+          }
+        }
+      }
+
+      iex> Aliyun.Oss.Service.list_buckets(config, query_params: %{"max-keys" => 100000})
+      {:error,
+        %Aliyun.Oss.Client.Error{
+          status_code: 400,
+          parsed_details: %{
+            "ArgumentName" => "max-keys",
+            "ArgumentValue" => "100000",
+            "Code" => "InvalidArgument",
+            "EC" => "0017-00000289",
+            "HostId" => "oss-cn-shenzhen.aliyuncs.com",
+            "Message" => "Argument max-keys must be an integer between 1 and 1000.",
+            "RecommendDoc" => "https://api.aliyun.com/troubleshoot?q=0017-00000289",
+            "RequestId" => "5BFF8912332CCD8D560F65D9"
+          },
+          body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>...</xml>"
+        }
+      }
+
+  """
+  @spec list_buckets(Config.t(), keyword()) ::
+          {:error, error()} | {:ok, Response.t()}
+  def list_buckets(%Config{} = config, options \\ []) do
+    request(config, :get, nil, nil, "", options)
   end
 end

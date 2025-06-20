@@ -3,7 +3,7 @@ defmodule Aliyun.Oss.Bucket.Policy do
   Bucket operations - Authorization policy.
   """
 
-  import Aliyun.Oss.Bucket, only: [get_bucket: 4, put_bucket: 5, delete_bucket: 3]
+  import Aliyun.Oss.Bucket, only: [get_bucket: 3, put_bucket: 4, delete_bucket: 3]
   alias Aliyun.Oss.Config
   alias Aliyun.Oss.Client.{Response, Error}
 
@@ -38,7 +38,7 @@ defmodule Aliyun.Oss.Bucket.Policy do
   """
   @spec put(Config.t(), String.t(), map()) :: {:error, error()} | {:ok, Response.t()}
   def put(config, bucket, %{} = policy) do
-    put_bucket(config, bucket, %{}, %{"policy" => nil}, Jason.encode!(policy))
+    put_bucket(config, bucket, %{"policy" => nil}, Jason.encode!(policy))
   end
 
   @doc """
@@ -68,7 +68,7 @@ defmodule Aliyun.Oss.Bucket.Policy do
   """
   @spec get(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
   def get(config, bucket) do
-    get_bucket(config, bucket, %{}, %{"policy" => nil})
+    get_bucket(config, bucket, %{"policy" => nil})
   end
 
   @doc """

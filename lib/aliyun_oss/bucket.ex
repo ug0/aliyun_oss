@@ -28,69 +28,20 @@ defmodule Aliyun.Oss.Bucket do
   @type error() ::
           %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
 
-  @doc """
-  ListBuckets - lists the information about all buckets.
 
-  ## Examples
-
-      iex> Aliyun.Oss.Bucket.list_buckets(config, %{"max-keys" => 5})
-      {:ok, %Aliyun.Oss.Client.Response{
-          data: %{
-            "Buckets" => %{
-              "Bucket" => [
-                %{
-                  "CreationDate" => "2018-10-12T07:57:51.000Z",
-                  "ExtranetEndpoint" => "oss-cn-shenzhen.aliyuncs.com",
-                  "IntranetEndpoint" => "oss-cn-shenzhen-internal.aliyuncs.com",
-                  "Location" => "oss-cn-shenzhen",
-                  "Name" => "XXXXX",
-                  "StorageClass" => "Standard"
-                },
-                ...
-              ]
-            },
-            "IsTruncated" => true,
-            "Marker" => nil,
-            "MaxKeys" => 5,
-            "NextMarker" => "XXXXX",
-            "Owner" => %{"DislayName" => "11111111", "ID" => "11111111"},
-            "Prefix" => nil
-          },
-          headers: [
-            {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
-            ...
-          ]
-        }
-      }
-
-      iex> Aliyun.Oss.Bucket.list_buckets(config, %{"max-keys" => 100000})
-      {:error,
-        %Aliyun.Oss.Client.Error{
-          status_code: 400,
-          parsed_details: %{
-            "ArgumentName" => "max-keys",
-            "ArgumentValue" => "100000",
-            "Code" => "InvalidArgument",
-            "HostId" => "oss-cn-shenzhen.aliyuncs.com",
-            "Message" => "Argument max-keys must be an integer between 1 and 1000.",
-            "RequestId" => "5BFF8912332CCD8D560F65D9"
-          },
-          body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>...</xml>"
-        }
-      }
-
-  """
-  @spec list_buckets(Config.t(), map()) :: {:error, error()} | {:ok, Response.t()}
-  def list_buckets(%Config{} = config, query_params \\ %{}) do
-    Service.get(config, nil, nil, query_params: query_params)
-  end
+  defdelegate list_buckets(config, options \\ []), to: Service
 
   @doc """
   GetBucket (ListObjects) - lists the information about all objects in a bucket.
 
+  ## Options
+
+  - `:query_params` - Defaults to `%{}`
+  - `:headers` - Defaults to `%{}`
+
   ## Examples
 
-      iex> Aliyun.Oss.Bucket.get_bucket(config, "some-bucket", %{"prefix" => "foo/"})
+      iex> Aliyun.Oss.Bucket.get_bucket(config, "some-bucket", query_params: %{"prefix" => "foo/"})
       {:ok, %Aliyun.Oss.Client.Response{
           data: %{
             "ListBucketResult" => %{
@@ -115,10 +66,10 @@ defmodule Aliyun.Oss.Bucket do
               "Prefix" => "foo/"
             }
           },
-          headers: [
-            {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
+          headers: %{
+            "connection" => ["keep-alive"],
             ...
-          ]
+          }
         }
       }
 
@@ -130,8 +81,10 @@ defmodule Aliyun.Oss.Bucket do
             "ListBucketResult" => %{
               "BucketName" => "unknown-bucket",
               "Code" => "NoSuchBucket",
+              "EC" => "0015-00000101",
               "HostId" => "unknown-bucket.oss-cn-shenzhen.aliyuncs.com",
               "Message" => "The specified bucket does not exist.",
+              "RecommendDoc" => "https://api.aliyun.com/troubleshoot?q=0015-00000101",
               "RequestId" => "5BFF89955E29FF66F10B9763"
             }
           },
@@ -140,18 +93,23 @@ defmodule Aliyun.Oss.Bucket do
       }
 
   """
-  @spec get_bucket(Config.t(), String.t(), map(), map()) ::
+  @spec get_bucket(Config.t(), String.t(), keyword()) ::
           {:error, error()} | {:ok, Response.t()}
-  def get_bucket(%Config{} = config, bucket, query_params \\ %{}, sub_resources \\ %{}) do
-    Service.get(config, bucket, nil, query_params: query_params, sub_resources: sub_resources)
+  def get_bucket(%Config{} = config, bucket, options \\ []) do
+    Service.get(config, bucket, nil, options)
   end
 
   @doc """
   GetBucketV2 (ListObjectsV2) - lists the information about all objects in a bucket.
 
+  ## Options
+
+  - `:query_params` - Defaults to `%{}`
+  - `:headers` - Defaults to `%{}`
+
   ## Examples
 
-      iex> Aliyun.Oss.Bucket.list_objects(config, "some-bucket", %{"prefix" => "foo/"})
+      iex> Aliyun.Oss.Bucket.list_objects(config, "some-bucket", query_params: %{"prefix" => "foo/"})
       {:ok, %Aliyun.Oss.Client.Response{
           data: %{
             "ListBucketResult" => %{
@@ -177,10 +135,10 @@ defmodule Aliyun.Oss.Bucket do
               "Prefix" => "foo/"
             }
           },
-          headers: [
-            {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
+          headers: %{
+            "connection" => ["keep-alive"],
             ...
-          ]
+          }
         }
       }
 
@@ -192,8 +150,10 @@ defmodule Aliyun.Oss.Bucket do
             "ListBucketResult" => %{
               "BucketName" => "unknown-bucket",
               "Code" => "NoSuchBucket",
+              "EC" => "0015-00000101",
               "HostId" => "unknown-bucket.oss-cn-shenzhen.aliyuncs.com",
               "Message" => "The specified bucket does not exist.",
+              "RecommendDoc" => "https://api.aliyun.com/troubleshoot?q=0015-00000101",
               "RequestId" => "5BFF89955E29FF66F10B9763"
             }
           },
@@ -202,10 +162,11 @@ defmodule Aliyun.Oss.Bucket do
       }
 
   """
-  @spec list_objects(Config.t(), String.t(), map(), map()) ::
+  @query_params %{"list-type" => 2}
+  @spec list_objects(Config.t(), String.t(), keyword()) ::
           {:error, error()} | {:ok, Response.t()}
-  def list_objects(%Config{} = config, bucket, query_params \\ %{}, sub_resources \\ %{}) do
-    get_bucket(config, bucket, Map.merge(query_params, %{"list-type" => 2}), sub_resources)
+  def list_objects(%Config{} = config, bucket, options \\ []) do
+    get_bucket(config, bucket, Keyword.update(options, :query_params, @query_params, &Map.merge(&1, @query_params)))
   end
 
   @doc """
@@ -219,8 +180,12 @@ defmodule Aliyun.Oss.Bucket do
           "BucketInfo" => %{
             "Bucket" => %{
               "AccessControlList" => %{"Grant" => "private"},
+              "AccessMonitor" => "Disabled",
+              "BlockPublicAccess" => "false",
+              "BucketPolicy" => %{"LogBucket" => nil, "LogPrefix" => nil},
               "Comment" => nil,
               "CreationDate" => "2018-08-29T01:52:03.000Z",
+              "CrossRegionReplication" => "Disabled",
               "DataRedundancyType" => "LRS",
               "ExtranetEndpoint" => "oss-cn-shenzhen.aliyuncs.com",
               "IntranetEndpoint" => "oss-cn-shenzhen-internal.aliyuncs.com",
@@ -230,19 +195,25 @@ defmodule Aliyun.Oss.Bucket do
                 "DisplayName" => "11111111",
                 "ID" => "11111111"
               },
-              "StorageClass" => "IA"
+              "ResourceGroupId" => "rg-acfmvqvnke6otqi",
+              "ResourcePoolConfig" => nil,
+              "ServerSideEncryptionRule" => %{"SSEAlgorithm" => "None"},
+              "StorageClass" => "IA",
+              "TransferAcceleration" => "Disabled",
+              "Versioning" => "Suspended"
             }
           }
         },
-        headers: [
-          {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"}
-        ]
+        headers: %{
+          "connection" => ["keep-alive"],
+          ...
+        }
       }
 
   """
   @spec get_bucket_info(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
   def get_bucket_info(%Config{} = config, bucket) do
-    get_bucket(config, bucket, %{}, %{"bucketInfo" => nil})
+    get_bucket(config, bucket, query_params: %{"bucketInfo" => nil})
   end
 
   @doc """
@@ -253,45 +224,100 @@ defmodule Aliyun.Oss.Bucket do
       iex> Aliyun.Oss.Bucket.get_bucket_location(config, "some-bucket")
       {:ok, %Aliyun.Oss.Client.Response{
           data: %{"LocationConstraint" => "oss-cn-shenzhen"},
-          headers: [
-            {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"}
-          ]
+          headers: %{
+            "connection" => ["keep-alive"],
+            ...
+          }
         }
       }
   """
   @spec get_bucket_location(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
   def get_bucket_location(%Config{} = config, bucket) do
-    get_bucket(config, bucket, %{}, %{"location" => nil})
+    get_bucket(config, bucket, query_params: %{"location" => nil})
+  end
+
+  @doc """
+  GetBucketStat - views the storage and objects count information of a bucket.
+
+  ## Examples
+
+      iex> Aliyun.Oss.Bucket.get_bucket_stat(config, "some-bucket")
+      {:ok, %Aliyun.Oss.Client.Response{
+          data: %{
+            "ArchiveObjectCount" => "0",
+            "ArchiveRealStorage" => "0",
+            "ArchiveStorage" => "0",
+            "ColdArchiveObjectCount" => "0",
+            "ColdArchiveRealStorage" => "0",
+            "ColdArchiveStorage" => "0",
+            "DeepColdArchiveObjectCount" => "0",
+            "DeepColdArchiveRealStorage" => "0",
+            "DeepColdArchiveStorage" => "0",
+            "DeleteMarkerCount" => "303",
+            "InfrequentAccessObjectCount" => "0",
+            "InfrequentAccessRealStorage" => "0",
+            "InfrequentAccessStorage" => "0",
+            "LastModifiedTime" => "1751610223",
+            "LiveChannelCount" => "2",
+            "MultipartPartCount" => "0",
+            "MultipartUploadCount" => "0",
+            "ObjectCount" => "19",
+            "StandardObjectCount" => "19",
+            "StandardStorage" => "3166616",
+            "Storage" => "3166616"
+          },
+          headers: %{
+            "connection" => ["keep-alive"],
+            ...
+          }
+        }
+      }
+  """
+  @spec get_bucket_stat(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  def get_bucket_stat(%Config{} = config, bucket) do
+    get_bucket(config, bucket, query_params: %{"stat" => nil})
   end
 
   @doc """
   PutBucket - creates a bucket.
 
+  ## Options
+
+  - `:headers` - Defaults to `%{}`
+
   ## Examples
 
-      iex> Aliyun.Oss.Bucket.put_bucket(config, "new-bucket", %{"x-oss-acl" => "private"})
+      iex> body = ~S{
+      <?xml version="1.0" encoding="UTF-8"?>
+      <CreateBucketConfiguration>
+        <StorageClass>Standard</StorageClass>
+      </CreateBucketConfiguration>
+      }
+      iex> Aliyun.Oss.Bucket.put_bucket(config, "new-bucket", body, headers: %{"x-oss-acl" => "private"})
       {:ok,
       %Aliyun.Oss.Client.Response{
         data: "",
-        headers: [
-          {"Server", "AliyunOSS"},
-          {"Date", "Fri, 11 Jan 2019 04:35:39 GMT"},
-          {"Content-Length", "0"},
-          {"Connection", "keep-alive"},
-          {"x-oss-request-id", "5C381D000000000000000000"},
-          {"Location", "/new-bucket"},
-          {"x-oss-server-time", "438"}
-        ]
+        headers: %{
+          "connection" => ["keep-alive"],
+          "content-length" => ["0"],
+          "date" => ["Fri, 11 Jan 2019 04:35:39 GMT"],
+          "location" => ["/new-bucket"],
+          "server" => ["AliyunOSS"],
+          "x-oss-request-id" => ["5C381D000000000000000000"],
+          "x-oss-server-time" => ["438"]
+        }
       }}
-      iex> Aliyun.Oss.Bucket.put_bucket(config, "new-bucket", %{"x-oss-acl" => "invalid-permission"}) # get error
+      iex> Aliyun.Oss.Bucket.put_bucket(config, "new-bucket", body, headers: %{"x-oss-acl" => "invalid-permission"}) # get error
       {:error,
       %Aliyun.Oss.Client.Error{
         parsed_details: %{
           "ArgumentName" => "x-oss-acl",
           "ArgumentValue" => "invalid-permission",
           "Code" => "InvalidArgument",
+          "EC" => "0015-00000204",
           "HostId" => "new-bucket.oss-cn-shenzhen.aliyuncs.com",
           "Message" => "no such bucket access control exists",
+          "RecommendDoc" => "https://api.aliyun.com/troubleshoot?q=0015-00000204",
           "RequestId" => "5C3000000000000000000000"
         },
         body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>...</xml>",
@@ -305,21 +331,24 @@ defmodule Aliyun.Oss.Bucket do
     <StorageClass>Standard</StorageClass>
   </CreateBucketConfiguration>
   """
-  @spec put_bucket(Config.t(), String.t(), map(), map(), String.t()) ::
+  @spec put_bucket(Config.t(), String.t(), String.t(), keyword()) ::
           {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
   def put_bucket(
         %Config{} = config,
         bucket,
-        headers = %{} \\ %{},
-        sub_resources = %{} \\ %{},
-        body \\ @body
+        body \\ @body,
+        options \\ []
       )
       when is_binary(body) do
-    Service.put(config, bucket, nil, body, headers: headers, sub_resources: sub_resources)
+    Service.put(config, bucket, nil, body, options)
   end
 
   @doc """
   DeleteBucket - deletes a bucket.
+
+  ## Options
+
+  - `:headers` - Defaults to `%{}`
 
   ## Examples
 
@@ -327,14 +356,14 @@ defmodule Aliyun.Oss.Bucket do
       {:ok,
       %Aliyun.Oss.Client.Response{
         data: "",
-        headers: [
-          {"Server", "AliyunOSS"},
-          {"Date", "Fri, 11 Jan 2019 05:26:36 GMT"},
-          {"Content-Length", "0"},
-          {"Connection", "keep-alive"},
-          {"x-oss-request-id", "5C38290C41F2DE32412A3A88"},
-          {"x-oss-server-time", "230"}
-        ]
+        headers: %{
+          "connection" => ["keep-alive"],
+          "content-length" => ["0"],
+          "date" => ["Fri, 11 Jan 2019 05:26:36 GMT"],
+          "server" => ["AliyunOSS"],
+          "x-oss-request-id" => ["5C38290C41F2DE32412A3A88"],
+          "x-oss-server-time" => ["230"]
+        }
       }}
       iex> Aliyun.Oss.Bucket.delete_bucket(config, "unknown-bucket")
       {:error,
@@ -346,21 +375,25 @@ defmodule Aliyun.Oss.Bucket do
                  <RequestId>5C3829B29BF380354CF9C2E8</RequestId>\n\
                  <HostId>unknown-bucket.oss-cn-shenzhen.aliyuncs.com</HostId>\n\
                  <BucketName>unknown-bucket</BucketName>\n\
+                 <EC>0015-00000101</EC>\n
+                 <RecommendDoc>https://api.aliyun.com/troubleshoot?q=0015-00000101</RecommendDoc>
                </Error>",
         parsed_details: %{
           "BucketName" => "unknown-bucket",
           "Code" => "NoSuchBucket",
+          "EC" => "0015-00000101",
           "HostId" => "unknown-bucket.oss-cn-shenzhen.aliyuncs.com",
           "Message" => "The specified bucket does not exist.",
+          "RecommendDoc" => "https://api.aliyun.com/troubleshoot?q=0015-00000101",
           "RequestId" => "5C3000000000000000000000"
         },
         status_code: 404
       }}
 
   """
-  @spec delete_bucket(Config.t(), String.t(), map()) ::
+  @spec delete_bucket(Config.t(), String.t(), keyword()) ::
           {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
-  def delete_bucket(%Config{} = config, bucket, sub_resources \\ %{}) do
-    Service.delete(config, bucket, nil, sub_resources: sub_resources)
+  def delete_bucket(%Config{} = config, bucket, options \\ []) do
+    Service.delete(config, bucket, nil, options)
   end
 end

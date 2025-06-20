@@ -4,8 +4,9 @@ defmodule Aliyun.Oss.ConfigTest do
 
   describe "new!/1" do
     test "creates a %Config{} struct" do
-      assert %Config{endpoint: _, access_key_id: _, access_key_secret: _} =
+      assert %Config{region: _, endpoint: _, access_key_id: _, access_key_secret: _, security_token: nil} =
                Config.new!(%{
+                 region: "cn-hangzhou",
                  endpoint: "...",
                  access_key_id: "...",
                  access_key_secret: "..."
@@ -14,7 +15,7 @@ defmodule Aliyun.Oss.ConfigTest do
 
     test "raises ArgumentError when required keys are missing" do
       assert_raise ArgumentError,
-                   "config :endpoint, :access_key_id, :access_key_secret are required",
+                   "config :region, :endpoint, :access_key_id, :access_key_secret are required",
                    fn ->
                      Config.new!(%{})
                    end

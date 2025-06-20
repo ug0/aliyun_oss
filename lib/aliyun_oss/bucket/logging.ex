@@ -3,7 +3,7 @@ defmodule Aliyun.Oss.Bucket.Logging do
   Bucket Inventory - Logging.
   """
 
-  import Aliyun.Oss.Bucket, only: [get_bucket: 4, put_bucket: 5, delete_bucket: 3]
+  import Aliyun.Oss.Bucket, only: [get_bucket: 3, put_bucket: 4, delete_bucket: 3]
   alias Aliyun.Oss.Config
   alias Aliyun.Oss.Client.{Response, Error}
 
@@ -34,7 +34,7 @@ defmodule Aliyun.Oss.Bucket.Logging do
   """
   @spec get(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
   def get(config, bucket) do
-    get_bucket(config, bucket, %{}, %{"logging" => nil})
+    get_bucket(config, bucket, %{"logging" => nil})
   end
 
   @doc """
@@ -77,7 +77,7 @@ defmodule Aliyun.Oss.Bucket.Logging do
         target_prefix: target_prefix
       )
 
-    put_bucket(config, bucket, %{}, %{"logging" => nil}, body)
+    put_bucket(config, bucket, %{"logging" => nil}, body)
   end
 
   @doc """

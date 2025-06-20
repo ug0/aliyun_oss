@@ -3,7 +3,7 @@ defmodule Aliyun.Oss.Bucket.Encryption do
   Bucket operations - Encryption.
   """
 
-  import Aliyun.Oss.Bucket, only: [get_bucket: 4, put_bucket: 5, delete_bucket: 3]
+  import Aliyun.Oss.Bucket, only: [get_bucket: 3, put_bucket: 4, delete_bucket: 3]
   alias Aliyun.Oss.Config
   alias Aliyun.Oss.Client.{Response, Error}
 
@@ -33,7 +33,7 @@ defmodule Aliyun.Oss.Bucket.Encryption do
   """
   @spec get(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
   def get(config, bucket) do
-    get_bucket(config, bucket, %{}, %{"encryption" => nil})
+    get_bucket(config, bucket, %{"encryption" => nil})
   end
 
   @doc """
@@ -86,7 +86,7 @@ defmodule Aliyun.Oss.Bucket.Encryption do
         kms_master_key_id: kms_master_key_id
       )
 
-    put_bucket(config, bucket, %{}, %{"encryption" => nil}, xml_body)
+    put_bucket(config, bucket, %{"encryption" => nil}, xml_body)
   end
 
   @doc """

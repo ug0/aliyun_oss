@@ -51,6 +51,12 @@ defmodule AliyunOss.MixProject do
     [
       main: "Aliyun.Oss",
       groups_for_modules: [
+        Service: [
+          Aliyun.Oss.Service
+        ],
+        Region: [
+          Aliyun.Oss.Region
+        ],
         Bucket: [
           Aliyun.Oss.Bucket,
           Aliyun.Oss.Bucket.WORM,

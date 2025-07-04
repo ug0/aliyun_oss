@@ -36,6 +36,7 @@
       - `Aliyun.Oss.Bucket.delete_bucket`
   - New APIs:
     - `Aliyun.Oss.Bucket.get_bucket_stat`
+    - `Aliyun.Oss.Region.describe_regions`
 
 ## v2.0.0
   - **Breaking changes**:

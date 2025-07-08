@@ -19,11 +19,15 @@ defmodule Aliyun.Oss.Bucket.WORM do
       iex> Aliyun.Oss.Bucket.WORM.initiate("some-bucket", 1)
       {:ok, %Aliyun.Oss.Client.Response{
         data: "",
-        headers: [
-          {"Server", "AliyunOSS"},
-          {"x-oss-worm-id", "F0000000000000000000000000000000"},
-          ...
-        ]
+        headers: %{
+          "connection" => ["keep-alive"],
+          "content-length" => ["0"],
+          "date" => ["Tue, 08 Jul 2025 01:37:08 GMT"],
+          "server" => ["AliyunOSS"],
+          "x-oss-request-id" => ["686C70000000000000007373"],
+          "x-oss-server-time" => ["44"],
+          "x-oss-worm-id" => ["0E2910000000000000000000000F5D09"]
+        }
       }}
 
   """
@@ -47,16 +51,16 @@ defmodule Aliyun.Oss.Bucket.WORM do
       iex> Aliyun.Oss.Bucket.WORM.abort("some-bucket", "report1")
       {:ok, %Aliyun.Oss.Client.Response{
         data: "",
-        headers: [
-          {"Server", "AliyunOSS"},
+        headers: %{
+          "connection" => ["keep-alive],
           ...
-        ]
+        }
       }}
 
   """
   @spec abort(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
   def abort(config, bucket) do
-    delete_bucket(config, bucket, %{"worm" => nil})
+    delete_bucket(config, bucket, query_params: %{"worm" => nil})
   end
 
   @doc """
@@ -67,10 +71,10 @@ defmodule Aliyun.Oss.Bucket.WORM do
       iex> Aliyun.Oss.Bucket.WORM.complete("some-bucket", "worm_id_1")
       {:ok, %Aliyun.Oss.Client.Response{
         data: "",
-        headers: [
-          {"Server", "AliyunOSS"},
+        headers: %{
+          "connection" => ["keep-alive],
           ...
-        ]
+        }
       }}
 
   """
@@ -88,10 +92,10 @@ defmodule Aliyun.Oss.Bucket.WORM do
       {:ok,
       %Aliyun.Oss.Client.Response{
         data: "",
-        headers: [
-          {"Server", "AliyunOSS"},
+        headers: %{
+          "connection" => ["keep-alive],
           ...
-        ]
+        }
       }}
 
   """
@@ -125,15 +129,15 @@ defmodule Aliyun.Oss.Bucket.WORM do
             "WormId" => "20000000000000000000000000000000"
           }
         },
-        headers: [
-          {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
+        headers: %{
+          "connection" => ["kee-alive],
           ...
-        ]
+        }
       }}
 
   """
   @spec get(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
   def get(config, bucket) do
-    get_bucket(config, bucket, %{"worm" => nil})
+    get_bucket(config, bucket, query_params: %{"worm" => nil})
   end
 end

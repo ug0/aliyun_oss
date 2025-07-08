@@ -34,6 +34,11 @@
       - `Aliyun.Oss.Bucket.list_objects`
       - `Aliyun.Oss.Bucket.put_bucket`
       - `Aliyun.Oss.Bucket.delete_bucket`
+      - `Aliyun.Oss.Bucket.WORM.initiate`
+      - `Aliyun.Oss.Bucket.WORM.abort`
+      - `Aliyun.Oss.Bucket.WORM.complete`
+      - `Aliyun.Oss.Bucket.WORM.extend`
+      - `Aliyun.Oss.Bucket.WORM.get`
   - New APIs:
     - `Aliyun.Oss.Bucket.get_bucket_stat`
     - `Aliyun.Oss.Region.describe_regions`

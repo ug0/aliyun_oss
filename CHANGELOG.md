@@ -39,6 +39,8 @@
       - `Aliyun.Oss.Bucket.WORM.complete`
       - `Aliyun.Oss.Bucket.WORM.extend`
       - `Aliyun.Oss.Bucket.WORM.get`
+      - `Aliyun.Oss.Bucket.ACL.get`
+      - `Aliyun.Oss.Bucket.ACL.put`
   - New APIs:
     - `Aliyun.Oss.Bucket.get_bucket_stat`
     - `Aliyun.Oss.Region.describe_regions`

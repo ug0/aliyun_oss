@@ -41,6 +41,9 @@
       - `Aliyun.Oss.Bucket.WORM.get`
       - `Aliyun.Oss.Bucket.ACL.get`
       - `Aliyun.Oss.Bucket.ACL.put`
+      - `Aliyun.Oss.Bucket.Lifecycle.put`
+      - `Aliyun.Oss.Bucket.Lifecycle.get`
+      - `Aliyun.Oss.Bucket.Lifecycle.delete`
   - New APIs:
     - `Aliyun.Oss.Bucket.get_bucket_stat`
     - `Aliyun.Oss.Region.describe_regions`

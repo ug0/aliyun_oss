@@ -52,10 +52,14 @@
       - `Aliyun.Oss.Bucket.Replication.get_location`
       - `Aliyun.Oss.Bucket.Replication.get_progress`
       - `Aliyun.Oss.Bucket.Replication.delete`
+      - `Aliyun.Oss.Bucket.Policy.put`
+      - `Aliyun.Oss.Bucket.Policy.get`
+      - `Aliyun.Oss.Bucket.Policy.delete`
   - New APIs:
     - `Aliyun.Oss.Bucket.get_bucket_stat`
     - `Aliyun.Oss.Region.describe_regions`
     - `Aliyun.Oss.Bucket.Replication.put_rtc`
+    - `Aliyun.Oss.Bucket.Policy.get_status`
 
 ## v2.0.0
   - **Breaking changes**:

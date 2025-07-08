@@ -3,7 +3,7 @@ defmodule Aliyun.Oss.Bucket.Replication do
   Bucket operations - Replication.
   """
 
-  import Aliyun.Oss.Bucket, only: [get_bucket: 3]
+  import Aliyun.Oss.Bucket, only: [get_bucket: 3, put_bucket: 4]
   import Aliyun.Oss.Service, only: [post: 5]
   alias Aliyun.Oss.Config
   alias Aliyun.Oss.Client.{Response, Error}
@@ -29,13 +29,18 @@ defmodule Aliyun.Oss.Bucket.Replication do
           }
         }
       }
-      iex> Aliyun.Oss.Bucket.Replication.put("some-bucket", config_json)
+      iex> Aliyun.Oss.Bucket.Replication.put(config, "some-bucket", config_json)
       {:ok, %Aliyun.Oss.Client.Response{
         data: "",
-        headers: [
-          {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
-          ...
-        ]
+        headers: %{
+          "connection" => ["keep-alive"],
+          "content-length" => ["0"],
+          "date" => ["Tue, 08 Jul 2025 06:21:42 GMT"],
+          "server" => ["AliyunOSS"],
+          "x-oss-replication-rule-id" => ["83925164-b43e-42c8-b755-************"],
+          "x-oss-request-id" => ["686CB8F60E28CD3*********"],
+          "x-oss-server-time" => ["194"]
+        }
       }}
       iex> config_xml = ~S[
         <?xml version="1.0" encoding="UTF-8"?>
@@ -51,23 +56,62 @@ defmodule Aliyun.Oss.Bucket.Replication do
           </Rule>
         </ReplicationConfiguration>
       ]
-      iex> Aliyun.Oss.Bucket.Inventory.put("some-bucket", "inventory_id", config_xml)
+      iex> Aliyun.Oss.Bucket.Replication.put(config, "some-bucket", config_xml)
       {:ok, %Aliyun.Oss.Client.Response{
         data: "",
-        headers: [
-          {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
-          ...
-        ]
+        headers: %{
+          "connection" => ["keep-alive"],
+          "content-length" => ["0"],
+          "date" => ["Tue, 08 Jul 2025 06:21:42 GMT"],
+          "server" => ["AliyunOSS"],
+          "x-oss-replication-rule-id" => ["83925164-b43e-42c8-b755-************"],
+          "x-oss-request-id" => ["686CB8F60E28CD3*********"],
+          "x-oss-server-time" => ["194"]
+        }
       }}
 
   """
   @spec put(Config.t(), String.t(), String.t() | map()) :: {:error, error()} | {:ok, Response.t()}
-  def put(config, bucket, %{} = config) do
-    put(config, bucket, MapToXml.from_map(config))
+  def put(config, bucket, %{} = replication_config_map) do
+    put(config, bucket, MapToXml.from_map(replication_config_map))
   end
 
-  def put(config, bucket, config) do
-    post(config, bucket, nil, config, sub_resources: %{"replication" => nil, "comp" => "add"})
+  def put(config, bucket, replication_config_xml) do
+    post(config, bucket, nil, replication_config_xml, query_params: %{"replication" => nil, "comp" => "add"})
+  end
+
+  @doc """
+  PutBucketRTC
+
+  ## Examples
+
+      iex> Aliyun.Oss.Bucket.Replication.put_rtc(config, "some-bucket", "83925164-b43e-42c8-b755-************", "enabled")
+      {:ok, %Aliyun.Oss.Client.Response{
+        data: "",
+        headers: %{
+          "connection" => ["keep-alive"],
+          "content-length" => ["0"],
+          "date" => ["Tue, 08 Jul 2025 06:21:42 GMT"],
+          "server" => ["AliyunOSS"],
+          "x-oss-request-id" => ["686CB8F60E28CD3*********"],
+          "x-oss-server-time" => ["194"]
+        }
+      }}
+
+  """
+  @body_tmpl """
+  <?xml version="1.0" encoding="UTF-8"?>
+  <ReplicationRule>
+    <RTC>
+      <Status><%= status %></Status>
+    </RTC>
+    <ID><%= rule_id %></ID>
+  </ReplicationRule>
+  """
+  @spec put_rtc(Config.t(), String.t(), String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  def put_rtc(config, bucket, replication_rule_id, status) do
+    body_xml = EEx.eval_string(@body_tmpl, rule_id: replication_rule_id, status: status)
+    put_bucket(config, bucket, body_xml, query_params: %{"rtc" => nil})
   end
 
   @doc """
@@ -75,7 +119,7 @@ defmodule Aliyun.Oss.Bucket.Replication do
 
   ## Examples
 
-      iex> Aliyun.Oss.Bucket.Replication.get("some-bucket")
+      iex> Aliyun.Oss.Bucket.Replication.get(config, "some-bucket")
       {:ok, %Aliyun.Oss.Client.Response{
         data: %{
           "ReplicationConfiguration" => %{
@@ -86,20 +130,20 @@ defmodule Aliyun.Oss.Bucket.Replication do
                 "Location" => "oss-cn-beijing"
               },
               "HistoricalObjectReplication" => "disabled",
-              "ID" => "test_replication_1",
+              "ID" => "83925164-b43e-42c8-b755-************",
               "Status" => "starting"
             }
           }
         },
-        headers: [
-          {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
+        headers: %{
+          "connection" => ["keep-alive"],
           ...
-        ]
+        }
       }}
   """
   @spec get(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
   def get(config, bucket) do
-    get_bucket(config, bucket, %{"replication" => nil})
+    get_bucket(config, bucket, query_params: %{"replication" => nil})
   end
 
   @doc """
@@ -107,7 +151,7 @@ defmodule Aliyun.Oss.Bucket.Replication do
 
   ## Examples
 
-      iex> Aliyun.Oss.Bucket.Replication.get_location("some-bucket")
+      iex> Aliyun.Oss.Bucket.Replication.get_location(config, "some-bucket")
       {:ok, %Aliyun.Oss.Client.Response{
         data: %{
           "ReplicationLocation" => %{
@@ -130,16 +174,16 @@ defmodule Aliyun.Oss.Bucket.Replication do
             }
           }
         },
-        headers: [
-          {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
+        headers: %{
+          "connection" => ["keep-alive"],
           ...
-        ]
+        }
       }}
 
   """
   @spec get_location(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
   def get_location(config, bucket) do
-    get_bucket(config, bucket, %{"replicationLocation" => nil})
+    get_bucket(config, bucket, query_params: %{"replicationLocation" => nil})
   end
 
   @doc """
@@ -147,7 +191,7 @@ defmodule Aliyun.Oss.Bucket.Replication do
 
   ## Examples
 
-      iex> Aliyun.Oss.Bucket.Replication.get_progress("some-bucket", "replication_rule_id_1")
+      iex> Aliyun.Oss.Bucket.Replication.get_progress(config, "some-bucket", "replication_rule_id_1")
       {:ok, %Aliyun.Oss.Client.Response{
         data: %{
           "ReplicationProgress" => %{
@@ -158,23 +202,23 @@ defmodule Aliyun.Oss.Bucket.Replication do
                 "Location" => "oss-cn-beijing"
               },
               "HistoricalObjectReplication" => "disabled",
-              "ID" => "replication_rule_id_1",
+              "ID" => "83925164-b43e-42c8-b755-************",
               "Progress" => %{"NewObject" => "2021-01-19T05:53:07.000Z"},
               "Status" => "doing"
             }
           }
         },
-        headers: [
-          {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
+        headers: %{
+          "connection" => ["keep-alive"],
           ...
-        ]
+        }
       }}
 
   """
   @spec get_progress(Config.t(), String.t(), String.t()) ::
           {:error, error()} | {:ok, Response.t()}
   def get_progress(config, bucket, rule_id) do
-    get_bucket(config, bucket, %{"rule-id" => rule_id, "replicationProgress" => nil})
+    get_bucket(config, bucket, query_params: %{"rule-id" => rule_id, "replicationProgress" => nil})
   end
 
   @doc """
@@ -183,18 +227,18 @@ defmodule Aliyun.Oss.Bucket.Replication do
 
   ## Examples
 
-      iex> Aliyun.Oss.Bucket.Replication.delete("some-bucket", "rule1")
+      iex> Aliyun.Oss.Bucket.Replication.delete(config, "some-bucket", "rule1")
       {:ok,
       %Aliyun.Oss.Client.Response{
         data: "",
-        headers: [
-          {"Server", "AliyunOSS"},
-          {"Date", "Fri, 11 Jan 2019 05:19:45 GMT"},
-          {"Content-Length", "0"},
-          {"Connection", "keep-alive"},
-          {"x-oss-request-id", "5C3000000000000000000000"},
-          {"x-oss-server-time", "90"}
-        ]
+        headers: %{
+          "connection" => ["keep-alive"],
+          "content-length" => ["0"],
+          "date" => ["Tue, 08 Jul 2025 06:29:32 GMT"],
+          "server" => ["AliyunOSS"],
+          "x-oss-request-id" => ["686CBACC8054033535D2D02B"],
+          "x-oss-server-time" => ["95"]
+        }
       }}
 
   """
@@ -209,6 +253,6 @@ defmodule Aliyun.Oss.Bucket.Replication do
   def delete(config, bucket, rule_id) do
     body_xml = EEx.eval_string(@body_tmpl, rule_id: rule_id)
 
-    post(config, bucket, nil, body_xml, sub_resources: %{"replication" => nil, "comp" => "delete"})
+    post(config, bucket, nil, body_xml, query_params: %{"replication" => nil, "comp" => "delete"})
   end
 end

@@ -47,9 +47,15 @@
       - `Aliyun.Oss.Bucket.Versioning.put`
       - `Aliyun.Oss.Bucket.Versioning.get`
       - `Aliyun.Oss.Bucket.Versioning.list_object_versions`
+      - `Aliyun.Oss.Bucket.Replication.put`
+      - `Aliyun.Oss.Bucket.Replication.get`
+      - `Aliyun.Oss.Bucket.Replication.get_location`
+      - `Aliyun.Oss.Bucket.Replication.get_progress`
+      - `Aliyun.Oss.Bucket.Replication.delete`
   - New APIs:
     - `Aliyun.Oss.Bucket.get_bucket_stat`
     - `Aliyun.Oss.Region.describe_regions`
+    - `Aliyun.Oss.Bucket.Replication.put_rtc`
 
 ## v2.0.0
   - **Breaking changes**:

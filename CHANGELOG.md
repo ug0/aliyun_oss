@@ -44,6 +44,9 @@
       - `Aliyun.Oss.Bucket.Lifecycle.put`
       - `Aliyun.Oss.Bucket.Lifecycle.get`
       - `Aliyun.Oss.Bucket.Lifecycle.delete`
+      - `Aliyun.Oss.Bucket.Versioning.put`
+      - `Aliyun.Oss.Bucket.Versioning.get`
+      - `Aliyun.Oss.Bucket.Versioning.list_object_versions`
   - New APIs:
     - `Aliyun.Oss.Bucket.get_bucket_stat`
     - `Aliyun.Oss.Region.describe_regions`

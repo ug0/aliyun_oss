@@ -65,6 +65,8 @@
       - `Aliyun.Oss.Bucket.Website.put`
       - `Aliyun.Oss.Bucket.Website.get`
       - `Aliyun.Oss.Bucket.Website.delete`
+      - `Aliyun.Oss.Bucket.Referer.put`
+      - `Aliyun.Oss.Bucket.Referer.get`
   - New APIs:
     - `Aliyun.Oss.Bucket.get_bucket_stat`
     - `Aliyun.Oss.Region.describe_regions`

@@ -15,25 +15,27 @@ defmodule Aliyun.Oss.Bucket.Referer do
 
   ## Examples
 
-      iex> Aliyun.Oss.Bucket.Referer.get("some-bucket")
+      iex> Aliyun.Oss.Bucket.Referer.get(config, "some-bucket")
       {:ok, %Aliyun.Oss.Client.Response{
         data: %{
           "RefererConfiguration" => %{
             "AllowEmptyReferer" => "true",
-            "RefererList" => nil
+            "AllowTruncateQueryString" => "true",
+            "RefererList" => nil,
+            "TruncatePath" => "false"
           }
         },
-        headers: [
-          {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
+        headers: %{
+          "connection" => "keep-alive",
           ...
-        ]
+        }
       }}
 
   """
 
   @spec get(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
   def get(config, bucket) do
-    get_bucket(config, bucket, %{"referer" => nil})
+    get_bucket(config, bucket, query_params: %{"referer" => nil})
   end
 
   @doc """
@@ -53,24 +55,24 @@ defmodule Aliyun.Oss.Bucket.Referer do
       ...>     </RefererList>
       ...> </RefererConfiguration>
       ...>  \"""
-      iex> Aliyun.Oss.Bucket.Referer.put("some-bucket", xml_body)
+      iex> Aliyun.Oss.Bucket.Referer.put(config, "some-bucket", xml_body)
       {:ok,
       %Aliyun.Oss.Client.Response{
         data: "",
-        headers: [
-          {"Server", "AliyunOSS"},
-          {"Date", "Fri, 11 Jan 2019 05:05:50 GMT"},
-          {"Content-Length", "0"},
-          {"Connection", "keep-alive"},
-          {"x-oss-request-id", "5C0000000000000000000000"},
-          {"x-oss-server-time", "63"}
-        ]
+        headers: %{
+          "connection" => ["keep-alive"],
+          "content-length" => ["0"],
+          "date" => ["Wed, 09 Jul 2025 05:35:55 GMT"],
+          "server" => ["AliyunOSS"],
+          "x-oss-request-id" => ["686DFFBBABB8F***********"],
+          "x-oss-server-time" => ["54"]
+        }
       }}
 
   """
   @spec put(Config.t(), String.t(), String.t()) ::
           {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
   def put(config, bucket, xml_body) do
-    put_bucket(config, bucket, %{"referer" => nil}, xml_body)
+    put_bucket(config, bucket, xml_body, query_params: %{"referer" => nil})
   end
 end

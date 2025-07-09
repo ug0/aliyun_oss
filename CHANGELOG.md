@@ -59,11 +59,17 @@
       - `Aliyun.Oss.Bucket.Inventory.get`
       - `Aliyun.Oss.Bucket.Inventory.list`
       - `Aliyun.Oss.Bucket.Inventory.delete`
+      - `Aliyun.Oss.Bucket.Logging.put`
+      - `Aliyun.Oss.Bucket.Logging.get`
+      - `Aliyun.Oss.Bucket.Logging.delete`
   - New APIs:
     - `Aliyun.Oss.Bucket.get_bucket_stat`
     - `Aliyun.Oss.Region.describe_regions`
     - `Aliyun.Oss.Bucket.Replication.put_rtc`
     - `Aliyun.Oss.Bucket.Policy.get_status`
+    - `Aliyun.Oss.Bucket.Logging.put_user_defined_log_fields_config`
+    - `Aliyun.Oss.Bucket.Logging.get_user_defined_log_fields_config`
+    - `Aliyun.Oss.Bucket.Logging.delete_user_defined_log_fields_config`
 
 ## v2.0.0
   - **Breaking changes**:

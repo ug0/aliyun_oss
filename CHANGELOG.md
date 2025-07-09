@@ -70,6 +70,9 @@
       - `Aliyun.Oss.Bucket.Tags.put`
       - `Aliyun.Oss.Bucket.Tags.get`
       - `Aliyun.Oss.Bucket.Tags.delete`
+      - `Aliyun.Oss.Bucket.Encryption.put`
+      - `Aliyun.Oss.Bucket.Encryption.get`
+      - `Aliyun.Oss.Bucket.Encryption.delete`
   - New APIs:
     - `Aliyun.Oss.Bucket.get_bucket_stat`
     - `Aliyun.Oss.Region.describe_regions`

@@ -55,6 +55,10 @@
       - `Aliyun.Oss.Bucket.Policy.put`
       - `Aliyun.Oss.Bucket.Policy.get`
       - `Aliyun.Oss.Bucket.Policy.delete`
+      - `Aliyun.Oss.Bucket.Inventory.put`
+      - `Aliyun.Oss.Bucket.Inventory.get`
+      - `Aliyun.Oss.Bucket.Inventory.list`
+      - `Aliyun.Oss.Bucket.Inventory.delete`
   - New APIs:
     - `Aliyun.Oss.Bucket.get_bucket_stat`
     - `Aliyun.Oss.Region.describe_regions`

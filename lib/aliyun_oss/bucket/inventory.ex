@@ -28,7 +28,7 @@ defmodule Aliyun.Oss.Bucket.Inventory do
             }
           },
           "Filter" => %{"Prefix" => "Pics"},
-          "Id" => "56594298207FB304438516F9",
+          "Id" => "inventory_id",
           "IncludedObjectVersions" => "All",
           "IsEnabled" => "true",
           "OptionalFields" => %{
@@ -38,40 +38,40 @@ defmodule Aliyun.Oss.Bucket.Inventory do
           "Schedule" => %{"Frequency" => "Daily"}
         }
       }
-      iex> Aliyun.Oss.Bucket.Inventory.put("some-bucket", "inventory_id", config_json)
+      iex> Aliyun.Oss.Bucket.Inventory.put(config, "some-bucket", "inventory_id", config_json)
       {:ok, %Aliyun.Oss.Client.Response{
         data: "",
-        headers: [
-          {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
+        headers: %{
+          "connection" => "keep-alive",
           ...
-        ]
+        }
       }}
       iex> config_xml = ~S[
           <?xml version="1.0" encoding="UTF-8"?>
           <InventoryConfiguration>
-            <Id>56594298207FB304438516F9</Id>
+            <Id>inventory_id</Id>
             <IsEnabled>true</IsEnabled>
             ...
           </InventoryConfiguration>
       ]
-      iex> Aliyun.Oss.Bucket.Inventory.put("some-bucket", "inventory_id", config_xml)
+      iex> Aliyun.Oss.Bucket.Inventory.put(config, "some-bucket", "inventory_id", config_xml)
       {:ok, %Aliyun.Oss.Client.Response{
         data: "",
-        headers: [
-          {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
+        headers: %{
+          "connection" => "keep-alive",
           ...
-        ]
+        }
       }}
 
   """
   @spec put(Config.t(), String.t(), String.t(), String.t() | map()) ::
           {:error, error()} | {:ok, Response.t()}
-  def put(config, bucket, inventory_id, %{} = config) do
-    put(config, bucket, inventory_id, MapToXml.from_map(config))
+  def put(config, bucket, inventory_id, %{} = config_map) do
+    put(config, bucket, inventory_id, MapToXml.from_map(config_map))
   end
 
-  def put(config, bucket, inventory_id, config) do
-    put_bucket(config, bucket, %{"inventory" => nil, "inventoryId" => inventory_id}, config)
+  def put(config, bucket, inventory_id, config_xml) do
+    put_bucket(config, bucket, config_xml, query_params: %{"inventory" => nil, "inventoryId" => inventory_id})
   end
 
   @doc """
@@ -79,7 +79,7 @@ defmodule Aliyun.Oss.Bucket.Inventory do
 
   ## Examples
 
-      iex> Aliyun.Oss.Bucket.Inventory.get("some-bucket", "report1")
+      iex> Aliyun.Oss.Bucket.Inventory.get(config, "some-bucket", "report1")
       {:ok, %Aliyun.Oss.Client.Response{
         data: %{
           "InventoryConfiguration" => %{
@@ -103,16 +103,16 @@ defmodule Aliyun.Oss.Bucket.Inventory do
             "Schedule" => %{"Frequency" => "Weekly"}
           }
         },
-        headers: [
-          {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
+        headers: %{
+          "connection" => "keep-alive",
           ...
-        ]
+        }
       }}
 
   """
   @spec get(Config.t(), String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
   def get(config, bucket, inventory_id) do
-    get_bucket(config, bucket, %{"inventory" => nil, "inventoryId" => inventory_id})
+    get_bucket(config, bucket, query_params: %{"inventory" => nil, "inventoryId" => inventory_id})
   end
 
   @doc """
@@ -120,7 +120,7 @@ defmodule Aliyun.Oss.Bucket.Inventory do
 
   ## Examples
 
-      iex> Aliyun.Oss.Bucket.Inventory.list("some-bucket", "report1")
+      iex> Aliyun.Oss.Bucket.Inventory.list(config, "some-bucket", "report1")
       {:ok, %Aliyun.Oss.Client.Response{
         data: %{
           "ListInventoryConfigurationsResult" => %{
@@ -131,15 +131,15 @@ defmodule Aliyun.Oss.Bucket.Inventory do
             "IsTruncated" => false
           }
         },
-        headers: [
-          {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
+        headers: %{
+          "connection" => "keep-alive",
           ...
-        ]
+        }
       }}
   """
   @spec list(Config.t(), String.t(), nil | String.t()) :: {:error, error()} | {:ok, Response.t()}
   def list(config, bucket, continuation_token \\ nil) do
-    get_bucket(config, bucket, %{
+    get_bucket(config, bucket, query_params: %{
       "inventory" => nil,
       "continuation-token" => continuation_token
     })
@@ -150,24 +150,24 @@ defmodule Aliyun.Oss.Bucket.Inventory do
 
   ## Examples
 
-      iex> Aliyun.Oss.Bucket.Inventory.delete("some-bucket", "report1")
+      iex> Aliyun.Oss.Bucket.Inventory.delete(config, "some-bucket", "report1")
       {:ok,
       %Aliyun.Oss.Client.Response{
         data: "",
-        headers: [
-          {"Server", "AliyunOSS"},
-          {"Date", "Fri, 11 Jan 2019 05:19:45 GMT"},
-          {"Content-Length", "0"},
-          {"Connection", "keep-alive"},
-          {"x-oss-request-id", "5C3000000000000000000000"},
-          {"x-oss-server-time", "90"}
-        ]
+        headers: %{
+          "connection" => ["keep-alive"],
+          "content-length" => ["0"],
+          "date" => ["Wed, 09 Jul 2025 01:50:11 GMT"],
+          "server" => ["AliyunOSS"],
+          "x-oss-request-id" => ["686DCAD31344************"],
+          "x-oss-server-time" => ["33"]
+        }
       }}
 
   """
   @spec delete(Config.t(), String.t(), String.t()) ::
           {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
   def delete(config, bucket, inventory_id) do
-    delete_bucket(config, bucket, %{"inventory" => nil, "inventoryId" => inventory_id})
+    delete_bucket(config, bucket, query_params: %{"inventory" => nil, "inventoryId" => inventory_id})
   end
 end

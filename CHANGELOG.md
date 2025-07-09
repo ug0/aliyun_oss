@@ -62,6 +62,9 @@
       - `Aliyun.Oss.Bucket.Logging.put`
       - `Aliyun.Oss.Bucket.Logging.get`
       - `Aliyun.Oss.Bucket.Logging.delete`
+      - `Aliyun.Oss.Bucket.Website.put`
+      - `Aliyun.Oss.Bucket.Website.get`
+      - `Aliyun.Oss.Bucket.Website.delete`
   - New APIs:
     - `Aliyun.Oss.Bucket.get_bucket_stat`
     - `Aliyun.Oss.Region.describe_regions`

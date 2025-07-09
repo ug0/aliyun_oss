@@ -75,6 +75,9 @@
       - `Aliyun.Oss.Bucket.Encryption.delete`
       - `Aliyun.Oss.Bucket.RequestPayment.put`
       - `Aliyun.Oss.Bucket.RequestPayment.get`
+      - `Aliyun.Oss.Bucket.CORS.put`
+      - `Aliyun.Oss.Bucket.CORS.get`
+      - `Aliyun.Oss.Bucket.CORS.delete`
   - New APIs:
     - `Aliyun.Oss.Bucket.get_bucket_stat`
     - `Aliyun.Oss.Region.describe_regions`

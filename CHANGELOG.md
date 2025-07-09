@@ -73,6 +73,8 @@
       - `Aliyun.Oss.Bucket.Encryption.put`
       - `Aliyun.Oss.Bucket.Encryption.get`
       - `Aliyun.Oss.Bucket.Encryption.delete`
+      - `Aliyun.Oss.Bucket.RequestPayment.put`
+      - `Aliyun.Oss.Bucket.RequestPayment.get`
   - New APIs:
     - `Aliyun.Oss.Bucket.get_bucket_stat`
     - `Aliyun.Oss.Region.describe_regions`

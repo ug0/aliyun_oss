@@ -78,6 +78,15 @@
       - `Aliyun.Oss.Bucket.CORS.put`
       - `Aliyun.Oss.Bucket.CORS.get`
       - `Aliyun.Oss.Bucket.CORS.delete`
+      - `Aliyun.Oss.Object.head_object`
+      - `Aliyun.Oss.Object.get_object`
+      - `Aliyun.Oss.Object.select_object`
+      - `Aliyun.Oss.Object.select_object_meta`
+      - `Aliyun.Oss.Object.signed_url`
+      - `Aliyun.Oss.Object.put_object`
+      - `Aliyun.Oss.Object.copy_object`
+      - `Aliyun.Oss.Object.append_object`
+      - `Aliyun.Oss.Object.delete_object`
   - New APIs:
     - `Aliyun.Oss.Bucket.get_bucket_stat`
     - `Aliyun.Oss.Region.describe_regions`
@@ -86,6 +95,7 @@
     - `Aliyun.Oss.Bucket.Logging.put_user_defined_log_fields_config`
     - `Aliyun.Oss.Bucket.Logging.get_user_defined_log_fields_config`
     - `Aliyun.Oss.Bucket.Logging.delete_user_defined_log_fields_config`
+    - `Aliyun.Oss.Object.clean_restored_object`
 
 ## v2.0.0
   - **Breaking changes**:

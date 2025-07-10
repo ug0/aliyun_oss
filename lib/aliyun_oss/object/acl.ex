@@ -3,7 +3,7 @@ defmodule Aliyun.Oss.Object.ACL do
   Object operations - ACL.
   """
 
-  import Aliyun.Oss.Object, only: [get_object: 5, put_object: 6]
+  import Aliyun.Oss.Object, only: [get_object: 4, put_object: 5]
   alias Aliyun.Oss.Config
   alias Aliyun.Oss.Client.{Response, Error}
 
@@ -26,16 +26,16 @@ defmodule Aliyun.Oss.Object.ACL do
               }
             }
           },
-          headers: [
-            {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"}
-          ]
+          headers: %{
+            "connection" => "keep-alive",
+          }
         }
       }
 
   """
   @spec get(Config.t(), String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
   def get(config, bucket, object) do
-    get_object(config, bucket, object, %{}, %{"acl" => nil})
+    get_object(config, bucket, object, headers: %{}, query_params: %{"acl" => nil})
   end
 
   @doc """
@@ -46,17 +46,17 @@ defmodule Aliyun.Oss.Object.ACL do
       iex> Aliyun.Oss.Object.ACL.put(config, "some-bucket", "some-object", "private")
       {:ok, %Aliyun.Oss.Client.Response{
           data: "",
-          headers: [
-            {"Server", "AliyunOSS"},
-            {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
+          headers: %{
+            "connection" => ["keep-alive"],
+            "content-length" => ["0"],
             ...
-          ]
+          }
         }
       }
   """
   @spec put(Config.t(), String.t(), String.t(), String.t()) ::
           {:error, error()} | {:ok, Response.t()}
   def put(config, bucket, object, acl) do
-    put_object(config, bucket, object, "", %{"x-oss-object-acl" => acl}, %{"acl" => nil})
+    put_object(config, bucket, object, "", headers: %{"x-oss-object-acl" => acl}, query_params: %{"acl" => nil})
   end
 end

@@ -2,7 +2,7 @@ defmodule Aliyun.Oss.Client.Request do
   @moduledoc """
   Internal module
   """
-  alias Aliyun.Oss.Config
+  alias Aliyun.Oss.{Config, Sign}
   alias Aliyun.Util.Encoder
 
   @hashed_request_header "x-oss-content-sha256"
@@ -174,7 +174,7 @@ defmodule Aliyun.Oss.Client.Request do
   defp calc_signature(%__MODULE__{} = request) do
     request
     |> string_to_sign()
-    |> sign(get_signing_key(request))
+    |> Sign.sign(get_signing_key(request))
   end
 
   defp string_to_sign(%__MODULE__{} = request) do
@@ -182,21 +182,7 @@ defmodule Aliyun.Oss.Client.Request do
   end
 
   defp get_signing_key(%__MODULE__{config: config} = request) do
-    "aliyun_v4#{config.access_key_secret}"
-    |> hmac_sha256(get_date(request))
-    |> hmac_sha256(config.region)
-    |> hmac_sha256("oss")
-    |> hmac_sha256("aliyun_v4_request")
-  end
-
-  defp hmac_sha256(key, data) do
-    :crypto.mac(:hmac, :sha256, key, data)
-  end
-
-  defp sign(data, key) do
-    key
-    |> hmac_sha256(data)
-    |> Base.encode16(case: :lower)
+    Sign.get_signing_key(config, get_date(request))
   end
 
   defp get_date(%__MODULE__{} = request) do

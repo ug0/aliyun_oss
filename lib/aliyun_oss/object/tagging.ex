@@ -3,7 +3,7 @@ defmodule Aliyun.Oss.Object.Tagging do
   Object operations - Tagging.
   """
 
-  import Aliyun.Oss.Object, only: [get_object: 5, put_object: 6, delete_object: 4]
+  import Aliyun.Oss.Object, only: [get_object: 4, put_object: 5, delete_object: 4]
   alias Aliyun.Oss.Config
   alias Aliyun.Oss.Client.{Response, Error}
 
@@ -36,7 +36,7 @@ defmodule Aliyun.Oss.Object.Tagging do
   """
   @spec get(Config.t(), String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
   def get(config, bucket, object) do
-    get_object(config, bucket, object, %{}, %{"tagging" => nil})
+    get_object(config, bucket, object, headers: %{}, query_params: %{"tagging" => nil})
   end
 
   @doc """
@@ -73,7 +73,7 @@ defmodule Aliyun.Oss.Object.Tagging do
           {:error, error()} | {:ok, Response.t()}
   def put(config, bucket, object, tags) do
     xml_body = EEx.eval_string(@body_tmpl, tags: tags)
-    put_object(config, bucket, object, xml_body, %{}, %{"tagging" => nil})
+    put_object(config, bucket, object, xml_body, query_params: %{"tagging" => nil})
   end
 
   @doc """

@@ -4,7 +4,7 @@ defmodule Aliyun.Oss.LiveChannel do
   """
 
   import Aliyun.Oss.Bucket, only: [get_bucket: 3]
-  import Aliyun.Oss.Object, only: [put_object: 6, get_object: 5, delete_object: 4]
+  import Aliyun.Oss.Object, only: [put_object: 5, get_object: 4, delete_object: 4]
   alias Aliyun.Oss.Config
   alias Aliyun.Oss.Service
   alias Aliyun.Oss.Client.{Request, Response, Error}
@@ -114,7 +114,7 @@ defmodule Aliyun.Oss.LiveChannel do
   end
 
   def put(config, bucket, channel_name, config) do
-    put_object(config, bucket, channel_name, config, %{}, %{"live" => nil})
+    put_object(config, bucket, channel_name, config, query_params: %{"live" => nil})
   end
 
   @doc """
@@ -204,7 +204,7 @@ defmodule Aliyun.Oss.LiveChannel do
   @spec put_status(Config.t(), String.t(), String.t(), String.t()) ::
           {:error, error()} | {:ok, Response.t()}
   def put_status(config, bucket, channel_name, status) do
-    put_object(config, bucket, channel_name, "", %{}, %{"live" => nil, "status" => status})
+    put_object(config, bucket, channel_name, "", query_params: %{"live" => nil, "status" => status})
   end
 
   @doc """
@@ -237,7 +237,7 @@ defmodule Aliyun.Oss.LiveChannel do
   """
   @spec get_info(Config.t(), String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
   def get_info(config, bucket, channel_name) do
-    get_object(config, bucket, channel_name, %{}, %{"live" => nil})
+    get_object(config, bucket, channel_name, headers: %{}, query_params: %{"live" => nil})
   end
 
   @doc """
@@ -259,7 +259,7 @@ defmodule Aliyun.Oss.LiveChannel do
   """
   @spec get_stat(Config.t(), String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
   def get_stat(config, bucket, channel_name) do
-    get_object(config, bucket, channel_name, %{}, %{"live" => nil, "comp" => "stat"})
+    get_object(config, bucket, channel_name, headers: %{}, query_params: %{"live" => nil, "comp" => "stat"})
   end
 
   @doc """
@@ -285,7 +285,7 @@ defmodule Aliyun.Oss.LiveChannel do
   """
   @spec get_history(Config.t(), String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
   def get_history(config, bucket, channel_name) do
-    get_object(config, bucket, channel_name, %{}, %{"live" => nil, "comp" => "history"})
+    get_object(config, bucket, channel_name, headers: %{}, query_params: %{"live" => nil, "comp" => "history"})
   end
 
   @doc """
@@ -333,7 +333,7 @@ defmodule Aliyun.Oss.LiveChannel do
   @spec get_playlist(Config.t(), String.t(), String.t(), integer(), integer()) ::
           {:error, error()} | {:ok, Response.t()}
   def get_playlist(config, bucket, channel_name, start_time, end_time) do
-    get_object(config, bucket, channel_name, %{}, %{
+    get_object(config, bucket, channel_name, headers: %{}, query_params: %{
       "vod" => nil,
       "startTime" => start_time,
       "endTime" => end_time

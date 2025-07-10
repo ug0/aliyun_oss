@@ -3,7 +3,7 @@ defmodule Aliyun.Oss.Object.Symlink do
   Object operations - Symlink.
   """
 
-  import Aliyun.Oss.Object, only: [get_object: 5, put_object: 6]
+  import Aliyun.Oss.Object, only: [get_object: 4, put_object: 5]
   alias Aliyun.Oss.Config
   alias Aliyun.Oss.Client.{Response, Error}
 
@@ -36,7 +36,7 @@ defmodule Aliyun.Oss.Object.Symlink do
   """
   @spec get(Config.t(), String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
   def get(config, bucket, object) do
-    get_object(config, bucket, object, %{}, %{"symlink" => nil})
+    get_object(config, bucket, object, headers: %{}, query_params: %{"symlink" => nil})
   end
 
   @doc """
@@ -64,8 +64,8 @@ defmodule Aliyun.Oss.Object.Symlink do
       bucket,
       symlink,
       "",
-      %{"x-oss-symlink-target" => target_object, "x-oss-storage-class" => storage_class},
-      %{"symlink" => nil}
+      headers: %{"x-oss-symlink-target" => target_object, "x-oss-storage-class" => storage_class},
+      query_params: %{"symlink" => nil}
     )
   end
 end

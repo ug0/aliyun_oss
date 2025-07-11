@@ -18,18 +18,19 @@ defmodule Aliyun.Oss.Object.Symlink do
       iex> Aliyun.Oss.Object.Symlink.get(config, "some-bucket", "some-object")
       {:ok, %Aliyun.Oss.Client.Response{
           data: "",
-          headers: [
-            {"Server", "AliyunOSS"},
-            {"Date", "Fri, 01 Mar 2019 06:26:07 GMT"},
-            {"Content-Type", "text/plain"},
-            {"Content-Length", "0"},
-            {"Connection", "keep-alive"},
-            {"x-oss-request-id", "5C7000000000000000000000"},
-            {"Last-Modified", "Fri, 01 Mar 2019 06:23:13 GMT"},
-            {"ETag", "\"6751C000000000000000000000000000\""},
-            {"x-oss-symlink-target", "test.txt"},
-            {"x-oss-server-time", "1"}
-          ]
+          headers: %{
+            "connection" => ["keep-alive"],
+            "content-length" => ["0"],
+            "content-type" => ["text/plain"],
+            "date" => ["Fri, 11 Jul 2025 06:51:54 GMT"],
+            "etag" => ["\"6751C61F42E*********************\""],
+            "last-modified" => ["Fri, 08 Mar 2019 05:11:29 GMT"],
+            "server" => ["AliyunOSS"],
+            "x-oss-request-id" => ["6870B4******************"],
+            "x-oss-server-time" => ["8"],
+            "x-oss-symlink-target" => ["test.txt"],
+            "x-oss-version-id" => ["null"]
+          }
         }
       }
 
@@ -42,29 +43,44 @@ defmodule Aliyun.Oss.Object.Symlink do
   @doc """
   PutSymlink - creates a symbolic link that points to target object.
 
+  ## Options
+
+  - `:storage_class` - the storage class of the symlink object, default is `"Standard"`. Acceptable values are:
+      - `"Standard"`
+      - `"IA"`
+      - `"Archive"`
+  - `:acl` - the access control list (ACL) of the symlink object, default is `"default"`. Acceptable values are:
+      - `"default"`
+      - `"private"`
+      - `"public-read"`
+      - `"public-read-write"`
+
   ## Examples
 
       iex> Aliyun.Oss.Object.Symlink.put("some-bucket", "symlink", "target-object")
       {:ok, %Aliyun.Oss.Client.Response{
           data: "",
-          headers: [
-            {"Server", "AliyunOSS"},
-            {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
+          headers: %{
+            "connection" => ["keep-alive"],
+            "content-length" => ["0"],
             ...
-          ]
+          }
         }
       }
 
   """
-  @spec put(Config.t(), String.t(), String.t(), String.t(), String.t()) ::
+  @spec put(Config.t(), String.t(), String.t(), String.t(), keyword()) ::
           {:error, error()} | {:ok, Response.t()}
-  def put(config, bucket, symlink, target_object, storage_class \\ "Standard") do
+  def put(config, bucket, symlink, target_object, options \\ []) do
+    storage_class= Keyword.get(options, :storage_class, "Standard")
+    acl = Keyword.get(options, :acl, "default")
+
     put_object(
       config,
       bucket,
       symlink,
       "",
-      headers: %{"x-oss-symlink-target" => target_object, "x-oss-storage-class" => storage_class},
+      headers: %{"x-oss-symlink-target" => target_object, "x-oss-storage-class" => storage_class, "x-oss-object-acl" => acl},
       query_params: %{"symlink" => nil}
     )
   end

@@ -87,6 +87,7 @@
       - `Aliyun.Oss.Object.copy_object`
       - `Aliyun.Oss.Object.append_object`
       - `Aliyun.Oss.Object.delete_object`
+      - `Aliyun.Oss.Object.Symlink.put`
   - New APIs:
     - `Aliyun.Oss.Bucket.get_bucket_stat`
     - `Aliyun.Oss.Region.describe_regions`

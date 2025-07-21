@@ -88,6 +88,11 @@
       - `Aliyun.Oss.Object.append_object`
       - `Aliyun.Oss.Object.delete_object`
       - `Aliyun.Oss.Object.Symlink.put`
+      - `Aliyun.Oss.Object.MultipartUpload.init_upload`
+      - `Aliyun.Oss.Object.MultipartUpload.list_uploads`
+      - `Aliyun.Oss.Object.MultipartUpload.upload_part_copy`
+      - `Aliyun.Oss.Object.MultipartUpload.complete_upload`
+      - `Aliyun.Oss.Object.MultipartUpload.list_parts`
   - New APIs:
     - `Aliyun.Oss.Bucket.get_bucket_stat`
     - `Aliyun.Oss.Region.describe_regions`

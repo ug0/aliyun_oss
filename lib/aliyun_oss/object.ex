@@ -727,7 +727,9 @@ defmodule Aliyun.Oss.Object do
     }
   end
 
-  defp post_object(config, bucket, object, body, options) do
+  @spec post_object(Config.t(), String.t(), String.t(), String.t(), keyword()) ::
+          {:error, error()} | {:ok, Response.t()}
+  def post_object(config, bucket, object, body, options) do
     Service.post(config, bucket, object, body, options)
   end
 end

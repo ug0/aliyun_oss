@@ -25,7 +25,7 @@ defmodule Aliyun.Oss.Bucket.Encryption do
           }
         },
         headers: %{
-          "connection" => "keep-alive",
+          "connection" => ["keep-alive"],
           ...
         }
       }}

@@ -19,7 +19,7 @@ defmodule Aliyun.Oss.Bucket.RequestPayment do
       {:ok, %Aliyun.Oss.Client.Response{
           data: %{"RequestPaymentConfiguration" => %{"Payer" => "BucketOwner"}},
           headers: %{
-            "connection" => "keep-alive",
+            "connection" => ["keep-alive"],
             ...
           }
         }

@@ -42,7 +42,7 @@ defmodule Aliyun.Oss.Bucket.Inventory do
       {:ok, %Aliyun.Oss.Client.Response{
         data: "",
         headers: %{
-          "connection" => "keep-alive",
+          "connection" => ["keep-alive"],
           ...
         }
       }}
@@ -58,7 +58,7 @@ defmodule Aliyun.Oss.Bucket.Inventory do
       {:ok, %Aliyun.Oss.Client.Response{
         data: "",
         headers: %{
-          "connection" => "keep-alive",
+          "connection" => ["keep-alive"],
           ...
         }
       }}
@@ -106,7 +106,7 @@ defmodule Aliyun.Oss.Bucket.Inventory do
           }
         },
         headers: %{
-          "connection" => "keep-alive",
+          "connection" => ["keep-alive"],
           ...
         }
       }}
@@ -134,7 +134,7 @@ defmodule Aliyun.Oss.Bucket.Inventory do
           }
         },
         headers: %{
-          "connection" => "keep-alive",
+          "connection" => ["keep-alive"],
           ...
         }
       }}

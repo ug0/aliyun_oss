@@ -38,7 +38,7 @@ defmodule Aliyun.Oss.Bucket.CORS do
       {:ok, %Aliyun.Oss.Client.Response{
         data: "",
         headers: %{
-          "connection" => "keep-alive",
+          "connection" => ["keep-alive"],
           ...
         }
       }}
@@ -52,7 +52,7 @@ defmodule Aliyun.Oss.Bucket.CORS do
       {:ok, %Aliyun.Oss.Client.Response{
         data: "",
         headers: %{
-          "connection" => "keep-alive",
+          "connection" => ["keep-alive"],
           ...
         }
       }}
@@ -94,7 +94,7 @@ defmodule Aliyun.Oss.Bucket.CORS do
           }
         },
         headers: %{
-          "connection" => "keep-alive",
+          "connection" => ["keep-alive"],
           ...
         }
       }}

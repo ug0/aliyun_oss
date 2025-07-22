@@ -27,7 +27,7 @@ defmodule Aliyun.Oss.Object.ACL do
             }
           },
           headers: %{
-            "connection" => "keep-alive",
+            "connection" => ["keep-alive"],
           }
         }
       }

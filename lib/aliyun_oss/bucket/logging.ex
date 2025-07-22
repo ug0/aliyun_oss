@@ -26,7 +26,7 @@ defmodule Aliyun.Oss.Bucket.Logging do
           }
         },
         headers: %{
-          "connection" => "keep-alive",
+          "connection" => ["keep-alive"],
           ...
         }
       }}
@@ -184,7 +184,7 @@ defmodule Aliyun.Oss.Bucket.Logging do
           }
         },
         headers: %{
-          "connection" => "keep-alive",
+          "connection" => ["keep-alive"],
           ...
         }
       }}

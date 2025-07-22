@@ -28,7 +28,7 @@ defmodule Aliyun.Oss.Bucket.Website do
           }
         },
         headers: %{
-          "connection" => "keep-alive",
+          "connection" => ["keep-alive"],
           ...
         }
       }}

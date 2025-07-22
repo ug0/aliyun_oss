@@ -26,7 +26,7 @@ defmodule Aliyun.Oss.Bucket.Referer do
           }
         },
         headers: %{
-          "connection" => "keep-alive",
+          "connection" => ["keep-alive"],
           ...
         }
       }}

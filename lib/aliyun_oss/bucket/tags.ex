@@ -19,7 +19,7 @@ defmodule Aliyun.Oss.Bucket.Tags do
       {:ok, %Aliyun.Oss.Client.Response{
           data: %{"Tagging" => %{"TagSet" => [%{"Key" => "key", "Value" => "value"}]}},
           headers: %{
-            "connection" => "keep-alive",
+            "connection" => ["keep-alive"],
             ...
           }
         }

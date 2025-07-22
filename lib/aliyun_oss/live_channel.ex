@@ -4,9 +4,9 @@ defmodule Aliyun.Oss.LiveChannel do
   """
 
   import Aliyun.Oss.Bucket, only: [get_bucket: 3]
-  import Aliyun.Oss.Object, only: [put_object: 5, get_object: 4, delete_object: 4]
+  import Aliyun.Oss.Object, only: [put_object: 5, post_object: 5, get_object: 4, delete_object: 4]
+
   alias Aliyun.Oss.Config
-  alias Aliyun.Oss.Service
   alias Aliyun.Oss.Client.{Request, Response, Error}
 
   @type error() ::
@@ -17,7 +17,7 @@ defmodule Aliyun.Oss.LiveChannel do
 
   ## Examples
 
-      iex> expires = Timex.now() |> Timex.shift(days: 1) |> Timex.to_unix()
+      iex> expires = DateTime.utc_now |> DateTime.shift(day: 1) |> DateTime.to_unix()
       iex> Aliyun.Oss.Object.signed_url("some-bucket", "some-object", expires, "GET", %{"Content-Type" -> ""})
       "http://some-bucket.oss-cn-hangzhou.aliyuncs.com/oss-api.pdf?OSSAccessKeyId=nz2pc5*******9l&Expires=1141889120&Signature=vjbyPxybdZ*****************v4%3D"
 
@@ -30,17 +30,24 @@ defmodule Aliyun.Oss.LiveChannel do
         expires,
         query_params \\ %{"playlistName" => "playlist.m3u8"}
       ) do
-    request =
-      Request.build(%{
-        host: "#{bucket}.#{config.endpoint}",
-        path: "/live/#{channel}",
-        resource: "/#{bucket}/#{channel}",
-        scheme: "rtmp",
-        query_params: query_params,
-        expires: expires
-      })
+    canonicalized_params =
+      query_params
+      |> Enum.sort_by(&elem(&1, 0))
+      |> Stream.map(fn {k, v} -> "#{k}:#{v}" end)
+      |> Enum.join("\n")
 
-    Request.to_signed_url(config, request)
+    canonicalized_resource = "/#{bucket}/#{channel}"
+
+    "rtmp://#{bucket}.#{config.endpoint}/live/#{channel}?OSSAccessKeyId=#{config.access_key_id}&Expires=#{expires}"
+    |> URI.new!()
+    |> URI.append_query(URI.encode_query(query_params, :rfc3986))
+    |> URI.append_query("Signature=#{calc_signature(config, [expires, canonicalized_params, canonicalized_resource])}")
+    |> URI.to_string()
+  end
+
+  defp calc_signature(%Config{} = config, data) when is_list(data) do
+    :crypto.mac(:hmac, :sha, config.access_key_secret, data |> Stream.reject(& &1 == "") |> Enum.join("\n"))
+    |> Base.encode64()
   end
 
   @doc """
@@ -55,7 +62,7 @@ defmodule Aliyun.Oss.LiveChannel do
           "Target" => %{"FragCount" => "3", "FragDuration" => "2", "Type" => "HLS"}
         }
       }
-      iex> Aliyun.Oss.LiveChannel.put("some-bucket", "channe-name", config_json)
+      iex> Aliyun.Oss.LiveChannel.put(config, "some-bucket", "channel-name", config_json)
       {:ok, %Aliyun.Oss.Client.Response{
           data: %{
             "CreateLiveChannelResult" => %{
@@ -86,7 +93,7 @@ defmodule Aliyun.Oss.LiveChannel do
           </Target>
         </LiveChannelConfiguration>
       ]
-      iex> Aliyun.Oss.LiveChannel.put("some-bucket", "channe-name", config_xml)
+      iex> Aliyun.Oss.LiveChannel.put(config, "some-bucket", "channe-name", config_xml)
       {:ok, %Aliyun.Oss.Client.Response{
           data: %{
             "CreateLiveChannelResult" => %{
@@ -98,31 +105,34 @@ defmodule Aliyun.Oss.LiveChannel do
               }
             }
           },
-          headers: [
-            {"Server", "AliyunOSS"},
-            {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
+          headers: %{
+            "connection" => ["keep-alive"],
             ...
-          ]
+          }
         }
       }
 
   """
   @spec put(Config.t(), String.t(), String.t(), map() | String.t()) ::
           {:error, error()} | {:ok, Response.t()}
-  def put(config, bucket, channel_name, %{} = config) do
-    put(config, bucket, channel_name, MapToXml.from_map(config))
+  def put(config, bucket, channel_name, %{} = config_map) do
+    put(config, bucket, channel_name, MapToXml.from_map(config_map))
   end
 
-  def put(config, bucket, channel_name, config) do
-    put_object(config, bucket, channel_name, config, query_params: %{"live" => nil})
+  def put(config, bucket, channel_name, config_xml) do
+    put_object(config, bucket, channel_name, config_xml, query_params: %{"live" => nil})
   end
 
   @doc """
   ListLiveChannel - lists specified LiveChannels.
 
+  ## Options
+
+  - `:query_params` - Defaults to `%{}`
+
   ## Examples
 
-      iex> Aliyun.Oss.LiveChannel.list("some-bucket")
+      iex> Aliyun.Oss.LiveChannel.list(config, "some-bucket")
       {:ok, %Aliyun.Oss.Client.Response{
           data: %{
             "ListLiveChannelResult" => %{
@@ -148,18 +158,22 @@ defmodule Aliyun.Oss.LiveChannel do
               "Prefix" => nil
             }
           },
-          headers: [
-            {"Server", "AliyunOSS"},
-            {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
+          headers: %{
+            "connection" => ["keep-alive"],
             ...
-          ]
+          }
         }
       }
 
   """
-  @spec list(Config.t(), String.t(), map()) :: {:error, error()} | {:ok, Response.t()}
-  def list(config, bucket, query_params \\ %{}) do
-    get_bucket(config, bucket, Map.put(query_params, "live", nil))
+  @spec list(Config.t(), String.t(), keyword()) :: {:error, error()} | {:ok, Response.t()}
+  def list(config, bucket, options \\ []) do
+    query_params =
+      options
+      |> Keyword.get(:query_params, %{})
+      |> Map.put("live", nil)
+
+    get_bucket(config, bucket, query_params: query_params)
   end
 
   @doc """
@@ -167,21 +181,20 @@ defmodule Aliyun.Oss.LiveChannel do
 
   ## Examples
 
-      iex> Aliyun.Oss.LiveChannel.delete("some-bucket", "channel-name")
+      iex> Aliyun.Oss.LiveChannel.delete(config, "some-bucket", "channel-name")
       {:ok, %Aliyun.Oss.Client.Response{
           data: "",
-          headers: [
-            {"Server", "AliyunOSS"},
-            {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
+          headers: %{
+            "connection" => ["keep-alive"],
             ...
-          ]
+          }
         }
       }
 
   """
   @spec delete(Config.t(), String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
   def delete(config, bucket, channel_name) do
-    delete_object(config, bucket, channel_name, %{"live" => nil})
+    delete_object(config, bucket, channel_name, query_params: %{"live" => nil})
   end
 
   @doc """
@@ -189,14 +202,13 @@ defmodule Aliyun.Oss.LiveChannel do
 
   ## Examples
 
-      iex> Aliyun.Oss.LiveChannel.put_status("some-bucket", "channe-name", "disabled)
+      iex> Aliyun.Oss.LiveChannel.put_status("some-bucket", "channe-name", "disabled")
       {:ok, %Aliyun.Oss.Client.Response{
           data: "",
-          headers: [
-            {"Server", "AliyunOSS"},
-            {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
+          headers: %{
+            "connection" => ["keep-alive"],
             ...
-          ]
+          }
         }
       }
 
@@ -212,7 +224,7 @@ defmodule Aliyun.Oss.LiveChannel do
 
   ## Examples
 
-      iex> Aliyun.Oss.LiveChannel.get_info("some-bucket", "channe-name")
+      iex> Aliyun.Oss.LiveChannel.get_info(config, "some-bucket", "channe-name")
       {:ok, %Aliyun.Oss.Client.Response{
           data: %{
             "LiveChannelConfiguration" => %{
@@ -226,18 +238,17 @@ defmodule Aliyun.Oss.LiveChannel do
               }
             }
           },
-          headers: [
-            {"Server", "AliyunOSS"},
-            {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
+          headers: %{
+            "connection" => ["keep-alive"],
             ...
-          ]
+          }
         }
       }
 
   """
   @spec get_info(Config.t(), String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
   def get_info(config, bucket, channel_name) do
-    get_object(config, bucket, channel_name, headers: %{}, query_params: %{"live" => nil})
+    get_object(config, bucket, channel_name, query_params: %{"live" => nil})
   end
 
   @doc """
@@ -245,21 +256,20 @@ defmodule Aliyun.Oss.LiveChannel do
 
   ## Examples
 
-      iex> Aliyun.Oss.LiveChannel.get_stat("some-bucket", "channe-name")
+      iex> Aliyun.Oss.LiveChannel.get_stat(config, "some-bucket", "channe-name")
       {:ok, %Aliyun.Oss.Client.Response{
           data: %{"LiveChannelStat" => %{"Status" => "Idle"}},
-          headers: [
-            {"Server", "AliyunOSS"},
-            {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
+          headers: {
+            "connection" => ["keep-alive"],
             ...
-          ]
+          }
         }
       }
 
   """
   @spec get_stat(Config.t(), String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
   def get_stat(config, bucket, channel_name) do
-    get_object(config, bucket, channel_name, headers: %{}, query_params: %{"live" => nil, "comp" => "stat"})
+    get_object(config, bucket, channel_name, query_params: %{"live" => nil, "comp" => "stat"})
   end
 
   @doc """
@@ -267,25 +277,29 @@ defmodule Aliyun.Oss.LiveChannel do
 
   ## Examples
 
-      iex> Aliyun.Oss.LiveChannel.get_history("some-bucket", "channe-name")
+      iex> Aliyun.Oss.LiveChannel.get_history(config, "some-bucket", "channe-name")
       {:ok, %Aliyun.Oss.Client.Response{
           data: %{"LiveChannelHistory" => %{
             "LiveRecord" => [
-              # ...
+              %{
+                "EndTime" => "2021-01-20T09:18:28.000Z",
+                "RemoteAddr" => "1**.1**.1**.1**:****",
+                "StartTime" => "2021-01-20T09:18:25.000Z"
+              },
+              ...
             ]
           }},
-          headers: [
-            {"Server", "AliyunOSS"},
-            {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
+          headers: %{
+            "connection" => ["keep-alive"],
             ...
-          ]
+          }
         }
       }
 
   """
   @spec get_history(Config.t(), String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
   def get_history(config, bucket, channel_name) do
-    get_object(config, bucket, channel_name, headers: %{}, query_params: %{"live" => nil, "comp" => "history"})
+    get_object(config, bucket, channel_name, query_params: %{"live" => nil, "comp" => "history"})
   end
 
   @doc """
@@ -293,23 +307,22 @@ defmodule Aliyun.Oss.LiveChannel do
 
   ## Examples
 
-      iex> Aliyun.Oss.LiveChannel.post_playlist("some-bucket", "channe-name", "list.m3u8", 1472020031, 1472020226)
+      iex> Aliyun.Oss.LiveChannel.post_vod_playlist(config, "some-bucket", "channe-name", "list.m3u8", 1472020031, 1472020226)
       {:ok, %Aliyun.Oss.Client.Response{
           data: "",
-          headers: [
-            {"Server", "AliyunOSS"},
-            {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
+          headers: %{
+            "connection" => ["keep-alive"],
             ...
-          ]
+          }
         }
       }
 
   """
-  @spec post_playlist(Config.t(), String.t(), String.t(), String.t(), integer(), integer()) ::
+  @spec post_vod_playlist(Config.t(), String.t(), String.t(), String.t(), integer(), integer()) ::
           {:error, error()} | {:ok, Response.t()}
-  def post_playlist(config, bucket, channel_name, list_name, start_time, end_time) do
-    Service.post(config, bucket, "#{channel_name}/#{list_name}", "",
-      sub_resources: %{"vod" => nil, "startTime" => start_time, "endTime" => end_time}
+  def post_vod_playlist(config, bucket, channel_name, list_name, start_time, end_time) do
+    post_object(config, bucket, "#{channel_name}/#{list_name}", "",
+      query_params: %{"vod" => nil, "startTime" => start_time, "endTime" => end_time}
     )
   end
 
@@ -318,22 +331,21 @@ defmodule Aliyun.Oss.LiveChannel do
 
   ## Examples
 
-      iex> Aliyun.Oss.LiveChannel.get_playlist("some-bucket", "channe-name", 1472020031, 1472020226)
+      iex> Aliyun.Oss.LiveChannel.get_vod_playlist(config, "some-bucket", "channe-name", 1472020031, 1472020226)
       {:ok, %Aliyun.Oss.Client.Response{
           data: "#EXTM3u...",
-          headers: [
-            {"Server", "AliyunOSS"},
-            {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
+          headers: %{
+            "connection" => ["keep-alive"],
             ...
-          ]
+          }
         }
       }
 
   """
-  @spec get_playlist(Config.t(), String.t(), String.t(), integer(), integer()) ::
+  @spec get_vod_playlist(Config.t(), String.t(), String.t(), integer(), integer()) ::
           {:error, error()} | {:ok, Response.t()}
-  def get_playlist(config, bucket, channel_name, start_time, end_time) do
-    get_object(config, bucket, channel_name, headers: %{}, query_params: %{
+  def get_vod_playlist(config, bucket, channel_name, start_time, end_time) do
+    get_object(config, bucket, channel_name, query_params: %{
       "vod" => nil,
       "startTime" => start_time,
       "endTime" => end_time

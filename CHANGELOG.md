@@ -93,6 +93,10 @@
       - `Aliyun.Oss.Object.MultipartUpload.upload_part_copy`
       - `Aliyun.Oss.Object.MultipartUpload.complete_upload`
       - `Aliyun.Oss.Object.MultipartUpload.list_parts`
+      - `Aliyun.Oss.LiveChannel.list`
+  - Rename functions:
+    - `Aliyun.Oss.LiveChannel.post_playlist` renamed to `Aliyun.Oss.LiveChannel.post_vod_playlist`
+    - `Aliyun.Oss.LiveChannel.get_playlist` renamed to `Aliyun.Oss.LiveChannel.get_vod_playlist`
   - New APIs:
     - `Aliyun.Oss.Bucket.get_bucket_stat`
     - `Aliyun.Oss.Region.describe_regions`

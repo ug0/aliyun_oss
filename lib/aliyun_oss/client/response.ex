@@ -1,6 +1,11 @@
 defmodule Aliyun.Oss.Client.Response do
   defstruct [:data, :headers]
 
+  @type t :: %__MODULE__{
+          data: map(),
+          headers: map()
+        }
+
   @value_casting_rules %{
     "Prefix" => :string,
     "Marker" => :string,
@@ -27,6 +32,10 @@ defmodule Aliyun.Oss.Client.Response do
 
   defp parse_content_type(headers) do
     headers
+    |> Stream.map(fn
+      {key, [value]} -> {key, value}
+      {key, value} -> {key, value}
+    end)
     |> Enum.find(fn {key, _value} -> String.downcase(key) == "content-type" end)
     |> case do
       {_, "application/json"} -> :json
@@ -35,8 +44,10 @@ defmodule Aliyun.Oss.Client.Response do
     end
   end
 
-  defp parse_body(body, :xml), do: body |> XmlToMap.naive_map() |> cast_data()
-  defp parse_body(body, :json), do: body |> Jason.decode!() |> cast_data()
+  defp parse_body(body, :xml) when is_binary(body),
+    do: body |> XmlToMap.naive_map() |> cast_data()
+
+  defp parse_body(body, :json) when is_binary(body), do: body |> Jason.decode!() |> cast_data()
   defp parse_body(body, _), do: body
 
   defp cast_data(map) do

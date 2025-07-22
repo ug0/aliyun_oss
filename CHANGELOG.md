@@ -1,5 +1,112 @@
 # Changelog
 
+## v3.0.0
+  V3 replaced `httpoison` with `req` and rewrites the function to build request and generate signature.
+  Now it supports [Aliyun OSS V4 signature](https://help.aliyun.com/zh/oss/developer-reference/guidelines-for-upgrading-v1-signatures-to-v4-signatures).
+
+  - **Breaking changes**:
+    - `Aliyun.Oss.Client.Response` has a new structure of `headers` as same as `req`.
+      ```elixir
+      # old
+      %Aliyun.Oss.Client.Response{headers: [
+        {"Server", "AliyunOSS"},
+        {"Date", "Fri, 11 Jan 2019 04:35:39 GMT"},
+        {"Content-Length", "0"},
+        {"Connection", "keep-alive"},
+        {"x-oss-request-id", "5C381D000000000000000000"},
+        {"Location", "/new-bucket"},
+        {"x-oss-server-time", "438"}
+      ]}
+      # new
+      %Aliyun.Oss.Client.Response{headers: %{
+        "connection" => ["keep-alive"],
+        "content-length" => ["0"],
+        "date" => ["Fri, 11 Jan 2019 04:35:39 GMT"],
+        "location" => ["/new-bucket"],
+        "server" => ["AliyunOSS"],
+        "x-oss-request-id" => ["5C381D000000000000000000"],
+        "x-oss-server-time" => ["438"]
+      }}
+      ```
+    - `Aliyun.Oss.Config` now requires to also set `region`
+    - Arguments such as `headers` are now passed via `options` keyword list:
+      - `Aliyun.Oss.Bucket.get_bucket`
+      - `Aliyun.Oss.Bucket.list_objects`
+      - `Aliyun.Oss.Bucket.put_bucket`
+      - `Aliyun.Oss.Bucket.delete_bucket`
+      - `Aliyun.Oss.Bucket.WORM.initiate`
+      - `Aliyun.Oss.Bucket.WORM.abort`
+      - `Aliyun.Oss.Bucket.WORM.complete`
+      - `Aliyun.Oss.Bucket.WORM.extend`
+      - `Aliyun.Oss.Bucket.WORM.get`
+      - `Aliyun.Oss.Bucket.ACL.get`
+      - `Aliyun.Oss.Bucket.ACL.put`
+      - `Aliyun.Oss.Bucket.Lifecycle.put`
+      - `Aliyun.Oss.Bucket.Lifecycle.get`
+      - `Aliyun.Oss.Bucket.Lifecycle.delete`
+      - `Aliyun.Oss.Bucket.Versioning.put`
+      - `Aliyun.Oss.Bucket.Versioning.get`
+      - `Aliyun.Oss.Bucket.Versioning.list_object_versions`
+      - `Aliyun.Oss.Bucket.Replication.put`
+      - `Aliyun.Oss.Bucket.Replication.get`
+      - `Aliyun.Oss.Bucket.Replication.get_location`
+      - `Aliyun.Oss.Bucket.Replication.get_progress`
+      - `Aliyun.Oss.Bucket.Replication.delete`
+      - `Aliyun.Oss.Bucket.Policy.put`
+      - `Aliyun.Oss.Bucket.Policy.get`
+      - `Aliyun.Oss.Bucket.Policy.delete`
+      - `Aliyun.Oss.Bucket.Inventory.put`
+      - `Aliyun.Oss.Bucket.Inventory.get`
+      - `Aliyun.Oss.Bucket.Inventory.list`
+      - `Aliyun.Oss.Bucket.Inventory.delete`
+      - `Aliyun.Oss.Bucket.Logging.put`
+      - `Aliyun.Oss.Bucket.Logging.get`
+      - `Aliyun.Oss.Bucket.Logging.delete`
+      - `Aliyun.Oss.Bucket.Website.put`
+      - `Aliyun.Oss.Bucket.Website.get`
+      - `Aliyun.Oss.Bucket.Website.delete`
+      - `Aliyun.Oss.Bucket.Referer.put`
+      - `Aliyun.Oss.Bucket.Referer.get`
+      - `Aliyun.Oss.Bucket.Tags.put`
+      - `Aliyun.Oss.Bucket.Tags.get`
+      - `Aliyun.Oss.Bucket.Tags.delete`
+      - `Aliyun.Oss.Bucket.Encryption.put`
+      - `Aliyun.Oss.Bucket.Encryption.get`
+      - `Aliyun.Oss.Bucket.Encryption.delete`
+      - `Aliyun.Oss.Bucket.RequestPayment.put`
+      - `Aliyun.Oss.Bucket.RequestPayment.get`
+      - `Aliyun.Oss.Bucket.CORS.put`
+      - `Aliyun.Oss.Bucket.CORS.get`
+      - `Aliyun.Oss.Bucket.CORS.delete`
+      - `Aliyun.Oss.Object.head_object`
+      - `Aliyun.Oss.Object.get_object`
+      - `Aliyun.Oss.Object.select_object`
+      - `Aliyun.Oss.Object.select_object_meta`
+      - `Aliyun.Oss.Object.signed_url`
+      - `Aliyun.Oss.Object.put_object`
+      - `Aliyun.Oss.Object.copy_object`
+      - `Aliyun.Oss.Object.append_object`
+      - `Aliyun.Oss.Object.delete_object`
+      - `Aliyun.Oss.Object.Symlink.put`
+      - `Aliyun.Oss.Object.MultipartUpload.init_upload`
+      - `Aliyun.Oss.Object.MultipartUpload.list_uploads`
+      - `Aliyun.Oss.Object.MultipartUpload.upload_part_copy`
+      - `Aliyun.Oss.Object.MultipartUpload.complete_upload`
+      - `Aliyun.Oss.Object.MultipartUpload.list_parts`
+      - `Aliyun.Oss.LiveChannel.list`
+  - Rename functions:
+    - `Aliyun.Oss.LiveChannel.post_playlist` renamed to `Aliyun.Oss.LiveChannel.post_vod_playlist`
+    - `Aliyun.Oss.LiveChannel.get_playlist` renamed to `Aliyun.Oss.LiveChannel.get_vod_playlist`
+  - New APIs:
+    - `Aliyun.Oss.Bucket.get_bucket_stat`
+    - `Aliyun.Oss.Region.describe_regions`
+    - `Aliyun.Oss.Bucket.Replication.put_rtc`
+    - `Aliyun.Oss.Bucket.Policy.get_status`
+    - `Aliyun.Oss.Bucket.Logging.put_user_defined_log_fields_config`
+    - `Aliyun.Oss.Bucket.Logging.get_user_defined_log_fields_config`
+    - `Aliyun.Oss.Bucket.Logging.delete_user_defined_log_fields_config`
+    - `Aliyun.Oss.Object.clean_restored_object`
+
 ## v2.0.0
   - **Breaking changes**:
     - Don't use global configuration any more

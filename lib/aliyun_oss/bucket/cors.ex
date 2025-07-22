@@ -3,7 +3,7 @@ defmodule Aliyun.Oss.Bucket.CORS do
   Bucket operations - CORS.
   """
 
-  import Aliyun.Oss.Bucket, only: [get_bucket: 4, put_bucket: 5, delete_bucket: 3]
+  import Aliyun.Oss.Bucket, only: [get_bucket: 3, put_bucket: 4, delete_bucket: 3]
   alias Aliyun.Oss.Config
   alias Aliyun.Oss.Client.{Response, Error}
 
@@ -34,13 +34,13 @@ defmodule Aliyun.Oss.Bucket.CORS do
           "ResponseVary" => "false"
         }
       }
-      iex> Aliyun.Oss.Bucket.CORS.put("some-bucket", config_json)
+      iex> Aliyun.Oss.Bucket.CORS.put(config, "some-bucket", config_json)
       {:ok, %Aliyun.Oss.Client.Response{
         data: "",
-        headers: [
-          {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
+        headers: %{
+          "connection" => ["keep-alive"],
           ...
-        ]
+        }
       }}
       iex> config_xml = ~S[
       <?xml version="1.0" encoding="UTF-8"?>
@@ -48,23 +48,23 @@ defmodule Aliyun.Oss.Bucket.CORS do
       ...
       </CORSConfiguration >
       ]
-      iex> Aliyun.Oss.Bucket.CORS.put("some-bucket", config_xml)
+      iex> Aliyun.Oss.Bucket.CORS.put(config, "some-bucket", config_xml)
       {:ok, %Aliyun.Oss.Client.Response{
         data: "",
-        headers: [
-          {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
+        headers: %{
+          "connection" => ["keep-alive"],
           ...
-        ]
+        }
       }}
 
   """
   @spec put(Config.t(), String.t(), String.t() | map()) :: {:error, error()} | {:ok, Response.t()}
-  def put(config, bucket, %{} = config) do
-    put(config, bucket, MapToXml.from_map(config))
+  def put(config, bucket, %{} = config_map) do
+    put(config, bucket, MapToXml.from_map(config_map))
   end
 
-  def put(config, bucket, config) do
-    put_bucket(config, bucket, %{}, %{"cors" => nil}, config)
+  def put(config, bucket, config_xml) do
+    put_bucket(config, bucket, config_xml, query_params: %{"cors" => nil})
   end
 
   @doc """
@@ -72,7 +72,7 @@ defmodule Aliyun.Oss.Bucket.CORS do
 
   ## Examples
 
-      iex> Aliyun.Oss.Bucket.CORS.get("some-bucket")
+      iex> Aliyun.Oss.Bucket.CORS.get(config, "some-bucket")
       {:ok, %Aliyun.Oss.Client.Response{
         data: %{
           "CORSConfiguration" => %{
@@ -93,16 +93,16 @@ defmodule Aliyun.Oss.Bucket.CORS do
             "ResponseVary" => "false"
           }
         },
-        headers: [
-          {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
+        headers: %{
+          "connection" => ["keep-alive"],
           ...
-        ]
+        }
       }}
 
   """
   @spec get(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
   def get(config, bucket) do
-    get_bucket(config, bucket, %{}, %{"cors" => nil})
+    get_bucket(config, bucket, query_params: %{"cors" => nil})
   end
 
   @doc """
@@ -111,24 +111,24 @@ defmodule Aliyun.Oss.Bucket.CORS do
 
   ## Examples
 
-      iex> Aliyun.Oss.Bucket.CORS.delete("some-bucket")
+      iex> Aliyun.Oss.Bucket.CORS.delete(config, "some-bucket")
       {:ok,
       %Aliyun.Oss.Client.Response{
         data: "",
-        headers: [
-          {"Server", "AliyunOSS"},
-          {"Date", "Fri, 11 Jan 2019 05:19:45 GMT"},
-          {"Content-Length", "0"},
-          {"Connection", "keep-alive"},
-          {"x-oss-request-id", "5C3000000000000000000000"},
-          {"x-oss-server-time", "90"}
-        ]
+        headers: %{
+          "connection" => ["keep-alive"],
+          "content-length" => ["0"],
+          "date" => ["Wed, 09 Jul 2025 07:31:57 GMT"],
+          "server" => ["AliyunOSS"],
+          "x-oss-request-id" => ["686E1AED****************"],
+          "x-oss-server-time" => ["73"]
+        }
       }}
 
   """
   @spec delete(Config.t(), String.t()) ::
           {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
   def delete(config, bucket) do
-    delete_bucket(config, bucket, %{"cors" => nil})
+    delete_bucket(config, bucket, query_params: %{"cors" => nil})
   end
 end

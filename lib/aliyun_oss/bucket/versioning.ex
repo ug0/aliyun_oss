@@ -3,7 +3,7 @@ defmodule Aliyun.Oss.Bucket.Versioning do
   Bucket operations - Versioning.
   """
 
-  import Aliyun.Oss.Bucket, only: [get_bucket: 4, put_bucket: 5]
+  import Aliyun.Oss.Bucket, only: [get_bucket: 3, put_bucket: 4]
   alias Aliyun.Oss.Config
   alias Aliyun.Oss.Client.{Response, Error}
 
@@ -18,11 +18,10 @@ defmodule Aliyun.Oss.Bucket.Versioning do
       iex> Aliyun.Oss.Bucket.Versioning.put("some-bucket", "Enabled")
       {:ok, %Aliyun.Oss.Client.Response{
           data: "",
-          headers: [
-            {"Server", "AliyunOSS"},
-            {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
+          headers: %{
+            "connection" => ["keep-alive"],
             ...
-          ]
+          }
         }
       }
 
@@ -36,7 +35,7 @@ defmodule Aliyun.Oss.Bucket.Versioning do
   @spec put(Config.t(), String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
   def put(config, bucket, status) do
     body_xml = EEx.eval_string(@body_tmpl, status: status)
-    put_bucket(config, bucket, %{}, %{"versioning" => nil}, body_xml)
+    put_bucket(config, bucket, body_xml, query_params: %{"versioning" => nil})
   end
 
   @doc """
@@ -47,16 +46,16 @@ defmodule Aliyun.Oss.Bucket.Versioning do
       iex> Aliyun.Oss.Bucket.Versioning.get("some-bucket")
       {:ok, %Aliyun.Oss.Client.Response{
         data: %{"VersioningConfiguration" => %{"Status" => "Enabled"}},
-        headers: [
-          {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
+        headers: %{
+          "connection" => ["keep-alive"],
           ...
-        ]
+        }
       }}
 
   """
   @spec get(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
   def get(config, bucket) do
-    get_bucket(config, bucket, %{}, %{"versioning" => nil})
+    get_bucket(config, bucket, query_params: %{"versioning" => nil})
   end
 
   @doc """
@@ -69,29 +68,55 @@ defmodule Aliyun.Oss.Bucket.Versioning do
         data: %{
           "ListVersionsResult" => %{
             "Delimiter" => nil,
+            "DeleteMarker" => [
+              %{
+                "IsLatest" => "false",
+                "Key" => "example",
+                "LastModified" => "2019-04-09T07:27:28.000Z",
+                "Owner" => %{
+                  "DisplayName" => "12345125285864390",
+                  "ID" => "1234512528586****"
+                },
+                "VersionId" => "CAEQMxiBgICAof2D0BYiIDJhMGE3N2M1YTI1NDQzOGY5NTkyNTI3MGYyMzJm****"
+              },
+            ],
             "IsTruncated" => true,
             "KeyMarker" => nil,
             "MaxKeys" => 100,
-            "Name" => "zidcn-test",
+            "Name" => "some-bucket",
             "NextKeyMarker" => "docs/test2.txt",
             "NextVersionIdMarker" => "null",
             "Prefix" => nil,
             "Version" => [
-              # ...
+              %{
+                "ETag" => "\"250F8A0AE989679A22926A875F0A2****\"",
+                "IsLatest" => "false",
+                "Key" => "example",
+                "LastModified" => "2019-04-09T07:27:28.000Z",
+                "Owner" => %{
+                  "DisplayName" => "12345125285864390",
+                  "ID" => "1234512528586****"
+                },
+                "Size" => "93731",
+                "StorageClass" => "Standard",
+                "Type" => "Normal",
+                "VersionId" => "CAEQMxiBgMDNoP2D0BYiIDE3MWUxNzgxZDQxNTRiODI5OGYwZGMwNGY3MzZjN****"
+              },
+              ...
             ],
             "VersionIdMarker" => nil,
           }
         },
-        headers: [
-          {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
+        headers: %{
+          "connection" => ["keep-alive"],
           ...
-        ]
+        }
       }}
 
   """
   @spec list_object_versions(Config.t(), String.t(), map()) ::
           {:error, error()} | {:ok, Response.t()}
   def list_object_versions(config, bucket, query_params \\ %{}) do
-    get_bucket(config, bucket, query_params, %{"versions" => nil})
+    get_bucket(config, bucket, query_params: Map.put(query_params, "versions", nil))
   end
 end

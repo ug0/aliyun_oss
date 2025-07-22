@@ -3,7 +3,7 @@ defmodule Aliyun.Oss.Bucket.Policy do
   Bucket operations - Authorization policy.
   """
 
-  import Aliyun.Oss.Bucket, only: [get_bucket: 4, put_bucket: 5, delete_bucket: 3]
+  import Aliyun.Oss.Bucket, only: [get_bucket: 3, put_bucket: 4, delete_bucket: 3]
   alias Aliyun.Oss.Config
   alias Aliyun.Oss.Client.{Response, Error}
 
@@ -26,19 +26,19 @@ defmodule Aliyun.Oss.Bucket.Policy do
         ],
         "Version" => "1"
       }
-      iex> Aliyun.Oss.Bucket.Policy.put("some-bucket", policy)
+      iex> Aliyun.Oss.Bucket.Policy.put(config, "some-bucket", policy)
       {:ok, %Aliyun.Oss.Client.Response{
         data: "",
-        headers: [
-          {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
+        headers: %{
+          "connection" => ["keep-alive"],
           ...
-        ]
+        }
       }}
 
   """
   @spec put(Config.t(), String.t(), map()) :: {:error, error()} | {:ok, Response.t()}
   def put(config, bucket, %{} = policy) do
-    put_bucket(config, bucket, %{}, %{"policy" => nil}, Jason.encode!(policy))
+    put_bucket(config, bucket, Jason.encode!(policy), query_params: %{"policy" => nil})
   end
 
   @doc """
@@ -46,7 +46,7 @@ defmodule Aliyun.Oss.Bucket.Policy do
 
   ## Examples
 
-      iex> Aliyun.Oss.Bucket.Policy.get("some-bucket")
+      iex> Aliyun.Oss.Bucket.Policy.get(config, "some-bucket")
       {:ok, %Aliyun.Oss.Client.Response{
         data: %{
           "Statement" => [
@@ -59,16 +59,38 @@ defmodule Aliyun.Oss.Bucket.Policy do
           ],
           "Version" => "1"
         },
-        headers: [
-          {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
+        headers: %{
+          "connection" => ["keep-alive"],
           ...
-        ]
+        }
       }}
 
   """
   @spec get(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
   def get(config, bucket) do
-    get_bucket(config, bucket, %{}, %{"policy" => nil})
+    get_bucket(config, bucket, query_params: %{"policy" => nil})
+  end
+
+  @doc """
+  GetBucketPolicyStatus
+
+  ## Examples
+
+      iex> Aliyun.Oss.Bucket.Policy.get_status(config, "some-bucket")
+      {:ok, %Aliyun.Oss.Client.Response{
+        data: %{
+          "PolicyStatus" => %{"IsPublic" => "false"}
+        },
+        headers: %{
+          "connection" => ["keep-alive"],
+          ...
+        }
+      }}
+
+  """
+  @spec get_status(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  def get_status(config, bucket) do
+    get_bucket(config, bucket, query_params: %{"policyStatus" => nil})
   end
 
   @doc """
@@ -80,20 +102,20 @@ defmodule Aliyun.Oss.Bucket.Policy do
       {:ok,
       %Aliyun.Oss.Client.Response{
         data: "",
-        headers: [
-          {"Server", "AliyunOSS"},
-          {"Date", "Fri, 11 Jan 2019 05:19:45 GMT"},
-          {"Content-Length", "0"},
-          {"Connection", "keep-alive"},
-          {"x-oss-request-id", "5C3000000000000000000000"},
-          {"x-oss-server-time", "90"}
-        ]
+        headers: %{
+          "connection" => ["keep-alive"],
+          "content-length" => ["0"],
+          "date" => ["Tue, 08 Jul 2025 07:43:42 GMT"],
+          "server" => ["AliyunOSS"],
+          "x-oss-request-id" => ["686CCC2E68CDB***********"],
+          "x-oss-server-time" => ["69"]
+        }
       }}
 
   """
   @spec delete(Config.t(), String.t()) ::
           {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
   def delete(config, bucket) do
-    delete_bucket(config, bucket, %{"policy" => nil})
+    delete_bucket(config, bucket, query_params: %{"policy" => nil})
   end
 end

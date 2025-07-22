@@ -3,7 +3,7 @@ defmodule Aliyun.Oss.Bucket.Encryption do
   Bucket operations - Encryption.
   """
 
-  import Aliyun.Oss.Bucket, only: [get_bucket: 4, put_bucket: 5, delete_bucket: 3]
+  import Aliyun.Oss.Bucket, only: [get_bucket: 3, put_bucket: 4, delete_bucket: 3]
   alias Aliyun.Oss.Config
   alias Aliyun.Oss.Client.{Response, Error}
 
@@ -15,7 +15,7 @@ defmodule Aliyun.Oss.Bucket.Encryption do
 
   ## Examples
 
-      iex> Aliyun.Oss.Bucket.Encryption.get("some-bucket")
+      iex> Aliyun.Oss.Bucket.Encryption.get(config, "some-bucket")
       {:ok, %Aliyun.Oss.Client.Response{
         data: %{
           "ServerSideEncryptionRule" => %{
@@ -24,16 +24,16 @@ defmodule Aliyun.Oss.Bucket.Encryption do
             }
           }
         },
-        headers: [
-          {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
+        headers: %{
+          "connection" => ["keep-alive"],
           ...
-        ]
+        }
       }}
 
   """
   @spec get(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
   def get(config, bucket) do
-    get_bucket(config, bucket, %{}, %{"encryption" => nil})
+    get_bucket(config, bucket, query_params: %{"encryption" => nil})
   end
 
   @doc """
@@ -41,52 +41,59 @@ defmodule Aliyun.Oss.Bucket.Encryption do
 
   ## Options
 
-  - `:algorithm` - Accept value: `:aes256`, `:kms`, default is `:aes256`
-  - `:kms_master_key_id` - Should and only be set if algorithm is `:kms`
+  - `:algorithm` - Accept value: `:aes256`, `:kms`, `:sm4`, default is `:aes256`
+  - `:kms_master_key_id` - Should and only be set if `algorithm` is `:kms`
+  - `:kms_data_encryption` - Accept value: `:sm4`, Should and only be set if `algorithm` is `:kms`
 
   ## Examples
 
-      iex> Aliyun.Oss.Bucket.Encryption.put("some-bucket", algorithm: :aes256)
+      iex> Aliyun.Oss.Bucket.Encryption.put(config, "some-bucket", algorithm: :aes256)
       {:ok,
       %Aliyun.Oss.Client.Response{
         data: "",
-        headers: [
-          {"Server", "AliyunOSS"},
-          {"Date", "Fri, 11 Jan 2019 05:05:50 GMT"},
-          {"Content-Length", "0"},
-          {"Connection", "keep-alive"},
-          {"x-oss-request-id", "5C0000000000000000000000"},
-          {"x-oss-server-time", "63"}
-        ]
+        headers: %{
+          "connection" => ["keep-alive"],
+          "content-length" => ["0"],
+          "date" => ["Wed, 09 Jul 2025 06:44:24 GMT"],
+          "server" => ["AliyunOSS"],
+          "x-oss-request-id" => ["686E0FC88A**************"],
+          "x-oss-server-time" => ["50"]
+        }
       }}
 
   """
+  @algorithms [:aes256, :kms, :sm4]
   @body_tmpl """
   <?xml version="1.0" encoding="UTF-8"?>
   <ServerSideEncryptionRule>
     <ApplyServerSideEncryptionByDefault>
-      <SSEAlgorithm><%= algorithm %></SSEAlgorithm>
-      <KMSMasterKeyID><%= kms_master_key_id %></KMSMasterKeyID>
+      <SSEAlgorithm><%= @algorithm %></SSEAlgorithm>
+      <%= if assigns[:kms_data_encryption] do %>
+      <KMSDataEncryption><%= @kms_data_encryption %></KMSDataEncryption>
+      <% end %>
+      <KMSMasterKeyID><%= @kms_master_key_id %></KMSMasterKeyID>
     </ApplyServerSideEncryptionByDefault>
   </ServerSideEncryptionRule>
   """
   @spec put(Config.t(), String.t(), Keyword.t()) ::
           {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
   def put(config, bucket, opts \\ []) do
-    {algorithm, kms_master_key_id} =
-      case Keyword.get(opts, :algorithm, :aes256) do
-        :aes256 -> {"AES256", nil}
-        :kms -> {"KMS", Keyword.fetch!(opts, :kms_master_key_id)}
-      end
+    vars =
+      [algorithm: :aes256, kms_master_key_id: nil]
+      |> Keyword.merge(opts)
+      |> Enum.reduce([], fn
+        {:algorithm, algorithm}, acc when algorithm in @algorithms ->
+          [{:algorithm, algorithm |> to_string() |> String.upcase()} | acc]
 
-    xml_body =
-      EEx.eval_string(
-        @body_tmpl,
-        algorithm: algorithm,
-        kms_master_key_id: kms_master_key_id
-      )
+        {:kms_master_key_id, key}, acc ->
+          [{:kms_master_key_id, key} | acc]
 
-    put_bucket(config, bucket, %{}, %{"encryption" => nil}, xml_body)
+        {:kms_data_encryption, :sm4}, acc ->
+          [{:kms_data_encryption, "SM4"} | acc]
+      end)
+
+    xml_body = EEx.eval_string(@body_tmpl, assigns: vars)
+    put_bucket(config, bucket, xml_body, query_params: %{"encryption" => nil})
   end
 
   @doc """
@@ -94,24 +101,24 @@ defmodule Aliyun.Oss.Bucket.Encryption do
 
   ## Examples
 
-      iex> Aliyun.Oss.Bucket.Encryption.delete("some-bucket")
+      iex> Aliyun.Oss.Bucket.Encryption.delete(config, "some-bucket")
       {:ok,
       %Aliyun.Oss.Client.Response{
         data: "",
-        headers: [
-          {"Server", "AliyunOSS"},
-          {"Date", "Fri, 11 Jan 2019 05:19:45 GMT"},
-          {"Content-Length", "0"},
-          {"Connection", "keep-alive"},
-          {"x-oss-request-id", "5C3000000000000000000000"},
-          {"x-oss-server-time", "90"}
-        ]
+        headers: %{
+          "connection" => ["keep-alive"],
+          "content-length" => ["0"],
+          "date" => ["Wed, 09 Jul 2025 06:44:24 GMT"],
+          "server" => ["AliyunOSS"],
+          "x-oss-request-id" => ["686E0FC88A**************"],
+          "x-oss-server-time" => ["50"]
+        }
       }}
 
   """
   @spec delete(Config.t(), String.t()) ::
           {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
   def delete(config, bucket) do
-    delete_bucket(config, bucket, %{"encryption" => nil})
+    delete_bucket(config, bucket, query_params: %{"encryption" => nil})
   end
 end

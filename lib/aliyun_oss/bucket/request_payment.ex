@@ -3,7 +3,7 @@ defmodule Aliyun.Oss.Bucket.RequestPayment do
   Bucket operations - RequestPayment.
   """
 
-  import Aliyun.Oss.Bucket, only: [get_bucket: 4, put_bucket: 5]
+  import Aliyun.Oss.Bucket, only: [get_bucket: 3, put_bucket: 4]
   alias Aliyun.Oss.Config
   alias Aliyun.Oss.Client.{Response, Error}
 
@@ -15,21 +15,20 @@ defmodule Aliyun.Oss.Bucket.RequestPayment do
 
   ## Examples
 
-      iex> Aliyun.Oss.Bucket.RequestPayment.get("some-bucket")
+      iex> Aliyun.Oss.Bucket.RequestPayment.get(config, "some-bucket")
       {:ok, %Aliyun.Oss.Client.Response{
           data: %{"RequestPaymentConfiguration" => %{"Payer" => "BucketOwner"}},
-          headers: [
-            {"Server", "AliyunOSS"},
-            {"Date", "Fri, 01 Mar 2019 06:26:07 GMT"},
+          headers: %{
+            "connection" => ["keep-alive"],
             ...
-          ]
+          }
         }
       }
 
   """
   @spec get(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
   def get(config, bucket) do
-    get_bucket(config, bucket, %{}, %{"requestPayment" => nil})
+    get_bucket(config, bucket, query_params: %{"requestPayment" => nil})
   end
 
   @doc """
@@ -37,14 +36,17 @@ defmodule Aliyun.Oss.Bucket.RequestPayment do
 
   ## Examples
 
-      iex> Aliyun.Oss.Bucket.RequestPayment.put("some-bucket", "Requester)
+      iex> Aliyun.Oss.Bucket.RequestPayment.put(config, "some-bucket", "Requester")
       {:ok, %Aliyun.Oss.Client.Response{
           data: "",
-          headers: [
-            {"Server", "AliyunOSS"},
-            {"Date", "Fri, 01 Mar 2019 06:26:07 GMT"},
-            ...
-          ]
+          headers: %{
+          "connection" => ["keep-alive"],
+          "content-length" => ["0"],
+          "date" => ["Wed, 09 Jul 2025 07:12:09 GMT"],
+          "server" => ["AliyunOSS"],
+          "x-oss-request-id" => ["686E164922DB************"],
+          "x-oss-server-time" => ["81"]
+          }
         }
       }
 
@@ -58,6 +60,6 @@ defmodule Aliyun.Oss.Bucket.RequestPayment do
   @spec put(Config.t(), String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
   def put(config, bucket, payer) do
     xml_body = EEx.eval_string(@body_tmpl, payer: payer)
-    put_bucket(config, bucket, %{}, %{"requestPayment" => nil}, xml_body)
+    put_bucket(config, bucket, xml_body, query_params: %{"requestPayment" => nil})
   end
 end

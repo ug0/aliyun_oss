@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/ug0/aliyun_oss.svg?branch=master)](https://travis-ci.org/ug0/aliyun_oss)
 [![Hex.pm](https://img.shields.io/hexpm/v/aliyun_oss.svg)](https://hex.pm/packages/aliyun_oss)
 
-阿里云对象存储（OSS）API
+阿里云对象存储（OSS）API（使用阿里云 V4 签名）
 
 ## Installation
 
@@ -12,7 +12,7 @@ Add `aliyun_oss` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:aliyun_oss, "~> 2.0"}
+    {:aliyun_oss, "~> 3.0"}
   ]
 end
 ```
@@ -39,9 +39,11 @@ end
 
 # In the config/runtime.exs
 config :my_app, MyApp.Oss,
-  endpoint: "...",
-  access_key_id: "...",
-  access_key_secret: "..."
+  region: "cn-hangzhou",
+  endpoint: "oss-cn-hangzhou.aliyuncs.com",
+  access_key_id: "YOUR_ACCESS_KEY_ID",
+  access_key_secret: "YOUR_ACCESS_KEY_SECRET",
+  security_token: "YOUR_STS_SECURITY_TOKEN" # for using STS token
 ```
 
 ## Documentation

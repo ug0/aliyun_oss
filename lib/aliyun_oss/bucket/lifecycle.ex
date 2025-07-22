@@ -3,7 +3,7 @@ defmodule Aliyun.Oss.Bucket.Lifecycle do
   Bucket operations - Lifecycle.
   """
 
-  import Aliyun.Oss.Bucket, only: [get_bucket: 4, put_bucket: 5, delete_bucket: 3]
+  import Aliyun.Oss.Bucket, only: [get_bucket: 3, put_bucket: 4, delete_bucket: 3]
   alias Aliyun.Oss.Config
   alias Aliyun.Oss.Client.{Response, Error}
 
@@ -13,9 +13,13 @@ defmodule Aliyun.Oss.Bucket.Lifecycle do
   @doc """
   PutBucketLifecycle - configures a lifecycle rule for a bucket.
 
+  ## Options
+
+  - `:headers` - Defaults to `%{}`
+
   ## Examples
 
-      iex> config = %{
+      iex> lifecycle_config = %{
         "LifecycleConfiguration" => %{
           "Rule" => %{
             "AbortMultipartUpload" => %{"Days" => "1"},
@@ -26,7 +30,7 @@ defmodule Aliyun.Oss.Bucket.Lifecycle do
           }
         }
       }
-      iex> Aliyun.Oss.Bucket.Lifecycle.put("some-bucket", config)
+      iex> Aliyun.Oss.Bucket.Lifecycle.put(config, "some-bucket", lifecycle_config)
       {:ok, %Aliyun.Oss.Client.Response{
         data: "",
         headers: [
@@ -34,7 +38,7 @@ defmodule Aliyun.Oss.Bucket.Lifecycle do
           ...
         ]
       }}
-      iex> config = ~S[
+      iex> lifecycle_config = ~S[
       <?xml version="1.0" encoding="UTF-8"?>
       <LifecycleConfiguration>
         <Rule>
@@ -50,23 +54,31 @@ defmodule Aliyun.Oss.Bucket.Lifecycle do
         </Rule>
       </LifecycleConfiguration>
       ]
-      iex> Aliyun.Oss.Bucket.Lifecycle.put("some-bucket", config)
+      iex> Aliyun.Oss.Bucket.Lifecycle.put(config, "some-bucket", lifecycle_config)
       {:ok, %Aliyun.Oss.Client.Response{
         data: "",
-        headers: [
-          {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
+        headers: %{
+          "connection" => ["keep-alive"],
           ...
-        ]
+        }
       }}
 
   """
-  @spec put(Config.t(), String.t(), String.t() | map()) :: {:error, error()} | {:ok, Response.t()}
-  def put(config, bucket, %{} = config) do
-    put(config, bucket, MapToXml.from_map(config))
+  @spec put(Config.t(), String.t(), String.t() | map(), keyword()) ::
+          {:error, error()} | {:ok, Response.t()}
+  def put(config, bucket, lifecycle_config, options \\ [])
+
+  def put(config, bucket, %{} = lifecycle_config_map, options) do
+    put(config, bucket, MapToXml.from_map(lifecycle_config_map), options)
   end
 
-  def put(config, bucket, config) do
-    put_bucket(config, bucket, %{}, %{"lifecycle" => nil}, config)
+  def put(config, bucket, lifecycle_config_xml, options) do
+    put_bucket(
+      config,
+      bucket,
+      lifecycle_config_xml,
+      Keyword.put(options, :query_params, %{"lifecycle" => nil})
+    )
   end
 
   @doc """
@@ -74,30 +86,29 @@ defmodule Aliyun.Oss.Bucket.Lifecycle do
 
   ## Examples
 
-      iex> Aliyun.Oss.Bucket.Lifecycle.get("some-bucket")
+      iex> Aliyun.Oss.Bucket.Lifecycle.get(config, "some-bucket")
       {:ok, %Aliyun.Oss.Client.Response{
         data: %{
           "LifecycleConfiguration" => %{
             "Rule" => %{
-              "ID" => "delete after one day",
+              "AbortMultipartUpload" => %{"Days" => "1"},
+              "Expiration" => %{"Days" => "1"},
+              "ID" => "delete objects and parts after one day",
               "Prefix" => "logs/",
-              "Status" => "Enabled",
-              "Expiration" => %{
-                "Days" => "1"
-              }
+              "Status" => "Enabled"
             }
           }
         },
-        headers: [
-          {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
+        headers: %{
+          "connection" => ["keep-alive"],
           ...
-        ]
+        }
       }}
 
   """
   @spec get(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
   def get(config, bucket) do
-    get_bucket(config, bucket, %{}, %{"lifecycle" => nil})
+    get_bucket(config, bucket, query_params: %{"lifecycle" => nil})
   end
 
   @doc """
@@ -109,14 +120,14 @@ defmodule Aliyun.Oss.Bucket.Lifecycle do
       {:ok,
       %Aliyun.Oss.Client.Response{
         data: "",
-        headers: [
-          {"Server", "AliyunOSS"},
-          {"Date", "Fri, 11 Jan 2019 05:19:45 GMT"},
-          {"Content-Length", "0"},
-          {"Connection", "keep-alive"},
-          {"x-oss-request-id", "5C3000000000000000000000"},
-          {"x-oss-server-time", "90"}
-        ]
+        headers: %{
+          "connection" => ["keep-alive"],
+          "content-length" => ["0"],
+          "date" => ["Tue, 08 Jul 2025 02:47:49 GMT"],
+          "server" => ["AliyunOSS"],
+          "x-oss-request-id" => ["686C0000000000000001C0B2"],
+          "x-oss-server-time" => ["53"]
+        }
       }}
       iex> Aliyun.Oss.Bucket.Lifecycle.delete("unknown-bucket")
       {:error,
@@ -124,8 +135,10 @@ defmodule Aliyun.Oss.Bucket.Lifecycle do
         parsed_details: %{
           "BucketName" => "unknown-bucket",
           "Code" => "NoSuchBucket",
+          "EC" => "0015-00000101",
           "HostId" => "unknown-bucket.oss-cn-shenzhen.aliyuncs.com",
           "Message" => "The specified bucket does not exist.",
+          "RecommendDoc" => "https://api.aliyun.com/troubleshoot?q=0015-00000101",
           "RequestId" => "5C38283EC84D1C4471F2F48A"
         },
         body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>...</xml>",
@@ -136,6 +149,6 @@ defmodule Aliyun.Oss.Bucket.Lifecycle do
   @spec delete(Config.t(), String.t()) ::
           {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
   def delete(config, bucket) do
-    delete_bucket(config, bucket, %{"lifecycle" => nil})
+    delete_bucket(config, bucket, query_params: %{"lifecycle" => nil})
   end
 end

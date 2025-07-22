@@ -2,13 +2,13 @@ defmodule AliyunOss.MixProject do
   use Mix.Project
 
   @source_url "https://github.com/ug0/aliyun_oss"
-  @version "2.0.0"
+  @version "3.0.0"
 
   def project do
     [
       app: :aliyun_oss,
       version: @version,
-      elixir: "~> 1.7",
+      elixir: "~> 1.18",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       package: package(),
@@ -28,11 +28,13 @@ defmodule AliyunOss.MixProject do
   defp deps do
     [
       {:mime, "~> 2.0"},
-      {:aliyun_util, "~> 0.3.3"},
-      {:httpoison, "~> 1.7"},
+      {:req, "~> 0.5.12"},
+      {:aliyun_util, "~> 0.4.1"},
+      {:httpoison, "~> 2.0"},
       {:elixir_xml_to_map, "~> 3.0"},
       {:elixir_map_to_xml, "~> 0.1.0"},
       {:jason, "~> 1.1"},
+      {:mock, "~> 0.3.0", only: :test},
       {:ex_doc, "~> 0.20", only: :dev, runtime: false}
     ]
   end
@@ -49,6 +51,12 @@ defmodule AliyunOss.MixProject do
     [
       main: "Aliyun.Oss",
       groups_for_modules: [
+        Service: [
+          Aliyun.Oss.Service
+        ],
+        Region: [
+          Aliyun.Oss.Region
+        ],
         Bucket: [
           Aliyun.Oss.Bucket,
           Aliyun.Oss.Bucket.WORM,

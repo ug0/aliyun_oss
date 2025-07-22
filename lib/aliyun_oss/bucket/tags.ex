@@ -3,7 +3,7 @@ defmodule Aliyun.Oss.Bucket.Tags do
   Bucket operations - Tags.
   """
 
-  import Aliyun.Oss.Bucket, only: [get_bucket: 4, put_bucket: 5, delete_bucket: 3]
+  import Aliyun.Oss.Bucket, only: [get_bucket: 3, put_bucket: 4, delete_bucket: 3]
   alias Aliyun.Oss.Config
   alias Aliyun.Oss.Client.{Response, Error}
 
@@ -15,21 +15,20 @@ defmodule Aliyun.Oss.Bucket.Tags do
 
   ## Examples
 
-      iex> Aliyun.Oss.Bucket.Tagging.get("some-bucket")
+      iex> Aliyun.Oss.Bucket.Tagging.get(config, "some-bucket")
       {:ok, %Aliyun.Oss.Client.Response{
           data: %{"Tagging" => %{"TagSet" => [%{"Key" => "key", "Value" => "value"}]}},
-          headers: [
-            {"Server", "AliyunOSS"},
-            {"Date", "Fri, 01 Mar 2019 06:26:07 GMT"},
+          headers: %{
+            "connection" => ["keep-alive"],
             ...
-          ]
+          }
         }
       }
 
   """
   @spec get(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
   def get(config, bucket) do
-    get_bucket(config, bucket, %{}, %{"tagging" => nil})
+    get_bucket(config, bucket, query_params: %{"tagging" => nil})
   end
 
   @doc """
@@ -37,14 +36,17 @@ defmodule Aliyun.Oss.Bucket.Tags do
 
   ## Examples
 
-      iex> Aliyun.Oss.Bucket.Tags.put("some-bucket", [{"key1", "value1"}, {:key2, "value2}])
+      iex> Aliyun.Oss.Bucket.Tags.put(config, "some-bucket", [{"key1", "value1"}, {:key2, "value2}])
       {:ok, %Aliyun.Oss.Client.Response{
           data: "",
-          headers: [
-            {"Server", "AliyunOSS"},
-            {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
-            ...
-          ]
+          headers: %{
+            "connection" => ["keep-alive"],
+            "content-length" => ["0"],
+            "date" => ["Wed, 09 Jul 2025 05:46:16 GMT"],
+            "server" => ["AliyunOSS"],
+            "x-oss-request-id" => ["686E0227B63*************"],
+            "x-oss-server-time" => ["393"]
+          }
         }
       }
 
@@ -67,7 +69,7 @@ defmodule Aliyun.Oss.Bucket.Tags do
           {:error, error()} | {:ok, Response.t()}
   def put(config, bucket, tags) do
     xml_body = EEx.eval_string(@body_tmpl, tags: tags)
-    put_bucket(config, bucket, %{}, %{"tagging" => nil}, xml_body)
+    put_bucket(config, bucket, xml_body, query_params: %{"tagging" => nil})
   end
 
   @doc """
@@ -75,24 +77,29 @@ defmodule Aliyun.Oss.Bucket.Tags do
 
   ## Examples
 
-      iex> Aliyun.Oss.Bucket.Tags.delete("some-bucket")
+      iex> Aliyun.Oss.Bucket.Tags.delete(config, "some-bucket")
       {:ok,
       %Aliyun.Oss.Client.Response{
         data: "",
-        headers: [
-          {"Server", "AliyunOSS"},
-          {"Date", "Fri, 11 Jan 2019 05:19:45 GMT"},
-          ...
-        ]
+        headers: %{
+          "connection" => ["keep-alive"],
+          "content-length" => ["0"],
+          "date" => ["Wed, 09 Jul 2025 05:47:50 GMT"],
+          "server" => ["AliyunOSS"],
+          "x-oss-request-id" => ["686E0285B630************"],
+          "x-oss-server-time" => ["374"]
+        }
       }}
-      iex> Aliyun.Oss.Bucket.Tags.delete("unknown-bucket")
+      iex> Aliyun.Oss.Bucket.Tags.delete(config, "unknown-bucket")
       {:error,
       %Aliyun.Oss.Client.Error{
         parsed_details: %{
           "BucketName" => "unknown-bucket",
           "Code" => "NoSuchBucket",
+          "EC" => "0015-00000101",
           "HostId" => "unknown-bucket.oss-cn-shenzhen.aliyuncs.com",
           "Message" => "The specified bucket does not exist.",
+          "RecommendDoc" => "https://api.aliyun.com/troubleshoot?q=0015-00000101",
           "RequestId" => "5C38283EC84D1C4471F2F48A"
         },
         body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>...</xml>",
@@ -103,6 +110,6 @@ defmodule Aliyun.Oss.Bucket.Tags do
   @spec delete(Config.t(), String.t()) ::
           {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
   def delete(config, bucket) do
-    delete_bucket(config, bucket, %{"tagging" => nil})
+    delete_bucket(config, bucket, query_params: %{"tagging" => nil})
   end
 end

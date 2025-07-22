@@ -3,7 +3,7 @@ defmodule Aliyun.Oss.Object.Tagging do
   Object operations - Tagging.
   """
 
-  import Aliyun.Oss.Object, only: [get_object: 5, put_object: 6, delete_object: 4]
+  import Aliyun.Oss.Object, only: [get_object: 4, put_object: 5, delete_object: 4]
   alias Aliyun.Oss.Config
   alias Aliyun.Oss.Client.{Response, Error}
 
@@ -18,25 +18,22 @@ defmodule Aliyun.Oss.Object.Tagging do
       iex> Aliyun.Oss.Object.Tagging.get(config, "some-bucket", "some-object")
       {:ok, %Aliyun.Oss.Client.Response{
           data: %{"Tagging" => %{"TagSet" => [%{"Key" => "key", "Value" => "value"}]}},
-          headers: [
-            {"Server", "AliyunOSS"},
-            {"Date", "Fri, 01 Mar 2019 06:26:07 GMT"},
-            {"Content-Type", "text/plain"},
-            {"Content-Length", "0"},
-            {"Connection", "keep-alive"},
-            {"x-oss-request-id", "5C7000000000000000000000"},
-            {"Last-Modified", "Fri, 01 Mar 2019 06:23:13 GMT"},
-            {"ETag", "\"6751C000000000000000000000000000\""},
-            {"x-oss-symlink-target", "test.txt"},
-            {"x-oss-server-time", "1"}
-          ]
+          headers: %{
+            "connection" => ["keep-alive"],
+            "content-type" => ["application/xml"],
+            "date" => ["Fri, 11 Jul 2025 07:12:14 GMT"],
+            "server" => ["AliyunOSS"],
+            "x-oss-request-id" => ["6870B94E9***************"],
+            "x-oss-server-time" => ["66"],
+            "x-oss-version-id" => ["null"]
+          }
         }
       }
 
   """
   @spec get(Config.t(), String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
   def get(config, bucket, object) do
-    get_object(config, bucket, object, %{}, %{"tagging" => nil})
+    get_object(config, bucket, object, headers: %{}, query_params: %{"tagging" => nil})
   end
 
   @doc """
@@ -47,11 +44,10 @@ defmodule Aliyun.Oss.Object.Tagging do
       iex> Aliyun.Oss.Object.Tagging.put(config, "some-bucket", "some-object", [{"key1", "value1"}, {:key2, "value2}])
       {:ok, %Aliyun.Oss.Client.Response{
           data: "",
-          headers: [
-            {"Server", "AliyunOSS"},
-            {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
+          headers: %{
+            "connection" => ["keep-alive"],
             ...
-          ]
+          }
         }
       }
 
@@ -69,11 +65,11 @@ defmodule Aliyun.Oss.Object.Tagging do
     </TagSet>
   </Tagging>
   """
-  @spec put(Config.t(), String.t(), String.t(), [{any(), any()}, ...]) ::
+  @spec put(Config.t(), String.t(), String.t(), keyword() | [{String.t(), String.t()}, ...]) ::
           {:error, error()} | {:ok, Response.t()}
-  def put(config, bucket, object, tags) do
+  def put(config, bucket, object, tags) when is_list(tags) do
     xml_body = EEx.eval_string(@body_tmpl, tags: tags)
-    put_object(config, bucket, object, xml_body, %{}, %{"tagging" => nil})
+    put_object(config, bucket, object, xml_body, query_params: %{"tagging" => nil})
   end
 
   @doc """
@@ -84,17 +80,16 @@ defmodule Aliyun.Oss.Object.Tagging do
       iex> Aliyun.Oss.Object.Tagging.delete("some-bucket", "some-object")
       {:ok, %Aliyun.Oss.Client.Response{
           data: "",
-          headers: [
-            {"Server", "AliyunOSS"},
-            {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
+          headers: %{
+            "connection" => ["keep-alive"],
             ...
-          ]
+          }
         }
       }
 
   """
   @spec delete(Config.t(), String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
   def delete(config, bucket, object) do
-    delete_object(config, bucket, object, %{"tagging" => nil})
+    delete_object(config, bucket, object, query_params: %{"tagging" => nil})
   end
 end

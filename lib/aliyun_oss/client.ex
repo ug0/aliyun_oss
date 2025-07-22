@@ -6,56 +6,25 @@ defmodule Aliyun.Oss.Client do
   alias Aliyun.Oss.Config
   alias Aliyun.Oss.Client.{Request, Response, Error}
 
-  def request(%Config{} = config, init_req) when is_map(init_req) do
-    Request.build_signed(config, init_req)
-    |> do_request()
+  def request(%Config{} = config, method, bucket, object, query_params, headers, body \\ nil) do
+    config
+    |> Request.build!(method, bucket, object, query_params, headers, body)
+    |> Request.sign_header()
+    |> Request.request()
     |> case do
-      {:ok, %HTTPoison.Response{body: body, status_code: status_code, headers: headers}}
-      when status_code in 200..299 ->
+      {:ok, %Req.Response{status: status, body: body, headers: headers}}
+      when status in 200..299 ->
         {:ok, Response.parse(body, headers)}
 
-      {:ok, %HTTPoison.Response{body: body, status_code: status_code}} ->
-        {:error, Error.parse(%Error{body: body, status_code: status_code})}
+      {:ok, %Req.Response{status: status, body: body}} ->
+        {:error, Error.parse(%Error{body: body, status_code: status})}
 
-      {:error, %HTTPoison.Error{reason: reason}} ->
+      {:error, %Jason.DecodeError{data: data}} ->
+        {:error,
+         %Error{body: data, status_code: 900, parsed_details: %{"message" => "JSON decode error"}}}
+
+      {:error, %{reason: reason}} ->
         {:error, reason}
     end
-  end
-
-  defp do_request(req = %Request{verb: "GET"}) do
-    HTTPoison.get(
-      Request.to_url(req),
-      req.headers
-    )
-  end
-
-  defp do_request(req = %Request{verb: "HEAD"}) do
-    HTTPoison.head(
-      Request.to_url(req),
-      req.headers
-    )
-  end
-
-  defp do_request(req = %Request{verb: "POST"}) do
-    HTTPoison.post(
-      Request.to_url(req),
-      req.body,
-      req.headers
-    )
-  end
-
-  defp do_request(req = %Request{verb: "PUT"}) do
-    HTTPoison.put(
-      Request.to_url(req),
-      req.body,
-      req.headers
-    )
-  end
-
-  defp do_request(req = %Request{verb: "DELETE"}) do
-    HTTPoison.delete(
-      Request.to_url(req),
-      req.headers
-    )
   end
 end

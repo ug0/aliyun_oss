@@ -3,7 +3,7 @@ defmodule Aliyun.Oss.Bucket.Website do
   Bucket operations - Static websites.
   """
 
-  import Aliyun.Oss.Bucket, only: [get_bucket: 4, put_bucket: 5, delete_bucket: 3]
+  import Aliyun.Oss.Bucket, only: [get_bucket: 3, put_bucket: 4, delete_bucket: 3]
   alias Aliyun.Oss.Config
   alias Aliyun.Oss.Client.{Response, Error}
 
@@ -15,26 +15,35 @@ defmodule Aliyun.Oss.Bucket.Website do
 
   ## Examples
 
-      iex> Aliyun.Oss.Bucket.Website.get("some-bucket")
+      iex> Aliyun.Oss.Bucket.Website.get(config, "some-bucket")
       {:ok, %Aliyun.Oss.Client.Response{
         data: %{
-          "WebsiteConfiguration" => %{"IndexDocument" => %{"Suffix" => "index.html"}}
+          "WebsiteConfiguration" => %{
+            "ErrorDocument" => %{"HttpStatus" => "404", "Key" => "error.html"},
+            "IndexDocument" => %{
+              "Suffix" => "index.html",
+              "SupportSubDir" => "true",
+              "Type" => "0"
+            }
+          }
         },
-        headers: [
-          {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
+        headers: %{
+          "connection" => ["keep-alive"],
           ...
-        ]
+        }
       }}
 
-      iex> Aliyun.Oss.Bucket.Website.get("unkown-bucket")
+      iex> Aliyun.Oss.Bucket.Website.get(config, "unkown-bucket")
       {:error,
         %Aliyun.Oss.Client.Error{
           status_code: 404,
           parsed_details: %{
             "BucketName" => "unkown-bucket",
             "Code" => "NoSuchBucket",
+            "EC" => "0015-00000101",
             "HostId" => "unkown-bucket.oss-cn-shenzhen.aliyuncs.com",
             "Message" => "The specified bucket does not exist.",
+            "RecommendDoc" => "https://api.aliyun.com/troubleshoot?q=0015-00000101",
             "RequestId" => "5C0000000000000000000000"
           },
           body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>...</xml>"
@@ -44,7 +53,7 @@ defmodule Aliyun.Oss.Bucket.Website do
   """
   @spec get(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
   def get(config, bucket) do
-    get_bucket(config, bucket, %{}, %{"website" => nil})
+    get_bucket(config, bucket, query_params: %{"website" => nil})
   end
 
   @doc """
@@ -62,25 +71,25 @@ defmodule Aliyun.Oss.Bucket.Website do
       ...> ...
       ...> </WebsiteConfiguration>
       ...>  \"""
-      iex> Aliyun.Oss.Bucket.Website.put("some-bucket", xml_body)
+      iex> Aliyun.Oss.Bucket.Website.put(config, "some-bucket", xml_body)
       {:ok,
       %Aliyun.Oss.Client.Response{
         data: "",
-        headers: [
-          {"Server", "AliyunOSS"},
-          {"Date", "Fri, 11 Jan 2019 05:05:50 GMT"},
-          {"Content-Length", "0"},
-          {"Connection", "keep-alive"},
-          {"x-oss-request-id", "5C0000000000000000000000"},
-          {"x-oss-server-time", "63"}
-        ]
+        headers: %{
+          "connection" => ["keep-alive"],
+          "content-length" => ["0"],
+          "date" => ["Wed, 09 Jul 2025 02:56:31 GMT"],
+          "server" => ["AliyunOSS"],
+          "x-oss-request-id" => ["686DDA5F22D*************"],
+          "x-oss-server-time" => ["113"]
+        }
       }}
 
   """
   @spec put(Config.t(), String.t(), String.t()) ::
           {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
   def put(config, bucket, xml_body) do
-    put_bucket(config, bucket, %{}, %{"website" => nil}, xml_body)
+    put_bucket(config, bucket, xml_body, query_params: %{"website" => nil})
   end
 
   @doc """
@@ -88,27 +97,29 @@ defmodule Aliyun.Oss.Bucket.Website do
 
   ## Examples
 
-      iex> Aliyun.Oss.Bucket.Website.delete("some-bucket")
+      iex> Aliyun.Oss.Bucket.Website.delete(config, "some-bucket")
       {:ok,
       %Aliyun.Oss.Client.Response{
         data: "",
-        headers: [
-          {"Server", "AliyunOSS"},
-          {"Date", "Fri, 11 Jan 2019 05:19:45 GMT"},
-          {"Content-Length", "0"},
-          {"Connection", "keep-alive"},
-          {"x-oss-request-id", "5C3000000000000000000000"},
-          {"x-oss-server-time", "90"}
-        ]
+        headers: %{
+          "connection" => ["keep-alive"],
+          "content-length" => ["0"],
+          "date" => ["Wed, 09 Jul 2025 02:58:10 GMT"],
+          "server" => ["AliyunOSS"],
+          "x-oss-request-id" => ["686DDAC222DB************"],
+          "x-oss-server-time" => ["38"]
+        }
       }}
-      iex> Aliyun.Oss.Bucket.Website.delete("unknown-bucket")
+      iex> Aliyun.Oss.Bucket.Website.delete(config, "unknown-bucket")
       {:error,
       %Aliyun.Oss.Client.Error{
         parsed_details: %{
           "BucketName" => "unknown-bucket",
           "Code" => "NoSuchBucket",
+          "EC" => "0015-00000101",
           "HostId" => "unknown-bucket.oss-cn-shenzhen.aliyuncs.com",
           "Message" => "The specified bucket does not exist.",
+          "RecommendDoc" => "https://api.aliyun.com/troubleshoot?q=0015-00000101",
           "RequestId" => "5C38283EC84D1C4471F2F48A"
         },
         body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>...</xml>",
@@ -119,6 +130,6 @@ defmodule Aliyun.Oss.Bucket.Website do
   @spec delete(Config.t(), String.t()) ::
           {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
   def delete(config, bucket) do
-    delete_bucket(config, bucket, %{"website" => nil})
+    delete_bucket(config, bucket, query_params: %{"website" => nil})
   end
 end

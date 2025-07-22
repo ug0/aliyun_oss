@@ -2,159 +2,288 @@ defmodule Aliyun.Oss.Client.Request do
   @moduledoc """
   Internal module
   """
-  alias Aliyun.Oss.Config
+  alias Aliyun.Oss.{Config, Sign}
+  alias Aliyun.Util.Encoder
 
-  @enforce_keys [:host, :path, :resource]
-  defstruct verb: "GET",
-            host: nil,
-            path: nil,
-            scheme: "https",
-            resource: nil,
-            query_params: %{},
-            sub_resources: %{},
-            body: "",
-            headers: %{},
-            expires: nil
+  @hashed_request_header "x-oss-content-sha256"
+  @default_payload_hash "UNSIGNED-PAYLOAD"
+  @algorithm "OSS4-HMAC-SHA256"
 
-  @default_content_type "application/octet-stream"
+  @enforce_keys [:config, :req]
+  defstruct [:config, :req, :bucket, :object]
 
-  def build(fields) do
-    __MODULE__
-    |> struct!(fields)
-    |> ensure_essential_headers()
+  def build!(%Config{} = config, method, bucket, object, headers, query_params, body \\ nil) do
+    %__MODULE__{
+      config: config,
+      req:
+        Req.new(
+          method: method,
+          url: build_url(config, bucket, object),
+          params: query_params,
+          headers: headers,
+          body: body
+        ),
+      bucket: bucket,
+      object: object
+    }
   end
 
-  def build_signed(%Config{} = config, fields) do
-    %{access_key_id: access_key_id, access_key_secret: access_key_secret} = config
-
-    build(fields)
-    |> set_authorization_header(access_key_id, access_key_secret)
+  def sign_header(%__MODULE__{} = request) do
+    request
+    |> ensure_necessary_headers()
+    |> set_authorization_header()
   end
 
-  def to_url(%__MODULE__{} = req) do
-    URI.to_string(%URI{
-      scheme: req.scheme,
-      host: req.host,
-      path: encode_path(req.path),
-      query: Map.merge(req.query_params, req.sub_resources) |> URI.encode_query()
-    })
+  def sign_url(%__MODULE__{} = request, expires_in_seconds \\ 3600) do
+    request
+    |> put_sign_query_params(expires_in_seconds)
+    |> append_signature_param()
   end
 
-  defp encode_path(path), do: String.replace(path, "+", "%2B")
-
-  def to_signed_url(%Config{} = config, %__MODULE__{} = req) do
-    %{access_key_id: access_key_id, access_key_secret: access_key_secret} = config
-    signature = gen_signature(req, access_key_secret)
-
-    req
-    |> Map.update!(:query_params, fn params ->
-      Map.merge(params, %{
-        "Expires" => req.expires,
-        "OSSAccessKeyId" => access_key_id,
-        "Signature" => signature
-      })
-    end)
-    |> to_url()
+  def request(%__MODULE__{req: req}) do
+    Req.request(req)
   end
 
-  defp ensure_essential_headers(%__MODULE__{} = req) do
-    headers =
-      req.headers
-      |> Map.put_new("Host", req.host)
-      |> Map.put_new_lazy("Content-Type", fn -> parse_content_type(req) end)
-      |> Map.put_new_lazy("Content-MD5", fn -> calc_content_md5(req) end)
-      |> Map.put_new_lazy("Content-Length", fn -> byte_size(req.body) end)
-      |> Map.put_new_lazy("Date", fn -> Aliyun.Util.Time.gmt_now() end)
-
-    Map.put(req, :headers, headers)
+  def to_url(%__MODULE__{req: req}) do
+    Req.Steps.put_params(req).url |> URI.to_string()
   end
 
-  defp set_authorization_header(%__MODULE__{} = req, access_key_id, access_key_secret) do
-    update_in(req.headers["Authorization"], fn _ ->
-      "OSS " <> access_key_id <> ":" <> gen_signature(req, access_key_secret)
-    end)
+  defp build_url(%Config{endpoint: endpoint}, nil, nil) do
+    "https://#{endpoint}/"
   end
 
-  defp canonicalize_oss_headers(%{headers: headers}) do
-    headers
-    |> Stream.filter(&is_oss_header?/1)
-    |> Stream.map(&encode_header/1)
-    |> Enum.join("\n")
-    |> case do
-      "" -> ""
-      str -> str <> "\n"
+  defp build_url(%Config{endpoint: endpoint}, bucket, nil) do
+    "https://#{bucket}.#{endpoint}/"
+  end
+
+  defp build_url(%Config{endpoint: endpoint}, bucket, object) do
+    "https://#{bucket}.#{endpoint}/#{object}"
+  end
+
+  defp append_signature_param(%__MODULE__{} = request) do
+    request
+    |> put_param("x-oss-signature", calc_signature(request))
+  end
+
+  defp put_sign_query_params(%__MODULE__{} = request, expires_in_seconds) do
+    request
+    |> put_param("x-oss-signature-version", @algorithm)
+    |> put_param("x-oss-date", gen_timestamp())
+    |> put_param("x-oss-expires", expires_in_seconds)
+    |> put_credential_param()
+    |> maybe_put_additional_headers_param()
+    |> maybe_put_sts_security_token_param()
+  end
+
+  defp put_credential_param(%__MODULE__{} = request) do
+    put_param(request, "x-oss-credential", get_credential(request))
+  end
+
+  defp maybe_put_additional_headers_param(%__MODULE__{req: req} = request) do
+    case additional_headers(req) do
+      "" ->
+        request
+
+      headers ->
+        put_param(request, "x-oss-additional-headers", headers)
+    end
+
+    request
+  end
+
+  defp maybe_set_sts_security_token(%__MODULE__{config: config} = request, set_fun) do
+    case config do
+      %Config{security_token: token} when is_binary(token) ->
+        set_fun.(request, token)
+
+      _ ->
+        request
     end
   end
 
-  defp is_oss_header?({h, _}) do
-    Regex.match?(~r/^x-oss-/i, to_string(h))
+  defp maybe_put_sts_security_token_param(%__MODULE__{} = request) do
+    maybe_set_sts_security_token(request, &put_param(&1, "x-oss-security-token", &2))
   end
 
-  defp encode_header({h, v}) do
-    (h |> to_string() |> String.downcase()) <> ":" <> to_string(v)
+  defp maybe_put_sts_security_token_header(%__MODULE__{} = request) do
+    maybe_set_sts_security_token(request, &put_header(&1, "x-oss-security-token", &2))
   end
 
-  defp canonicalize_query_params(%{query_params: query_params}) do
-    query_params
-    |> Stream.map(fn {k, v} -> "#{k}:#{v}\n" end)
+  defp hashed_request_payload(%__MODULE__{} = request) do
+    get_header(request, @hashed_request_header) || @default_payload_hash
+  end
+
+  defp hash_digest(nil) do
+    hash_digest("")
+  end
+
+  defp hash_digest(data) do
+    :crypto.hash(:sha256, data) |> Base.encode16(case: :lower)
+  end
+
+  defp set_authorization_header(%__MODULE__{} = request) do
+    put_header(request, "authorization", calc_authorization_header(request))
+  end
+
+  defp ensure_necessary_headers(%__MODULE__{} = request) do
+    request
+    |> put_new_header("x-oss-date", gen_timestamp())
+    |> maybe_put_sts_security_token_header()
+    |> put_new_header(@hashed_request_header, @default_payload_hash)
+  end
+
+  defp gen_timestamp() do
+    DateTime.utc_now(:second)
+    |> DateTime.to_iso8601(:basic)
+  end
+
+  defp get_param(%__MODULE__{req: req}, key) do
+    case Req.Request.get_option(req, :params, %{}) do
+      %{^key => value} -> value
+      _ -> nil
+    end
+  end
+
+  defp put_param(%__MODULE__{req: req} = request, key, value) do
+    new_params = req |> Req.Request.get_option(:params, %{}) |> Map.put(key, value)
+
+    %{request | req: Req.Request.put_option(req, :params, new_params)}
+  end
+
+  def get_header(%__MODULE__{req: req}, key) do
+    case Req.Request.get_header(req, key) do
+      [header] -> header
+      [] -> nil
+    end
+  end
+
+  defp put_header(%__MODULE__{req: req} = request, key, value) do
+    %{request | req: Req.Request.put_header(req, key, value)}
+  end
+
+  defp put_new_header(%__MODULE__{req: req} = request, key, value) do
+    %{request | req: Req.Request.put_new_header(req, key, value)}
+  end
+
+  def calc_authorization_header(%__MODULE__{req: req} = request) do
+    case additional_headers(req) do
+      "" ->
+        "#{@algorithm} Credential=#{get_credential(request)},Signature=#{calc_signature(request)}"
+
+      headers ->
+        "#{@algorithm} Credential=#{get_credential(request)},AdditionalHeaders=#{headers},Signature=#{calc_signature(request)}"
+    end
+  end
+
+  defp get_credential(%__MODULE__{config: config} = request) do
+    config.access_key_id <> "/" <> get_scope(request)
+  end
+
+  defp calc_signature(%__MODULE__{} = request) do
+    request
+    |> string_to_sign()
+    |> Sign.sign(get_signing_key(request))
+  end
+
+  defp string_to_sign(%__MODULE__{} = request) do
+    @algorithm <>
+      "\n" <>
+      get_timestamp(request) <>
+      "\n" <> get_scope(request) <> "\n" <> hash_canonical_request(request)
+  end
+
+  defp get_signing_key(%__MODULE__{config: config} = request) do
+    Sign.get_signing_key(config, get_date(request))
+  end
+
+  defp get_date(%__MODULE__{} = request) do
+    [date, _] =
+      request
+      |> get_timestamp()
+      |> String.split("T", parts: 2)
+
+    date
+  end
+
+  defp get_timestamp(%__MODULE__{} = request) do
+    get_header(request, "x-oss-date") || get_param(request, "x-oss-date")
+  end
+
+  defp get_scope(%__MODULE__{config: config} = request) do
+    [get_date(request), config.region, "oss", "aliyun_v4_request"] |> Enum.join("/")
+  end
+
+  defp hash_canonical_request(%__MODULE__{} = request) do
+    request
+    |> canonical_request()
+    |> hash_digest()
+  end
+
+  defp canonical_request(%__MODULE__{req: req} = request) do
+    method_string(req) <>
+      "\n" <>
+      canonical_uri(request) <>
+      "\n" <>
+      canonical_query_string(req) <>
+      "\n" <>
+      canonical_headers(req) <>
+      "\n" <>
+      additional_headers(req) <>
+      "\n" <>
+      hashed_request_payload(request)
+  end
+
+  defp method_string(%Req.Request{} = req), do: req.method |> to_string() |> String.upcase()
+
+  defp canonical_uri(%__MODULE__{bucket: bucket, object: object}) do
+    canonical_uri(bucket, object)
+  end
+
+  defp canonical_uri(nil, nil) do
+    Encoder.encode_uri("/")
+  end
+
+  defp canonical_uri(bucket, nil) do
+    Encoder.encode_uri("/#{bucket}/")
+  end
+
+  defp canonical_uri(bucket, object) do
+    Encoder.encode_uri("/" <> Path.join(bucket, object))
+  end
+
+  defp canonical_query_string(%Req.Request{} = req) do
+    req
+    |> Req.Request.fetch_option!(:params)
+    |> Encoder.encode_params(strict_nil: true)
+  end
+
+  defp canonical_headers(%Req.Request{} = req) do
+    req
+    |> sort_and_filter_headers(&is_canonical_header?/1)
+    |> Stream.map(fn {k, v} -> "#{k}:#{String.trim(v)}\n" end)
     |> Enum.join()
   end
 
-  defp canonicalize_resource(%{resource: resource, sub_resources: nil}), do: resource
-
-  defp canonicalize_resource(%{resource: resource, sub_resources: sub_resources}) do
-    sub_resources
-    |> Stream.map(fn
-      {k, nil} -> k
-      {k, v} -> "#{k}=#{v}"
-    end)
-    |> Enum.join("&")
-    |> case do
-      "" -> resource
-      query_string -> resource <> "?" <> query_string
-    end
-  end
-
-  defp parse_content_type(%{resource: resource}) do
-    case Path.extname(resource) do
-      "." <> name -> MIME.type(name)
-      _ -> @default_content_type
-    end
-  end
-
-  defp gen_signature(%__MODULE__{} = req, secret) do
+  defp additional_headers(%Req.Request{} = req) do
     req
-    |> string_to_sign()
-    |> Aliyun.Util.Sign.sign(secret)
+    |> sort_and_filter_headers(&is_additional_header?/1)
+    |> Stream.map(fn {k, _} -> k end)
+    |> Enum.join(";")
   end
 
-  defp string_to_sign(%__MODULE__{scheme: "rtmp"} = req) do
-    expires_time(req) <>
-      "\n" <>
-      canonicalize_query_params(req) <> canonicalize_resource(req)
+  defp sort_and_filter_headers(%Req.Request{} = req, filter_fun) do
+    req.headers
+    |> Stream.map(fn {k, [v]} -> {String.downcase(k), v} end)
+    |> Stream.filter(filter_fun)
+    |> Enum.sort_by(fn {k, _} -> k end)
   end
 
-  defp string_to_sign(%__MODULE__{} = req) do
-    req.verb <>
-      "\n" <>
-      header_content_md5(req) <>
-      "\n" <>
-      header_content_type(req) <>
-      "\n" <>
-      expires_time(req) <>
-      "\n" <>
-      canonicalize_oss_headers(req) <> canonicalize_resource(req)
-  end
+  defp is_canonical_header?({"authorization", _}), do: false
+  defp is_canonical_header?({_, _}), do: true
 
-  defp expires_time(%{expires: expires} = req), do: (expires || header_date(req)) |> to_string()
-
-  defp header_content_md5(%{headers: %{"Content-MD5" => md5}}), do: md5
-  defp header_content_type(%{headers: %{"Content-Type" => content_type}}), do: content_type
-  defp header_date(%{headers: %{"Date" => date}}), do: date
-
-  defp calc_content_md5(%{body: ""}), do: ""
-
-  defp calc_content_md5(%{body: body}) do
-    :crypto.hash(:md5, body) |> Base.encode64()
-  end
+  defp is_additional_header?({"x-oss-" <> _, _}), do: false
+  defp is_additional_header?({"content-type", _}), do: false
+  defp is_additional_header?({"content-md5" <> _, _}), do: false
+  defp is_additional_header?({"authorization" <> _, _}), do: false
+  defp is_additional_header?({_, _}), do: true
 end

@@ -719,7 +719,7 @@ defmodule Aliyun.Oss.Object do
         }
   def sign_post_policy(config, %{} = policy) do
     today = Date.utc_today() |> Date.to_iso8601(:basic)
-    encoded_policy = policy |> JSON.encode!() |> Base.encode64()
+    encoded_policy = policy |> Jason.encode!() |> Base.encode64()
 
     %{
       policy: encoded_policy,

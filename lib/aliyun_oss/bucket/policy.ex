@@ -38,7 +38,7 @@ defmodule Aliyun.Oss.Bucket.Policy do
   """
   @spec put(Config.t(), String.t(), map()) :: {:error, error()} | {:ok, Response.t()}
   def put(config, bucket, %{} = policy) do
-    put_bucket(config, bucket, JSON.encode!(policy), query_params: %{"policy" => nil})
+    put_bucket(config, bucket, Jason.encode!(policy), query_params: %{"policy" => nil})
   end
 
   @doc """

@@ -45,7 +45,7 @@ defmodule Aliyun.Oss.Client.Response do
   end
 
   defp parse_body(body, :xml) when is_binary(body), do: body |> XmlToMap.naive_map() |> cast_data()
-  defp parse_body(body, :json) when is_binary(body), do: body |> JSON.decode!() |> cast_data()
+  defp parse_body(body, :json) when is_binary(body), do: body |> Jason.decode!() |> cast_data()
   defp parse_body(body, _), do: body
 
   defp cast_data(map) do

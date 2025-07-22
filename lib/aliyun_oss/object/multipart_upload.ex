@@ -283,6 +283,7 @@ defmodule Aliyun.Oss.Object.MultipartUpload do
   def complete_upload(config, bucket, object, upload_id, parts, options \\ []) do
     body = EEx.eval_string(@body_tmpl, parts: parts)
     headers = Keyword.get(options, :headers, %{})
+
     query_params =
       case Keyword.get(options, :encoding_type) do
         :url -> %{"encoding-type" => "url"}
@@ -365,7 +366,9 @@ defmodule Aliyun.Oss.Object.MultipartUpload do
   """
   @spec list_uploads(Config.t(), String.t(), keyword()) :: {:error, error()} | {:ok, Response.t()}
   def list_uploads(config, bucket, options \\ []) do
-    options = Keyword.update(options, :query_params, %{"uploads" => nil}, &Map.put(&1, "uploads", nil))
+    options =
+      Keyword.update(options, :query_params, %{"uploads" => nil}, &Map.put(&1, "uploads", nil))
+
     get_bucket(config, bucket, options)
   end
 
@@ -419,7 +422,14 @@ defmodule Aliyun.Oss.Object.MultipartUpload do
   @spec list_parts(Config.t(), String.t(), String.t(), String.t(), keyword()) ::
           {:error, error()} | {:ok, Response.t()}
   def list_parts(config, bucket, object, upload_id, options \\ []) do
-    options = Keyword.update(options, :query_params, %{"uploadId" => upload_id}, &Map.put(&1, "uploadId", upload_id))
+    options =
+      Keyword.update(
+        options,
+        :query_params,
+        %{"uploadId" => upload_id},
+        &Map.put(&1, "uploadId", upload_id)
+      )
+
     get_object(config, bucket, object, options)
   end
 end

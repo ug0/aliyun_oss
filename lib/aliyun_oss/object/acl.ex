@@ -57,6 +57,9 @@ defmodule Aliyun.Oss.Object.ACL do
   @spec put(Config.t(), String.t(), String.t(), String.t()) ::
           {:error, error()} | {:ok, Response.t()}
   def put(config, bucket, object, acl) do
-    put_object(config, bucket, object, "", headers: %{"x-oss-object-acl" => acl}, query_params: %{"acl" => nil})
+    put_object(config, bucket, object, "",
+      headers: %{"x-oss-object-acl" => acl},
+      query_params: %{"acl" => nil}
+    )
   end
 end

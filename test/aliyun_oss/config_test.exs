@@ -4,7 +4,13 @@ defmodule Aliyun.Oss.ConfigTest do
 
   describe "new!/1" do
     test "creates a %Config{} struct" do
-      assert %Config{region: _, endpoint: _, access_key_id: _, access_key_secret: _, security_token: nil} =
+      assert %Config{
+               region: _,
+               endpoint: _,
+               access_key_id: _,
+               access_key_secret: _,
+               security_token: nil
+             } =
                Config.new!(%{
                  region: "cn-hangzhou",
                  endpoint: "...",

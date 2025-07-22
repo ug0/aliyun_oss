@@ -85,7 +85,6 @@ defmodule Aliyun.Oss.Client.ObjectTest do
                )
                |> URI.parse()
 
-
       assert %{
                "x-oss-credential" =>
                  "LTAI****************/#{@today}/cn-hangzhou/oss/aliyun_v4_request",

@@ -77,7 +77,9 @@ defmodule Aliyun.Oss.Bucket.Replication do
   end
 
   def put(config, bucket, replication_config_xml) do
-    post(config, bucket, nil, replication_config_xml, query_params: %{"replication" => nil, "comp" => "add"})
+    post(config, bucket, nil, replication_config_xml,
+      query_params: %{"replication" => nil, "comp" => "add"}
+    )
   end
 
   @doc """
@@ -108,7 +110,8 @@ defmodule Aliyun.Oss.Bucket.Replication do
     <ID><%= rule_id %></ID>
   </ReplicationRule>
   """
-  @spec put_rtc(Config.t(), String.t(), String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  @spec put_rtc(Config.t(), String.t(), String.t(), String.t()) ::
+          {:error, error()} | {:ok, Response.t()}
   def put_rtc(config, bucket, replication_rule_id, status) do
     body_xml = EEx.eval_string(@body_tmpl, rule_id: replication_rule_id, status: status)
     put_bucket(config, bucket, body_xml, query_params: %{"rtc" => nil})
@@ -218,7 +221,9 @@ defmodule Aliyun.Oss.Bucket.Replication do
   @spec get_progress(Config.t(), String.t(), String.t()) ::
           {:error, error()} | {:ok, Response.t()}
   def get_progress(config, bucket, rule_id) do
-    get_bucket(config, bucket, query_params: %{"rule-id" => rule_id, "replicationProgress" => nil})
+    get_bucket(config, bucket,
+      query_params: %{"rule-id" => rule_id, "replicationProgress" => nil}
+    )
   end
 
   @doc """

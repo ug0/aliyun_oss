@@ -71,7 +71,9 @@ defmodule Aliyun.Oss.Bucket.Inventory do
   end
 
   def put(config, bucket, inventory_id, config_xml) do
-    put_bucket(config, bucket, config_xml, query_params: %{"inventory" => nil, "inventoryId" => inventory_id})
+    put_bucket(config, bucket, config_xml,
+      query_params: %{"inventory" => nil, "inventoryId" => inventory_id}
+    )
   end
 
   @doc """
@@ -139,10 +141,12 @@ defmodule Aliyun.Oss.Bucket.Inventory do
   """
   @spec list(Config.t(), String.t(), nil | String.t()) :: {:error, error()} | {:ok, Response.t()}
   def list(config, bucket, continuation_token \\ nil) do
-    get_bucket(config, bucket, query_params: %{
-      "inventory" => nil,
-      "continuation-token" => continuation_token
-    })
+    get_bucket(config, bucket,
+      query_params: %{
+        "inventory" => nil,
+        "continuation-token" => continuation_token
+      }
+    )
   end
 
   @doc """
@@ -168,6 +172,8 @@ defmodule Aliyun.Oss.Bucket.Inventory do
   @spec delete(Config.t(), String.t(), String.t()) ::
           {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
   def delete(config, bucket, inventory_id) do
-    delete_bucket(config, bucket, query_params: %{"inventory" => nil, "inventoryId" => inventory_id})
+    delete_bucket(config, bucket,
+      query_params: %{"inventory" => nil, "inventoryId" => inventory_id}
+    )
   end
 end

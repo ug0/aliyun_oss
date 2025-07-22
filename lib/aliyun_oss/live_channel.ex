@@ -41,12 +41,19 @@ defmodule Aliyun.Oss.LiveChannel do
     "rtmp://#{bucket}.#{config.endpoint}/live/#{channel}?OSSAccessKeyId=#{config.access_key_id}&Expires=#{expires}"
     |> URI.new!()
     |> URI.append_query(URI.encode_query(query_params, :rfc3986))
-    |> URI.append_query("Signature=#{calc_signature(config, [expires, canonicalized_params, canonicalized_resource])}")
+    |> URI.append_query(
+      "Signature=#{calc_signature(config, [expires, canonicalized_params, canonicalized_resource])}"
+    )
     |> URI.to_string()
   end
 
   defp calc_signature(%Config{} = config, data) when is_list(data) do
-    :crypto.mac(:hmac, :sha, config.access_key_secret, data |> Stream.reject(& &1 == "") |> Enum.join("\n"))
+    :crypto.mac(
+      :hmac,
+      :sha,
+      config.access_key_secret,
+      data |> Stream.reject(&(&1 == "")) |> Enum.join("\n")
+    )
     |> Base.encode64()
   end
 
@@ -216,7 +223,9 @@ defmodule Aliyun.Oss.LiveChannel do
   @spec put_status(Config.t(), String.t(), String.t(), String.t()) ::
           {:error, error()} | {:ok, Response.t()}
   def put_status(config, bucket, channel_name, status) do
-    put_object(config, bucket, channel_name, "", query_params: %{"live" => nil, "status" => status})
+    put_object(config, bucket, channel_name, "",
+      query_params: %{"live" => nil, "status" => status}
+    )
   end
 
   @doc """
@@ -345,10 +354,12 @@ defmodule Aliyun.Oss.LiveChannel do
   @spec get_vod_playlist(Config.t(), String.t(), String.t(), integer(), integer()) ::
           {:error, error()} | {:ok, Response.t()}
   def get_vod_playlist(config, bucket, channel_name, start_time, end_time) do
-    get_object(config, bucket, channel_name, query_params: %{
-      "vod" => nil,
-      "startTime" => start_time,
-      "endTime" => end_time
-    })
+    get_object(config, bucket, channel_name,
+      query_params: %{
+        "vod" => nil,
+        "startTime" => start_time,
+        "endTime" => end_time
+      }
+    )
   end
 end

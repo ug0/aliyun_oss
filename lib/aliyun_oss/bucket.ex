@@ -28,7 +28,6 @@ defmodule Aliyun.Oss.Bucket do
   @type error() ::
           %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
 
-
   defdelegate list_buckets(config, options \\ []), to: Service
 
   @doc """
@@ -166,7 +165,11 @@ defmodule Aliyun.Oss.Bucket do
   @spec list_objects(Config.t(), String.t(), keyword()) ::
           {:error, error()} | {:ok, Response.t()}
   def list_objects(%Config{} = config, bucket, options \\ []) do
-    get_bucket(config, bucket, Keyword.update(options, :query_params, @query_params, &Map.merge(&1, @query_params)))
+    get_bucket(
+      config,
+      bucket,
+      Keyword.update(options, :query_params, @query_params, &Map.merge(&1, @query_params))
+    )
   end
 
   @doc """

@@ -15,7 +15,14 @@ defmodule Aliyun.Oss.Client.Request do
   def build!(%Config{} = config, method, bucket, object, headers, query_params, body \\ nil) do
     %__MODULE__{
       config: config,
-      req: Req.new(method: method, url: build_url(config, bucket, object), params: query_params, headers: headers, body: body),
+      req:
+        Req.new(
+          method: method,
+          url: build_url(config, bucket, object),
+          params: query_params,
+          headers: headers,
+          body: body
+        ),
       bucket: bucket,
       object: object
     }
@@ -80,6 +87,7 @@ defmodule Aliyun.Oss.Client.Request do
       headers ->
         put_param(request, "x-oss-additional-headers", headers)
     end
+
     request
   end
 
@@ -178,7 +186,10 @@ defmodule Aliyun.Oss.Client.Request do
   end
 
   defp string_to_sign(%__MODULE__{} = request) do
-    @algorithm <> "\n" <> get_timestamp(request) <> "\n" <> get_scope(request) <> "\n" <> hash_canonical_request(request)
+    @algorithm <>
+      "\n" <>
+      get_timestamp(request) <>
+      "\n" <> get_scope(request) <> "\n" <> hash_canonical_request(request)
   end
 
   defp get_signing_key(%__MODULE__{config: config} = request) do
@@ -209,12 +220,17 @@ defmodule Aliyun.Oss.Client.Request do
   end
 
   defp canonical_request(%__MODULE__{req: req} = request) do
-    method_string(req) <> "\n" <>
-    canonical_uri(request) <>  "\n" <>
-    canonical_query_string(req) <> "\n" <>
-    canonical_headers(req) <> "\n" <>
-    additional_headers(req) <> "\n" <>
-    hashed_request_payload(request)
+    method_string(req) <>
+      "\n" <>
+      canonical_uri(request) <>
+      "\n" <>
+      canonical_query_string(req) <>
+      "\n" <>
+      canonical_headers(req) <>
+      "\n" <>
+      additional_headers(req) <>
+      "\n" <>
+      hashed_request_payload(request)
   end
 
   defp method_string(%Req.Request{} = req), do: req.method |> to_string() |> String.upcase()

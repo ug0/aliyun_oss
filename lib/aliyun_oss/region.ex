@@ -10,7 +10,6 @@ defmodule Aliyun.Oss.Region do
   @type error() ::
           %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
 
-
   @doc """
   DescribeRegions - lists the region information.
 

@@ -8,7 +8,7 @@ defmodule Aliyun.Oss.Client.LiveChannelTest do
   @endpoint "oss-example.oss-cn-hangzhou.aliyuncs.com"
   @access_key_id "44CF9590006BF252F707"
   @access_key_secret "OtxrzxIsfpFjA7SwPzILwy8Bw21TLhquhboDYROV"
-  @expires 1547105286
+  @expires 1_547_105_286
   @signature "JvQe2X2bOTmJ3H/XQcWlW7Mh4gc="
   describe "signed_publish_url/4" do
     test "build signed rtmp publish url" do

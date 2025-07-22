@@ -190,7 +190,8 @@ defmodule Aliyun.Oss.Bucket.Logging do
       }}
 
   """
-  @spec get_user_defined_log_fields_config(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  @spec get_user_defined_log_fields_config(Config.t(), String.t()) ::
+          {:error, error()} | {:ok, Response.t()}
   def get_user_defined_log_fields_config(config, bucket) do
     get_bucket(config, bucket, query_params: %{"userDefinedLogFieldsConfig" => nil})
   end

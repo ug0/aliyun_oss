@@ -64,7 +64,8 @@ defmodule Aliyun.Oss.Bucket.Lifecycle do
       }}
 
   """
-  @spec put(Config.t(), String.t(), String.t() | map(), keyword()) :: {:error, error()} | {:ok, Response.t()}
+  @spec put(Config.t(), String.t(), String.t() | map(), keyword()) ::
+          {:error, error()} | {:ok, Response.t()}
   def put(config, bucket, lifecycle_config, options \\ [])
 
   def put(config, bucket, %{} = lifecycle_config_map, options) do
@@ -72,7 +73,12 @@ defmodule Aliyun.Oss.Bucket.Lifecycle do
   end
 
   def put(config, bucket, lifecycle_config_xml, options) do
-    put_bucket(config, bucket, lifecycle_config_xml, Keyword.put(options, :query_params, %{"lifecycle" => nil}))
+    put_bucket(
+      config,
+      bucket,
+      lifecycle_config_xml,
+      Keyword.put(options, :query_params, %{"lifecycle" => nil})
+    )
   end
 
   @doc """

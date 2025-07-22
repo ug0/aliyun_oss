@@ -72,7 +72,7 @@ defmodule Aliyun.Oss.Object.Symlink do
   @spec put(Config.t(), String.t(), String.t(), String.t(), keyword()) ::
           {:error, error()} | {:ok, Response.t()}
   def put(config, bucket, symlink, target_object, options \\ []) do
-    storage_class= Keyword.get(options, :storage_class, "Standard")
+    storage_class = Keyword.get(options, :storage_class, "Standard")
     acl = Keyword.get(options, :acl, "default")
 
     put_object(
@@ -80,7 +80,11 @@ defmodule Aliyun.Oss.Object.Symlink do
       bucket,
       symlink,
       "",
-      headers: %{"x-oss-symlink-target" => target_object, "x-oss-storage-class" => storage_class, "x-oss-object-acl" => acl},
+      headers: %{
+        "x-oss-symlink-target" => target_object,
+        "x-oss-storage-class" => storage_class,
+        "x-oss-object-acl" => acl
+      },
       query_params: %{"symlink" => nil}
     )
   end

@@ -21,7 +21,7 @@ defmodule Aliyun.Oss.Client.Request do
     }
   end
 
-  def sign_header(%__MODULE_{} = request) do
+  def sign_header(%__MODULE__{} = request) do
     request
     |> ensure_necessary_headers()
     |> set_authorization_header()
@@ -53,7 +53,7 @@ defmodule Aliyun.Oss.Client.Request do
     "https://#{bucket}.#{endpoint}/#{object}"
   end
 
-  defp append_signature_param(%__MODULE__{req: req} = request) do
+  defp append_signature_param(%__MODULE__{} = request) do
     request
     |> put_param("x-oss-signature", calc_signature(request))
   end
@@ -97,7 +97,7 @@ defmodule Aliyun.Oss.Client.Request do
     maybe_set_sts_security_token(request, &put_param(&1, "x-oss-security-token", &2))
   end
 
-  defp maybe_put_sts_security_token_header(%__MODULE__{config: config} = request) do
+  defp maybe_put_sts_security_token_header(%__MODULE__{} = request) do
     maybe_set_sts_security_token(request, &put_header(&1, "x-oss-security-token", &2))
   end
 
@@ -117,7 +117,7 @@ defmodule Aliyun.Oss.Client.Request do
     put_header(request, "authorization", calc_authorization_header(request))
   end
 
-  defp ensure_necessary_headers(%__MODULE__{req: req} = request) do
+  defp ensure_necessary_headers(%__MODULE__{} = request) do
     request
     |> put_new_header("x-oss-date", gen_timestamp())
     |> maybe_put_sts_security_token_header()
@@ -157,7 +157,7 @@ defmodule Aliyun.Oss.Client.Request do
     %{request | req: Req.Request.put_new_header(req, key, value)}
   end
 
-  def calc_authorization_header(%__MODULE__{req: req, config: config} = request) do
+  def calc_authorization_header(%__MODULE__{req: req} = request) do
     case additional_headers(req) do
       "" ->
         "#{@algorithm} Credential=#{get_credential(request)},Signature=#{calc_signature(request)}"
@@ -168,7 +168,7 @@ defmodule Aliyun.Oss.Client.Request do
   end
 
   defp get_credential(%__MODULE__{config: config} = request) do
-    credential = config.access_key_id <> "/" <> get_scope(request)
+    config.access_key_id <> "/" <> get_scope(request)
   end
 
   defp calc_signature(%__MODULE__{} = request) do
@@ -208,7 +208,7 @@ defmodule Aliyun.Oss.Client.Request do
     |> hash_digest()
   end
 
-  defp canonical_request(%__MOUDLE__{req: req} = request) do
+  defp canonical_request(%__MODULE__{req: req} = request) do
     method_string(req) <> "\n" <>
     canonical_uri(request) <>  "\n" <>
     canonical_query_string(req) <> "\n" <>

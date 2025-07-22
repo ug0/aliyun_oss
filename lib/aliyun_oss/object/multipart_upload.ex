@@ -6,7 +6,7 @@ defmodule Aliyun.Oss.Object.MultipartUpload do
   import Aliyun.Oss.Bucket, only: [get_bucket: 3]
   import Aliyun.Oss.Object, only: [get_object: 4, put_object: 5, post_object: 5, delete_object: 4]
 
-  alias Aliyun.Oss.{Config, Bucket, Object}
+  alias Aliyun.Oss.Config
   alias Aliyun.Oss.Client.{Response, Error}
   alias Aliyun.Oss.TaskSupervisor
 
@@ -94,7 +94,7 @@ defmodule Aliyun.Oss.Object.MultipartUpload do
     end)
   end
 
-  defp get_etag_from_header(%{"etag" => [etag]} = headers) when is_binary(etag) do
+  defp get_etag_from_header(%{"etag" => [etag]}) when is_binary(etag) do
     etag
   end
 

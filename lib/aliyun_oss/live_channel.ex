@@ -7,7 +7,7 @@ defmodule Aliyun.Oss.LiveChannel do
   import Aliyun.Oss.Object, only: [put_object: 5, post_object: 5, get_object: 4, delete_object: 4]
 
   alias Aliyun.Oss.Config
-  alias Aliyun.Oss.Client.{Request, Response, Error}
+  alias Aliyun.Oss.Client.{Response, Error}
 
   @type error() ::
           %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()

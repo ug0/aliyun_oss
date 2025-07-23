@@ -21,11 +21,15 @@ defmodule Aliyun.Oss.Client.ObjectTest do
           })
 
   @utc_now ~U[2025-07-01 02:44:10Z]
+  @utc_today ~D[2025-07-01]
   @today "20250701"
   @timestamp "20250701T024410Z"
   @expires 3600
 
-  setup_with_mocks([{DateTime, [:passthrough], utc_now: fn :second -> @utc_now end}]) do
+  setup_with_mocks([
+    {DateTime, [:passthrough], utc_now: fn :second -> @utc_now end},
+    {Date, [:passthrough], utc_today: fn -> @utc_today end}
+  ]) do
     :ok
   end
 
@@ -132,7 +136,7 @@ defmodule Aliyun.Oss.Client.ObjectTest do
       assert Object.sign_post_policy(@config, policy) == %{
                policy:
                  "eyJjb25kaXRpb25zIjpbWyJjb250ZW50LWxlbmd0aC1yYW5nZSIsMCwxMDQ4NTc2MF0seyJidWNrZXQiOiJhaGFoYSJ9LHsiQSI6ImEifSx7ImtleSI6IkFCQyJ9XSwiZXhwaXJhdGlvbiI6IjIwMTMtMTItMDFUMTI6MDA6MDBaIn0=",
-               signature: "35870516a49acdd2db08c8225d2045d4f58c846df5c8b019d23307b0b29c423b"
+               signature: "4f19e5c3030598cfe1d4e34b6006cd931bae28ddd5df481ff175e70e94495793"
              }
     end
   end

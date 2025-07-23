@@ -1,6 +1,6 @@
 # AliyunOss
 
-[![Build Status](https://travis-ci.org/ug0/aliyun_oss.svg?branch=master)](https://travis-ci.org/ug0/aliyun_oss)
+[![Run Tests](https://github.com/ug0/aliyun_oss/actions/workflows/test.yml/badge.svg)](https://github.com/ug0/aliyun_oss/actions/workflows/test.yml)
 [![Hex.pm](https://img.shields.io/hexpm/v/aliyun_oss.svg)](https://hex.pm/packages/aliyun_oss)
 
 阿里云对象存储（OSS）API（使用阿里云 V4 签名）

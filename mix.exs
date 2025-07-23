@@ -27,7 +27,6 @@ defmodule AliyunOss.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:mime, "~> 2.0"},
       {:req, "~> 0.5.12"},
       {:aliyun_util, "~> 0.4.1"},
       {:elixir_xml_to_map, "~> 3.0"},

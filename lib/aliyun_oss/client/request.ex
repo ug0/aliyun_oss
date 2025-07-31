@@ -129,12 +129,22 @@ defmodule Aliyun.Oss.Client.Request do
     request
     |> put_new_header("x-oss-date", gen_timestamp())
     |> maybe_put_sts_security_token_header()
+    |> put_new_header("content-type", parse_content_type(request))
     |> put_new_header(@hashed_request_header, @default_payload_hash)
   end
 
   defp gen_timestamp() do
     DateTime.utc_now(:second)
     |> DateTime.to_iso8601(:basic)
+  end
+
+  defp parse_content_type(%__MODULE__{req: req}) do
+    with %URI{path: path} <- req.url,
+         "." <> ext <- Path.extname(path) do
+      MIME.type(ext)
+    else
+      _ -> "application/octet-stream"
+    end
   end
 
   defp get_param(%__MODULE__{req: req}, key) do

@@ -1,5 +1,8 @@
 # Changelog
 
+## v3.1.0
+  - Set `Content-Type` header based on the object's extension name
+
 ## v3.0.0
   V3 replaced `httpoison` with `req` and rewrites the function to build request and generate signature.
   Now it supports [Aliyun OSS V4 signature](https://help.aliyun.com/zh/oss/developer-reference/guidelines-for-upgrading-v1-signatures-to-v4-signatures).

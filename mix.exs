@@ -2,7 +2,7 @@ defmodule AliyunOss.MixProject do
   use Mix.Project
 
   @source_url "https://github.com/ug0/aliyun_oss"
-  @version "3.0.0"
+  @version "3.1.0"
 
   def project do
     [
@@ -28,6 +28,7 @@ defmodule AliyunOss.MixProject do
   defp deps do
     [
       {:req, "~> 0.5.12"},
+      {:mime, "~> 2.0"},
       {:aliyun_util, "~> 0.4.1"},
       {:elixir_xml_to_map, "~> 3.0"},
       {:elixir_map_to_xml, "~> 0.1.0"},

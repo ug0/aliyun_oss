@@ -1,5 +1,5 @@
 %{
-  "aliyun_util": {:hex, :aliyun_util, "0.4.1", "a95b15014e4b1d93fdcbcbd001d059052c49d01b14bbca692a2292235e091b55", [:mix], [{:req, "~> 0.5.0", [hex: :req, repo: "hexpm", optional: false]}], "hexpm", "36e5f88b8817f5a8239fec29b9c5bb0d4e4e1bbfa5307c21aca24f38480de7df"},
+  "aliyun_util": {:hex, :aliyun_util, "0.4.2", "0dc67628861a652d50aee0fbc2b6159cd8d096f97da270a7402589d972aaa3db", [:mix], [{:req, "~> 0.5.0", [hex: :req, repo: "hexpm", optional: false]}], "hexpm", "389a82d63d451731ac331eb5ce9b4891e416adbe4a5cb7d64194e29745b21541"},
   "earmark_parser": {:hex, :earmark_parser, "1.4.44", "f20830dd6b5c77afe2b063777ddbbff09f9759396500cdbe7523efd58d7a339c", [:mix], [], "hexpm", "4778ac752b4701a5599215f7030989c989ffdc4f6df457c5f36938cc2d2a2750"},
   "elixir_map_to_xml": {:hex, :elixir_map_to_xml, "0.1.0", "938ece68237e5aaccbe1d2b1146f850cda7ad4ac7d4106026d6b3d4c2086bce9", [:mix], [{:xml_builder, "~> 2.1.1", [hex: :xml_builder, repo: "hexpm", optional: false]}], "hexpm", "fef8cc1c57d9cf442491e6b94cf7ed606fd1c04dbdf0ce9626066a78c0f6a2f5"},
   "elixir_xml_to_map": {:hex, :elixir_xml_to_map, "3.1.0", "4d6260486a8cce59e4bf3575fe2dd2a24766546ceeef9f93fcec6f7c62a2827a", [:mix], [{:erlsom, "~> 1.4", [hex: :erlsom, repo: "hexpm", optional: false]}], "hexpm", "8fe5f2e75f90bab07ee2161120c2dc038ebcae8135554f5582990f1c8c21f911"},

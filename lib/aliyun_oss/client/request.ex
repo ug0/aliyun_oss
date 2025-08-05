@@ -57,7 +57,7 @@ defmodule Aliyun.Oss.Client.Request do
   end
 
   defp build_url(%Config{endpoint: endpoint}, bucket, object) do
-    "https://#{bucket}.#{endpoint}/#{object}"
+    "https://#{bucket}.#{endpoint}/#{URI.encode(object)}"
   end
 
   defp append_signature_param(%__MODULE__{} = request) do

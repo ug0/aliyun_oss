@@ -1,5 +1,8 @@
 # Changelog
 
+## v3.1.1
+  - Fix encoding of object keys
+
 ## v3.1.0
   - Set `Content-Type` header based on the object's extension name
 

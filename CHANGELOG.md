@@ -1,5 +1,8 @@
 # Changelog
 
+## v3.1.2
+  - Remove inspect code
+
 ## v3.1.1
   - Fix encoding of object keys
 

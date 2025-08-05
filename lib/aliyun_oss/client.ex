@@ -11,7 +11,6 @@ defmodule Aliyun.Oss.Client do
     |> Request.build!(method, bucket, object, query_params, headers, body)
     |> Request.sign_header()
     |> Request.request()
-    |> IO.inspect()
     |> case do
       {:ok, %Req.Response{status: status, body: body, headers: headers}}
       when status in 200..299 ->

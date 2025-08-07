@@ -25,7 +25,7 @@ defmodule MyApp.Oss do
   alias Aliyun.Oss.Bucket
 
   def list_buckets(query_params \\ %{}) do
-    Bucket.list_buckets(config(), query_params)
+    Bucket.list_buckets(config(), query_params: query_params)
   end
 
   # encapsulate more API that you required ...

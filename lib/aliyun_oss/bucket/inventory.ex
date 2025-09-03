@@ -15,37 +15,6 @@ defmodule Aliyun.Oss.Bucket.Inventory do
 
   ## Examples
 
-      iex> config_json = %{
-        "InventoryConfiguration" => %{
-          "Destination" => %{
-            "OSSBucketDestination" => %{
-              "AccountId" => "100000000000000",
-              "Bucket" => "acs:oss:::bucket_0001",
-              "Encryption" => %{"SSE-KMS" => %{"KeyId" => "keyId"}},
-              "Format" => "CSV",
-              "Prefix" => "prefix1",
-              "RoleArn" => "acs:ram::100000000000000:role/AliyunOSSRole"
-            }
-          },
-          "Filter" => %{"Prefix" => "Pics"},
-          "Id" => "inventory_id",
-          "IncludedObjectVersions" => "All",
-          "IsEnabled" => "true",
-          "OptionalFields" => %{
-            "Field" => ["Size", "LastModifiedDate", "ETag", "StorageClass",
-            "IsMultipartUploaded", "EncryptionStatus"]
-          },
-          "Schedule" => %{"Frequency" => "Daily"}
-        }
-      }
-      iex> Aliyun.Oss.Bucket.Inventory.put(config, "some-bucket", "inventory_id", config_json)
-      {:ok, %Aliyun.Oss.Client.Response{
-        data: "",
-        headers: %{
-          "connection" => ["keep-alive"],
-          ...
-        }
-      }}
       iex> config_xml = ~S[
           <?xml version="1.0" encoding="UTF-8"?>
           <InventoryConfiguration>
@@ -64,12 +33,8 @@ defmodule Aliyun.Oss.Bucket.Inventory do
       }}
 
   """
-  @spec put(Config.t(), String.t(), String.t(), String.t() | map()) ::
+  @spec put(Config.t(), String.t(), String.t(), String.t()) ::
           {:error, error()} | {:ok, Response.t()}
-  def put(config, bucket, inventory_id, %{} = config_map) do
-    put(config, bucket, inventory_id, MapToXml.from_map(config_map))
-  end
-
   def put(config, bucket, inventory_id, config_xml) do
     put_bucket(config, bucket, config_xml,
       query_params: %{"inventory" => nil, "inventoryId" => inventory_id}

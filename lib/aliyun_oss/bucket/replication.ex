@@ -16,32 +16,6 @@ defmodule Aliyun.Oss.Bucket.Replication do
 
   ## Examples
 
-      iex> config_json = %{
-        "ReplicationConfiguration" => %{
-          "Rule" => %{
-            "Action" => "ALL",
-            "Destination" => %{
-              "Bucket" => "replication-test",
-              "Location" => "oss-cn-beijing",
-              "TransferType" => "internal"
-            },
-            "HistoricalObjectReplication" => "disabled"
-          }
-        }
-      }
-      iex> Aliyun.Oss.Bucket.Replication.put(config, "some-bucket", config_json)
-      {:ok, %Aliyun.Oss.Client.Response{
-        data: "",
-        headers: %{
-          "connection" => ["keep-alive"],
-          "content-length" => ["0"],
-          "date" => ["Tue, 08 Jul 2025 06:21:42 GMT"],
-          "server" => ["AliyunOSS"],
-          "x-oss-replication-rule-id" => ["83925164-b43e-42c8-b755-************"],
-          "x-oss-request-id" => ["686CB8F60E28CD3*********"],
-          "x-oss-server-time" => ["194"]
-        }
-      }}
       iex> config_xml = ~S[
         <?xml version="1.0" encoding="UTF-8"?>
         <ReplicationConfiguration>
@@ -71,11 +45,7 @@ defmodule Aliyun.Oss.Bucket.Replication do
       }}
 
   """
-  @spec put(Config.t(), String.t(), String.t() | map()) :: {:error, error()} | {:ok, Response.t()}
-  def put(config, bucket, %{} = replication_config_map) do
-    put(config, bucket, MapToXml.from_map(replication_config_map))
-  end
-
+  @spec put(Config.t(), String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
   def put(config, bucket, replication_config_xml) do
     post(config, bucket, nil, replication_config_xml,
       query_params: %{"replication" => nil, "comp" => "add"}

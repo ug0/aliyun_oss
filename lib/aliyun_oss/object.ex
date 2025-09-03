@@ -192,23 +192,6 @@ defmodule Aliyun.Oss.Object do
 
   ## Examples
 
-      iex> select_request = %{
-        "SelectRequest" => %{
-          "Expression" => "c2VsZWN0ICogZnJvbSBvc3NvYmplY3Q=",
-          "InputSerialization" => %{"JSON" => %{"Type" => "DOCUMENT"}},
-          "OutputSerialization" => %{"JSON" => %{"RecordDelimiter" => "LA=="}}
-        }
-      }
-      iex> Aliyun.Oss.Object.select_object(config, "some-bucket", "file.json", select_request, format: :json)
-      {:ok, %Aliyun.Oss.Client.Response{
-          data: %{"contacts" => [...]},
-          headers: %{
-            "accept-ranges" => ["bytes"],
-            "connection" => ["keep-alive"],
-            ...
-          }
-        }
-      }
       iex> select_request = ~S[
         <SelectRequest>
             <Expression>c2VsZWN0ICogZnJvbSBvc3NvYmplY3Q=</Expression>
@@ -234,19 +217,6 @@ defmodule Aliyun.Oss.Object do
           }
         }
       }
-      iex> select_request = %{
-        "SelectRequest" => %{"Expression" => "c2VsZWN0ICogZnJvbSBvc3NvYmplY3Q="}
-      }
-      iex> Aliyun.Oss.Object.select_object(config, "some-bucket", "file.csv", select_request, format: :csv)
-      {:ok, %Aliyun.Oss.Client.Response{
-          data: "...",
-          headers: %{
-            "accept-ranges" => ["bytes"],
-            "connection" => ["keep-alive"],
-            ...
-          }
-        }
-      }
       iex> select_request = ~S[
         <SelectRequest>
           <Expression>c2VsZWN0ICogZnJvbSBvc3NvYmplY3Q=</Expression>
@@ -264,15 +234,9 @@ defmodule Aliyun.Oss.Object do
       }
 
   """
-  @spec select_object(Config.t(), String.t(), String.t(), String.t() | map(), keyword) ::
+  @spec select_object(Config.t(), String.t(), String.t(), String.t(), keyword) ::
           {:error, error()} | {:ok, Response.t()}
-  def select_object(config, bucket, object, select_request, options \\ [])
-
-  def select_object(config, bucket, object, %{} = select_request, options) do
-    select_object(config, bucket, object, MapToXml.from_map(select_request), options)
-  end
-
-  def select_object(config, bucket, object, select_request, options) do
+  def select_object(config, bucket, object, select_request, options \\ []) do
     x_oss_process =
       case Keyword.get(options, :format, :csv) do
         :csv -> "csv/select"
@@ -299,24 +263,6 @@ defmodule Aliyun.Oss.Object do
 
   ## Examples
 
-      iex> select_request = %{
-        "JsonMetaRequest" => %{
-          "InputSerialization" => %{"JSON" => %{"Type" => "LINES"}},
-          "OverwriteIfExisting" => "false"
-        }
-      }
-      iex> Aliyun.Oss.Object.select_object_meta(config, "some-bucket", "some-object", select_request, format: :json)
-      {:ok, %Aliyun.Oss.Client.Response{
-          data: <<208, 207, 17, 224, 161, 177, 26, 225, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 62, 0, 3, 0, 254, 255, 9, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 18,
-            0, 0, 0, ...>>,
-          headers: %{
-            "accept-ranges" => ["bytes"],
-            "connection" => ["keep-alive"],
-            ...
-          }
-        }
-      }
       iex> select_request = ~S[
         <?xml version="1.0"?>
         <JsonMetaRequest>
@@ -342,15 +288,9 @@ defmodule Aliyun.Oss.Object do
       }
 
   """
-  @spec select_object_meta(Config.t(), String.t(), String.t(), String.t() | map(), keyword) ::
+  @spec select_object_meta(Config.t(), String.t(), String.t(), String.t(), keyword) ::
           {:error, error()} | {:ok, Response.t()}
-  def select_object_meta(config, bucket, object, select_request, options \\ [])
-
-  def select_object_meta(config, bucket, object, %{} = select_request, options) do
-    select_object_meta(config, bucket, object, MapToXml.from_map(select_request), options)
-  end
-
-  def select_object_meta(config, bucket, object, select_request, options) do
+  def select_object_meta(config, bucket, object, select_request, options \\ []) do
     x_oss_process =
       case Keyword.get(options, :format, :csv) do
         :csv -> "csv/meta"

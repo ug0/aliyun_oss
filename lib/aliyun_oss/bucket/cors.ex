@@ -15,33 +15,6 @@ defmodule Aliyun.Oss.Bucket.CORS do
 
   ## Examples
 
-      iex> config_json = %{
-        "CORSConfiguration" => %{
-          "CORSRule" => [
-            %{
-              "AllowedHeader" => "Authorization",
-              "AllowedMethod" => ["PUT", "GET"],
-              "AllowedOrigin" => "*"
-            },
-            %{
-              "AllowedHeader" => "Authorization",
-              "AllowedMethod" => "GET",
-              "AllowedOrigin" => ["http://www.a.com", "http://www.b.com"],
-              "ExposeHeader" => ["x-oss-test", "x-oss-test1"],
-              "MaxAgeSeconds" => "100"
-            }
-          ],
-          "ResponseVary" => "false"
-        }
-      }
-      iex> Aliyun.Oss.Bucket.CORS.put(config, "some-bucket", config_json)
-      {:ok, %Aliyun.Oss.Client.Response{
-        data: "",
-        headers: %{
-          "connection" => ["keep-alive"],
-          ...
-        }
-      }}
       iex> config_xml = ~S[
       <?xml version="1.0" encoding="UTF-8"?>
       <CORSConfiguration>
@@ -58,11 +31,7 @@ defmodule Aliyun.Oss.Bucket.CORS do
       }}
 
   """
-  @spec put(Config.t(), String.t(), String.t() | map()) :: {:error, error()} | {:ok, Response.t()}
-  def put(config, bucket, %{} = config_map) do
-    put(config, bucket, MapToXml.from_map(config_map))
-  end
-
+  @spec put(Config.t(), String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
   def put(config, bucket, config_xml) do
     put_bucket(config, bucket, config_xml, query_params: %{"cors" => nil})
   end

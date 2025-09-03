@@ -62,32 +62,6 @@ defmodule Aliyun.Oss.LiveChannel do
 
   ## Examples
 
-      iex> config_json = %{
-        "LiveChannelConfiguration" => %{
-          "Description" => nil,
-          "Status" => "enabled",
-          "Target" => %{"FragCount" => "3", "FragDuration" => "2", "Type" => "HLS"}
-        }
-      }
-      iex> Aliyun.Oss.LiveChannel.put(config, "some-bucket", "channel-name", config_json)
-      {:ok, %Aliyun.Oss.Client.Response{
-          data: %{
-            "CreateLiveChannelResult" => %{
-              "PlayUrls" => %{
-                "Url" => "http://some-bucket.oss-cn-shenzhen.aliyuncs.com/channel-name/playlist.m3u8"
-              },
-              "PublishUrls" => %{
-                "Url" => "rtmp://some-bucket.oss-cn-shenzhen.aliyuncs.com/live/channel-name"
-              }
-            }
-          },
-          headers: [
-            {"Server", "AliyunOSS"},
-            {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
-            ...
-          ]
-        }
-      }
       iex> config_xml = ~S[
         <?xml version="1.0" encoding="UTF-8"?>
         <LiveChannelConfiguration>
@@ -120,12 +94,8 @@ defmodule Aliyun.Oss.LiveChannel do
       }
 
   """
-  @spec put(Config.t(), String.t(), String.t(), map() | String.t()) ::
+  @spec put(Config.t(), String.t(), String.t(), String.t()) ::
           {:error, error()} | {:ok, Response.t()}
-  def put(config, bucket, channel_name, %{} = config_map) do
-    put(config, bucket, channel_name, MapToXml.from_map(config_map))
-  end
-
   def put(config, bucket, channel_name, config_xml) do
     put_object(config, bucket, channel_name, config_xml, query_params: %{"live" => nil})
   end

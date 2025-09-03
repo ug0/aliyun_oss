@@ -19,25 +19,6 @@ defmodule Aliyun.Oss.Bucket.Lifecycle do
 
   ## Examples
 
-      iex> lifecycle_config = %{
-        "LifecycleConfiguration" => %{
-          "Rule" => %{
-            "AbortMultipartUpload" => %{"Days" => "1"},
-            "Expiration" => %{"Days" => "1"},
-            "ID" => "delete objects and parts after one day",
-            "Prefix" => "logs/",
-            "Status" => "Enabled"
-          }
-        }
-      }
-      iex> Aliyun.Oss.Bucket.Lifecycle.put(config, "some-bucket", lifecycle_config)
-      {:ok, %Aliyun.Oss.Client.Response{
-        data: "",
-        headers: [
-          {"Date", "Wed, 05 Dec 2018 02:34:57 GMT"},
-          ...
-        ]
-      }}
       iex> lifecycle_config = ~S[
       <?xml version="1.0" encoding="UTF-8"?>
       <LifecycleConfiguration>
@@ -64,15 +45,9 @@ defmodule Aliyun.Oss.Bucket.Lifecycle do
       }}
 
   """
-  @spec put(Config.t(), String.t(), String.t() | map(), keyword()) ::
+  @spec put(Config.t(), String.t(), String.t(), keyword()) ::
           {:error, error()} | {:ok, Response.t()}
-  def put(config, bucket, lifecycle_config, options \\ [])
-
-  def put(config, bucket, %{} = lifecycle_config_map, options) do
-    put(config, bucket, MapToXml.from_map(lifecycle_config_map), options)
-  end
-
-  def put(config, bucket, lifecycle_config_xml, options) do
+  def put(config, bucket, lifecycle_config_xml, options \\ []) do
     put_bucket(
       config,
       bucket,

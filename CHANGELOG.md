@@ -1,5 +1,15 @@
 # Changelog
 
+## v3.2.0
+- **Breaking changes**: Some functions used to accept a map argument and automatically convert it to an XML string. These functions no longer perform the conversion and only accept an XML string argument. Affected functions:
+  - `Aliyun.Oss.LiveChannel.put/4`
+  - `Aliyun.Oss.Object.select_object/5`
+  - `Aliyun.Oss.Object.select_object_meta/5`
+  - `Aliyun.Oss.Bucket.CORS.put/3`
+  - `Aliyun.Oss.Bucket.Inventory.put/4`
+  - `Aliyun.Oss.Bucket.Lifecycle.put/4`
+  - `Aliyun.Oss.Bucket.Replication.put/3`
+
 ## v3.1.2
   - Remove inspect code
 

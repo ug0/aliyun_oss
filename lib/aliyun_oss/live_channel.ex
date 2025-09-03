@@ -18,8 +18,8 @@ defmodule Aliyun.Oss.LiveChannel do
   ## Examples
 
       iex> expires = DateTime.utc_now |> DateTime.shift(day: 1) |> DateTime.to_unix()
-      iex> Aliyun.Oss.Object.signed_url("some-bucket", "some-object", expires, "GET", %{"Content-Type" -> ""})
-      "http://some-bucket.oss-cn-hangzhou.aliyuncs.com/oss-api.pdf?OSSAccessKeyId=nz2pc5*******9l&Expires=1141889120&Signature=vjbyPxybdZ*****************v4%3D"
+      iex> Aliyun.Oss.LiveChannel.signed_url(config, "some-bucket", "some-object", expires, "GET", %{"Content-Type" -> ""})
+      "rtmp://some-bucket.oss-cn-hangzhou.aliyuncs.com/live/channel-name?OSSAccessKeyId=...&Expires=...&playlistName=playlist.m3u8&Signature=..."
 
   """
   @spec signed_publish_url(Config.t(), String.t(), String.t(), integer(), map()) :: String.t()
@@ -74,7 +74,7 @@ defmodule Aliyun.Oss.LiveChannel do
           </Target>
         </LiveChannelConfiguration>
       ]
-      iex> Aliyun.Oss.LiveChannel.put(config, "some-bucket", "channe-name", config_xml)
+      iex> Aliyun.Oss.LiveChannel.put(config, "some-bucket", "channel-name", config_xml)
       {:ok, %Aliyun.Oss.Client.Response{
           data: %{
             "CreateLiveChannelResult" => %{
@@ -179,7 +179,7 @@ defmodule Aliyun.Oss.LiveChannel do
 
   ## Examples
 
-      iex> Aliyun.Oss.LiveChannel.put_status("some-bucket", "channe-name", "disabled")
+      iex> Aliyun.Oss.LiveChannel.put_status(config, "some-bucket", "channel-name", "disabled")
       {:ok, %Aliyun.Oss.Client.Response{
           data: "",
           headers: %{
@@ -203,7 +203,7 @@ defmodule Aliyun.Oss.LiveChannel do
 
   ## Examples
 
-      iex> Aliyun.Oss.LiveChannel.get_info(config, "some-bucket", "channe-name")
+      iex> Aliyun.Oss.LiveChannel.get_info(config, "some-bucket", "channel-name")
       {:ok, %Aliyun.Oss.Client.Response{
           data: %{
             "LiveChannelConfiguration" => %{
@@ -235,10 +235,10 @@ defmodule Aliyun.Oss.LiveChannel do
 
   ## Examples
 
-      iex> Aliyun.Oss.LiveChannel.get_stat(config, "some-bucket", "channe-name")
+      iex> Aliyun.Oss.LiveChannel.get_stat(config, "some-bucket", "channel-name")
       {:ok, %Aliyun.Oss.Client.Response{
           data: %{"LiveChannelStat" => %{"Status" => "Idle"}},
-          headers: {
+          headers: %{
             "connection" => ["keep-alive"],
             ...
           }
@@ -256,7 +256,7 @@ defmodule Aliyun.Oss.LiveChannel do
 
   ## Examples
 
-      iex> Aliyun.Oss.LiveChannel.get_history(config, "some-bucket", "channe-name")
+      iex> Aliyun.Oss.LiveChannel.get_history(config, "some-bucket", "channel-name")
       {:ok, %Aliyun.Oss.Client.Response{
           data: %{"LiveChannelHistory" => %{
             "LiveRecord" => [
@@ -286,7 +286,7 @@ defmodule Aliyun.Oss.LiveChannel do
 
   ## Examples
 
-      iex> Aliyun.Oss.LiveChannel.post_vod_playlist(config, "some-bucket", "channe-name", "list.m3u8", 1472020031, 1472020226)
+      iex> Aliyun.Oss.LiveChannel.post_vod_playlist(config, "some-bucket", "channel-name", "list.m3u8", 1472020031, 1472020226)
       {:ok, %Aliyun.Oss.Client.Response{
           data: "",
           headers: %{
@@ -310,7 +310,7 @@ defmodule Aliyun.Oss.LiveChannel do
 
   ## Examples
 
-      iex> Aliyun.Oss.LiveChannel.get_vod_playlist(config, "some-bucket", "channe-name", 1472020031, 1472020226)
+      iex> Aliyun.Oss.LiveChannel.get_vod_playlist(config, "some-bucket", "channel-name", 1472020031, 1472020226)
       {:ok, %Aliyun.Oss.Client.Response{
           data: "#EXTM3u...",
           headers: %{

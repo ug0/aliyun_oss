@@ -17,14 +17,10 @@ defmodule Aliyun.Oss.Client do
         {:ok, Response.parse(body, headers)}
 
       {:ok, %Req.Response{status: status, body: body}} ->
-        {:error, Error.parse(%Error{body: body, status_code: status})}
+        {:error, Error.build(status, body)}
 
-      {:error, %Jason.DecodeError{data: data}} ->
-        {:error,
-         %Error{body: data, status_code: 900, parsed_details: %{"message" => "JSON decode error"}}}
-
-      {:error, %{reason: reason}} ->
-        {:error, reason}
+      {:error, error} ->
+        {:error, error}
     end
   end
 end

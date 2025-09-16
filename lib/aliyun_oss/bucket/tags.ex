@@ -5,10 +5,7 @@ defmodule Aliyun.Oss.Bucket.Tags do
 
   import Aliyun.Oss.Bucket, only: [get_bucket: 3, put_bucket: 4, delete_bucket: 3]
   alias Aliyun.Oss.Config
-  alias Aliyun.Oss.Client.{Response, Error}
-
-  @type error() ::
-          %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
+  alias Aliyun.Oss.Client.Response
 
   @doc """
   GetBucketTags - gets the tags configured for a bucket.
@@ -26,7 +23,7 @@ defmodule Aliyun.Oss.Bucket.Tags do
       }
 
   """
-  @spec get(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  @spec get(Config.t(), String.t()) :: {:error, Exception.t()} | {:ok, Response.t()}
   def get(config, bucket) do
     get_bucket(config, bucket, query_params: %{"tagging" => nil})
   end
@@ -66,7 +63,7 @@ defmodule Aliyun.Oss.Bucket.Tags do
   </Tagging>
   """
   @spec put(Config.t(), String.t(), [{String.t(), String.t()}, ...]) ::
-          {:error, error()} | {:ok, Response.t()}
+          {:error, Exception.t()} | {:ok, Response.t()}
   def put(config, bucket, tags) do
     xml_body = EEx.eval_string(@body_tmpl, tags: tags)
     put_bucket(config, bucket, xml_body, query_params: %{"tagging" => nil})
@@ -93,7 +90,10 @@ defmodule Aliyun.Oss.Bucket.Tags do
       iex> Aliyun.Oss.Bucket.Tags.delete(config, "unknown-bucket")
       {:error,
       %Aliyun.Oss.Client.Error{
-        parsed_details: %{
+        status: 404,
+        code: "NoSuchBucket",
+        message: "The specified bucket does not exist.",
+        details: %{
           "BucketName" => "unknown-bucket",
           "Code" => "NoSuchBucket",
           "EC" => "0015-00000101",
@@ -101,14 +101,12 @@ defmodule Aliyun.Oss.Bucket.Tags do
           "Message" => "The specified bucket does not exist.",
           "RecommendDoc" => "https://api.aliyun.com/troubleshoot?q=0015-00000101",
           "RequestId" => "5C38283EC84D1C4471F2F48A"
-        },
-        body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>...</xml>",
-        status_code: 404
+        }
       }}
 
   """
   @spec delete(Config.t(), String.t()) ::
-          {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
+          {:error, Exception.t()} | {:ok, Aliyun.Oss.Client.Response.t()}
   def delete(config, bucket) do
     delete_bucket(config, bucket, query_params: %{"tagging" => nil})
   end

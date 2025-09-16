@@ -5,10 +5,7 @@ defmodule Aliyun.Oss.Bucket.Lifecycle do
 
   import Aliyun.Oss.Bucket, only: [get_bucket: 3, put_bucket: 4, delete_bucket: 3]
   alias Aliyun.Oss.Config
-  alias Aliyun.Oss.Client.{Response, Error}
-
-  @type error() ::
-          %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
+  alias Aliyun.Oss.Client.Response
 
   @doc """
   PutBucketLifecycle - configures a lifecycle rule for a bucket.
@@ -46,7 +43,7 @@ defmodule Aliyun.Oss.Bucket.Lifecycle do
 
   """
   @spec put(Config.t(), String.t(), String.t(), keyword()) ::
-          {:error, error()} | {:ok, Response.t()}
+          {:error, Exception.t()} | {:ok, Response.t()}
   def put(config, bucket, lifecycle_config_xml, options \\ []) do
     put_bucket(
       config,
@@ -81,7 +78,7 @@ defmodule Aliyun.Oss.Bucket.Lifecycle do
       }}
 
   """
-  @spec get(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  @spec get(Config.t(), String.t()) :: {:error, Exception.t()} | {:ok, Response.t()}
   def get(config, bucket) do
     get_bucket(config, bucket, query_params: %{"lifecycle" => nil})
   end
@@ -91,7 +88,7 @@ defmodule Aliyun.Oss.Bucket.Lifecycle do
 
   ## Examples
 
-      iex> Aliyun.Oss.Bucket.Lifecycle.delete("some-bucket")
+      iex> Aliyun.Oss.Bucket.Lifecycle.delete(config, "some-bucket")
       {:ok,
       %Aliyun.Oss.Client.Response{
         data: "",
@@ -104,10 +101,13 @@ defmodule Aliyun.Oss.Bucket.Lifecycle do
           "x-oss-server-time" => ["53"]
         }
       }}
-      iex> Aliyun.Oss.Bucket.Lifecycle.delete("unknown-bucket")
+      iex> Aliyun.Oss.Bucket.Lifecycle.delete(config, "unknown-bucket")
       {:error,
       %Aliyun.Oss.Client.Error{
-        parsed_details: %{
+        status: 404,
+        code: "NoSuchBucket",
+        message: "The specified bucket does not exist.",
+        details: %{
           "BucketName" => "unknown-bucket",
           "Code" => "NoSuchBucket",
           "EC" => "0015-00000101",
@@ -115,14 +115,12 @@ defmodule Aliyun.Oss.Bucket.Lifecycle do
           "Message" => "The specified bucket does not exist.",
           "RecommendDoc" => "https://api.aliyun.com/troubleshoot?q=0015-00000101",
           "RequestId" => "5C38283EC84D1C4471F2F48A"
-        },
-        body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>...</xml>",
-        status_code: 404
+        }
       }}
 
   """
   @spec delete(Config.t(), String.t()) ::
-          {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
+          {:error, Exception.t()} | {:ok, Aliyun.Oss.Client.Response.t()}
   def delete(config, bucket) do
     delete_bucket(config, bucket, query_params: %{"lifecycle" => nil})
   end

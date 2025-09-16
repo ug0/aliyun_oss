@@ -5,10 +5,7 @@ defmodule Aliyun.Oss.Bucket.RequestPayment do
 
   import Aliyun.Oss.Bucket, only: [get_bucket: 3, put_bucket: 4]
   alias Aliyun.Oss.Config
-  alias Aliyun.Oss.Client.{Response, Error}
-
-  @type error() ::
-          %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
+  alias Aliyun.Oss.Client.Response
 
   @doc """
   GetBucketRequestPayment - gets pay-by-requester configurations for a bucket.
@@ -26,7 +23,7 @@ defmodule Aliyun.Oss.Bucket.RequestPayment do
       }
 
   """
-  @spec get(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  @spec get(Config.t(), String.t()) :: {:error, Exception.t()} | {:ok, Response.t()}
   def get(config, bucket) do
     get_bucket(config, bucket, query_params: %{"requestPayment" => nil})
   end
@@ -57,7 +54,7 @@ defmodule Aliyun.Oss.Bucket.RequestPayment do
     <Payer><%= payer %></Payer>
   </RequestPaymentConfiguration>
   """
-  @spec put(Config.t(), String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  @spec put(Config.t(), String.t(), String.t()) :: {:error, Exception.t()} | {:ok, Response.t()}
   def put(config, bucket, payer) do
     xml_body = EEx.eval_string(@body_tmpl, payer: payer)
     put_bucket(config, bucket, xml_body, query_params: %{"requestPayment" => nil})

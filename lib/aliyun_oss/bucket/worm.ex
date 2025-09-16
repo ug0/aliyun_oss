@@ -6,10 +6,7 @@ defmodule Aliyun.Oss.Bucket.WORM do
   import Aliyun.Oss.Bucket, only: [get_bucket: 3, delete_bucket: 3]
   import Aliyun.Oss.Service, only: [post: 5]
   alias Aliyun.Oss.Config
-  alias Aliyun.Oss.Client.{Response, Error}
-
-  @type error() ::
-          %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
+  alias Aliyun.Oss.Client.Response
 
   @doc """
   InitiateBucketWorm - creates a retention policy.
@@ -37,7 +34,8 @@ defmodule Aliyun.Oss.Bucket.WORM do
     <RetentionPeriodInDays><%= days %></RetentionPeriodInDays>
   </InitiateWormConfiguration>
   """
-  @spec initiate(Config.t(), String.t(), integer()) :: {:error, error()} | {:ok, Response.t()}
+  @spec initiate(Config.t(), String.t(), integer()) ::
+          {:error, Exception.t()} | {:ok, Response.t()}
   def initiate(config, bucket, days) when is_integer(days) do
     body_xml = EEx.eval_string(@body_tmpl, days: days)
     post(config, bucket, nil, body_xml, query_params: %{"worm" => nil})
@@ -58,7 +56,7 @@ defmodule Aliyun.Oss.Bucket.WORM do
       }}
 
   """
-  @spec abort(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  @spec abort(Config.t(), String.t()) :: {:error, Exception.t()} | {:ok, Response.t()}
   def abort(config, bucket) do
     delete_bucket(config, bucket, query_params: %{"worm" => nil})
   end
@@ -78,7 +76,8 @@ defmodule Aliyun.Oss.Bucket.WORM do
       }}
 
   """
-  @spec complete(Config.t(), String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  @spec complete(Config.t(), String.t(), String.t()) ::
+          {:error, Exception.t()} | {:ok, Response.t()}
   def complete(config, bucket, worm_id) do
     post(config, bucket, nil, "", query_params: %{"wormId" => worm_id})
   end
@@ -106,7 +105,7 @@ defmodule Aliyun.Oss.Bucket.WORM do
   </ExtendWormConfiguration>
   """
   @spec extend(Config.t(), String.t(), String.t(), integer()) ::
-          {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
+          {:error, Exception.t()} | {:ok, Aliyun.Oss.Client.Response.t()}
   def extend(config, bucket, worm_id, days) when is_integer(days) do
     body_xml = EEx.eval_string(@body_tmpl, days: days)
 
@@ -136,7 +135,7 @@ defmodule Aliyun.Oss.Bucket.WORM do
       }}
 
   """
-  @spec get(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  @spec get(Config.t(), String.t()) :: {:error, Exception.t()} | {:ok, Response.t()}
   def get(config, bucket) do
     get_bucket(config, bucket, query_params: %{"worm" => nil})
   end

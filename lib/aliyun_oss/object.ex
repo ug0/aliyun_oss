@@ -13,10 +13,7 @@ defmodule Aliyun.Oss.Object do
   """
 
   alias Aliyun.Oss.{Config, Service, Sign}
-  alias Aliyun.Oss.Client.{Request, Response, Error}
-
-  @type error() ::
-          %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
+  alias Aliyun.Oss.Client.{Request, Response}
 
   @doc """
   HeadObject - gets the metadata of an object.
@@ -53,11 +50,11 @@ defmodule Aliyun.Oss.Object do
       }}
 
       iex> Aliyun.Oss.Object.head_object(config, "some-bucket", "unknown-object")
-      {:error, %Aliyun.Oss.Client.Error{status_code: 404, body: "", parsed_details: nil}}
+      {:error, %Aliyun.Oss.Client.Error{status: 404, code: nil, message: "", details: nil}}
 
   """
   @spec head_object(Config.t(), String.t(), String.t(), keyword()) ::
-          {:error, error()} | {:ok, Response.t()}
+          {:error, Exception.t()} | {:ok, Response.t()}
   def head_object(%Config{} = config, bucket, object, options \\ []) do
     Service.head(config, bucket, object, options)
   end
@@ -89,7 +86,7 @@ defmodule Aliyun.Oss.Object do
 
   """
   @spec get_object_meta(Config.t(), String.t(), String.t()) ::
-          {:error, error()} | {:ok, Response.t()}
+          {:error, Exception.t()} | {:ok, Response.t()}
   def get_object_meta(%Config{} = config, bucket, object) do
     Service.head(config, bucket, object, query_params: %{"objectMeta" => nil})
   end
@@ -176,7 +173,7 @@ defmodule Aliyun.Oss.Object do
 
   """
   @spec get_object(Config.t(), String.t(), String.t(), keyword()) ::
-          {:error, error()} | {:ok, Response.t()}
+          {:error, Exception.t()} | {:ok, Response.t()}
   def get_object(%Config{} = config, bucket, object, options \\ []) do
     Service.get(config, bucket, object, options)
   end
@@ -235,7 +232,7 @@ defmodule Aliyun.Oss.Object do
 
   """
   @spec select_object(Config.t(), String.t(), String.t(), String.t(), keyword) ::
-          {:error, error()} | {:ok, Response.t()}
+          {:error, Exception.t()} | {:ok, Response.t()}
   def select_object(config, bucket, object, select_request, options \\ []) do
     x_oss_process =
       case Keyword.get(options, :format, :csv) do
@@ -289,7 +286,7 @@ defmodule Aliyun.Oss.Object do
 
   """
   @spec select_object_meta(Config.t(), String.t(), String.t(), String.t(), keyword) ::
-          {:error, error()} | {:ok, Response.t()}
+          {:error, Exception.t()} | {:ok, Response.t()}
   def select_object_meta(config, bucket, object, select_request, options \\ []) do
     x_oss_process =
       case Keyword.get(options, :format, :csv) do
@@ -381,7 +378,7 @@ defmodule Aliyun.Oss.Object do
 
   """
   @spec put_object(Config.t(), String.t(), String.t(), String.t(), keyword()) ::
-          {:error, error()} | {:ok, Response.t()}
+          {:error, Exception.t()} | {:ok, Response.t()}
   def put_object(config, bucket, object, body, options \\ []) do
     Service.put(config, bucket, object, body, options)
   end
@@ -421,7 +418,7 @@ defmodule Aliyun.Oss.Object do
 
   """
   @spec copy_object(Config.t(), {String.t(), String.t()}, {String.t(), String.t()}, keyword()) ::
-          {:error, error()} | {:ok, Response.t()}
+          {:error, Exception.t()} | {:ok, Response.t()}
   def copy_object(
         config,
         {source_bucket, source_object},
@@ -456,8 +453,8 @@ defmodule Aliyun.Oss.Object do
       }
 
   """
-  @spec append_object(Config.t(), String.t(), String.t(), String.t(), integer(), map()) ::
-          {:error, error()} | {:ok, Response.t()}
+  @spec append_object(Config.t(), String.t(), String.t(), String.t(), integer(), keyword()) ::
+          {:error, Exception.t()} | {:ok, Response.t()}
   def append_object(config, bucket, object, content, position, options \\ []) do
     query_params = %{"append" => nil, "position" => position}
     options = Keyword.update(options, :query_params, query_params, &Map.merge(&1, query_params))
@@ -485,7 +482,7 @@ defmodule Aliyun.Oss.Object do
 
   """
   @spec restore_object(Config.t(), String.t(), String.t()) ::
-          {:error, error()} | {:ok, Response.t()}
+          {:error, Exception.t()} | {:ok, Response.t()}
   def restore_object(config, bucket, object) do
     post_object(config, bucket, object, "", query_params: %{"restore" => nil})
   end
@@ -511,7 +508,7 @@ defmodule Aliyun.Oss.Object do
 
   """
   @spec clean_restored_object(Config.t(), String.t(), String.t()) ::
-          {:error, error()} | {:ok, Response.t()}
+          {:error, Exception.t()} | {:ok, Response.t()}
   def clean_restored_object(config, bucket, object) do
     post_object(config, bucket, object, "", query_params: %{"cleanRestoredObject" => nil})
   end
@@ -538,8 +535,8 @@ defmodule Aliyun.Oss.Object do
       }
 
   """
-  @spec delete_object(Config.t(), String.t(), String.t()) ::
-          {:error, error()} | {:ok, Response.t()}
+  @spec delete_object(Config.t(), String.t(), String.t(), keyword()) ::
+          {:error, Exception.t()} | {:ok, Response.t()}
   def delete_object(config, bucket, object, options \\ []) do
     Service.delete(config, bucket, object, options)
   end
@@ -611,7 +608,7 @@ defmodule Aliyun.Oss.Object do
   </Delete>
   """
   @spec delete_multiple_objects(Config.t(), String.t(), [String.t()] | String.t(), keyword()) ::
-          {:error, error()} | {:ok, Response.t()}
+          {:error, Exception.t()} | {:ok, Response.t()}
   def delete_multiple_objects(config, bucket, objects_or_xml_body, options \\ [])
 
   def delete_multiple_objects(config, bucket, objects, options) when is_list(objects) do
@@ -668,7 +665,7 @@ defmodule Aliyun.Oss.Object do
   end
 
   @spec post_object(Config.t(), String.t(), String.t(), String.t(), keyword()) ::
-          {:error, error()} | {:ok, Response.t()}
+          {:error, Exception.t()} | {:ok, Response.t()}
   def post_object(config, bucket, object, body, options) do
     Service.post(config, bucket, object, body, options)
   end

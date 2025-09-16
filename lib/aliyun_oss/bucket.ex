@@ -23,10 +23,7 @@ defmodule Aliyun.Oss.Bucket do
 
   alias Aliyun.Oss.Config
   alias Aliyun.Oss.Service
-  alias Aliyun.Oss.Client.{Response, Error}
-
-  @type error() ::
-          %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
+  alias Aliyun.Oss.Client.Response
 
   defdelegate list_buckets(config, options \\ []), to: Service
 
@@ -75,25 +72,24 @@ defmodule Aliyun.Oss.Bucket do
       iex> Aliyun.Oss.Bucket.get_bucket(config, "unknown-bucket")
       {:error,
         %Aliyun.Oss.Client.Error{
-          status_code: 404,
-          parsed_details: %{
-            "ListBucketResult" => %{
-              "BucketName" => "unknown-bucket",
-              "Code" => "NoSuchBucket",
-              "EC" => "0015-00000101",
-              "HostId" => "unknown-bucket.oss-cn-shenzhen.aliyuncs.com",
-              "Message" => "The specified bucket does not exist.",
-              "RecommendDoc" => "https://api.aliyun.com/troubleshoot?q=0015-00000101",
-              "RequestId" => "5BFF89955E29FF66F10B9763"
-            }
-          },
-          body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>...</xml>"
+          status: 404,
+          code: "NoSuchBucket",
+          message: "The specified bucket does not exist.",
+          details: %{
+            "BucketName" => "unknown-bucket",
+            "Code" => "NoSuchBucket",
+            "EC" => "0015-00000101",
+            "HostId" => "unknown-bucket.oss-cn-shenzhen.aliyuncs.com",
+            "Message" => "The specified bucket does not exist.",
+            "RecommendDoc" => "https://api.aliyun.com/troubleshoot?q=0015-00000101",
+            "RequestId" => "5BFF89955E29FF66F10B9763"
+          }
         }
       }
 
   """
   @spec get_bucket(Config.t(), String.t(), keyword()) ::
-          {:error, error()} | {:ok, Response.t()}
+          {:error, Exception.t()} | {:ok, Response.t()}
   def get_bucket(%Config{} = config, bucket, options \\ []) do
     Service.get(config, bucket, nil, options)
   end
@@ -144,26 +140,25 @@ defmodule Aliyun.Oss.Bucket do
       iex> Aliyun.Oss.Bucket.list_objects(config, "unknown-bucket")
       {:error,
         %Aliyun.Oss.Client.Error{
-          status_code: 404,
-          parsed_details: %{
-            "ListBucketResult" => %{
-              "BucketName" => "unknown-bucket",
-              "Code" => "NoSuchBucket",
-              "EC" => "0015-00000101",
-              "HostId" => "unknown-bucket.oss-cn-shenzhen.aliyuncs.com",
-              "Message" => "The specified bucket does not exist.",
-              "RecommendDoc" => "https://api.aliyun.com/troubleshoot?q=0015-00000101",
-              "RequestId" => "5BFF89955E29FF66F10B9763"
-            }
-          },
-          body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>...</xml>"
+          status: 404,
+          code: "NoSuchBucket",
+          message: "The specified bucket does not exist.",
+          details: %{
+            "BucketName" => "unknown-bucket",
+            "Code" => "NoSuchBucket",
+            "EC" => "0015-00000101",
+            "HostId" => "unknown-bucket.oss-cn-shenzhen.aliyuncs.com",
+            "Message" => "The specified bucket does not exist.",
+            "RecommendDoc" => "https://api.aliyun.com/troubleshoot?q=0015-00000101",
+            "RequestId" => "5BFF89955E29FF66F10B9763"
+          }
         }
       }
 
   """
   @query_params %{"list-type" => 2}
   @spec list_objects(Config.t(), String.t(), keyword()) ::
-          {:error, error()} | {:ok, Response.t()}
+          {:error, Exception.t()} | {:ok, Response.t()}
   def list_objects(%Config{} = config, bucket, options \\ []) do
     get_bucket(
       config,
@@ -214,7 +209,7 @@ defmodule Aliyun.Oss.Bucket do
       }
 
   """
-  @spec get_bucket_info(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  @spec get_bucket_info(Config.t(), String.t()) :: {:error, Exception.t()} | {:ok, Response.t()}
   def get_bucket_info(%Config{} = config, bucket) do
     get_bucket(config, bucket, query_params: %{"bucketInfo" => nil})
   end
@@ -234,7 +229,8 @@ defmodule Aliyun.Oss.Bucket do
         }
       }
   """
-  @spec get_bucket_location(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  @spec get_bucket_location(Config.t(), String.t()) ::
+          {:error, Exception.t()} | {:ok, Response.t()}
   def get_bucket_location(%Config{} = config, bucket) do
     get_bucket(config, bucket, query_params: %{"location" => nil})
   end
@@ -276,7 +272,7 @@ defmodule Aliyun.Oss.Bucket do
         }
       }
   """
-  @spec get_bucket_stat(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  @spec get_bucket_stat(Config.t(), String.t()) :: {:error, Exception.t()} | {:ok, Response.t()}
   def get_bucket_stat(%Config{} = config, bucket) do
     get_bucket(config, bucket, query_params: %{"stat" => nil})
   end
@@ -313,7 +309,10 @@ defmodule Aliyun.Oss.Bucket do
       iex> Aliyun.Oss.Bucket.put_bucket(config, "new-bucket", body, headers: %{"x-oss-acl" => "invalid-permission"}) # get error
       {:error,
       %Aliyun.Oss.Client.Error{
-        parsed_details: %{
+        status: 400,
+        code: "InvalidArgument",
+        message: "no such bucket access control exists",
+        details: %{
           "ArgumentName" => "x-oss-acl",
           "ArgumentValue" => "invalid-permission",
           "Code" => "InvalidArgument",
@@ -322,9 +321,7 @@ defmodule Aliyun.Oss.Bucket do
           "Message" => "no such bucket access control exists",
           "RecommendDoc" => "https://api.aliyun.com/troubleshoot?q=0015-00000204",
           "RequestId" => "5C3000000000000000000000"
-        },
-        body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>...</xml>",
-        status_code: 400
+        }
       }}
 
   """
@@ -335,7 +332,7 @@ defmodule Aliyun.Oss.Bucket do
   </CreateBucketConfiguration>
   """
   @spec put_bucket(Config.t(), String.t(), String.t(), keyword()) ::
-          {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
+          {:error, Exception.t()} | {:ok, Aliyun.Oss.Client.Response.t()}
   def put_bucket(
         %Config{} = config,
         bucket,
@@ -371,17 +368,10 @@ defmodule Aliyun.Oss.Bucket do
       iex> Aliyun.Oss.Bucket.delete_bucket(config, "unknown-bucket")
       {:error,
       %Aliyun.Oss.Client.Error{
-        body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
-               <Error>\n\
-                 <Code>NoSuchBucket</Code>\n\
-                 <Message>The specified bucket does not exist.</Message>\n\
-                 <RequestId>5C3829B29BF380354CF9C2E8</RequestId>\n\
-                 <HostId>unknown-bucket.oss-cn-shenzhen.aliyuncs.com</HostId>\n\
-                 <BucketName>unknown-bucket</BucketName>\n\
-                 <EC>0015-00000101</EC>\n
-                 <RecommendDoc>https://api.aliyun.com/troubleshoot?q=0015-00000101</RecommendDoc>
-               </Error>",
-        parsed_details: %{
+        status: 404,
+        code: "NoSuchBucket",
+        message: "The specified bucket does not exist.",
+        details: %{
           "BucketName" => "unknown-bucket",
           "Code" => "NoSuchBucket",
           "EC" => "0015-00000101",
@@ -389,13 +379,12 @@ defmodule Aliyun.Oss.Bucket do
           "Message" => "The specified bucket does not exist.",
           "RecommendDoc" => "https://api.aliyun.com/troubleshoot?q=0015-00000101",
           "RequestId" => "5C3000000000000000000000"
-        },
-        status_code: 404
+        }
       }}
 
   """
   @spec delete_bucket(Config.t(), String.t(), keyword()) ::
-          {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
+          {:error, Exception.t()} | {:ok, Aliyun.Oss.Client.Response.t()}
   def delete_bucket(%Config{} = config, bucket, options \\ []) do
     Service.delete(config, bucket, nil, options)
   end

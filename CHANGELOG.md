@@ -1,5 +1,10 @@
 # Changelog
 
+## v3.3.0
+- **Breaking changes**: Rewrite `Aliyun.Oss.Client.Error` to implement the `Exception` behaviour. Now all API requests will either return `{:ok, Aliyun.Oss.Client.Response.t()}` or `{:error, Exception.t()}`
+- Fix functions:
+  - `Aliyun.Oss.Bucket.ACL.put/3`
+
 ## v3.2.0
 - **Breaking changes**: Some functions used to accept a map argument and automatically convert it to an XML string. These functions no longer perform the conversion and only accept an XML string argument. Affected functions:
   - `Aliyun.Oss.LiveChannel.put/4`

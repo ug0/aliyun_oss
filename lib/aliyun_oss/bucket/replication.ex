@@ -6,10 +6,7 @@ defmodule Aliyun.Oss.Bucket.Replication do
   import Aliyun.Oss.Bucket, only: [get_bucket: 3, put_bucket: 4]
   import Aliyun.Oss.Service, only: [post: 5]
   alias Aliyun.Oss.Config
-  alias Aliyun.Oss.Client.{Response, Error}
-
-  @type error() ::
-          %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
+  alias Aliyun.Oss.Client.Response
 
   @doc """
   PutBucketReplication - configures data replication rules for a bucket.
@@ -45,7 +42,7 @@ defmodule Aliyun.Oss.Bucket.Replication do
       }}
 
   """
-  @spec put(Config.t(), String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  @spec put(Config.t(), String.t(), String.t()) :: {:error, Exception.t()} | {:ok, Response.t()}
   def put(config, bucket, replication_config_xml) do
     post(config, bucket, nil, replication_config_xml,
       query_params: %{"replication" => nil, "comp" => "add"}
@@ -81,7 +78,7 @@ defmodule Aliyun.Oss.Bucket.Replication do
   </ReplicationRule>
   """
   @spec put_rtc(Config.t(), String.t(), String.t(), String.t()) ::
-          {:error, error()} | {:ok, Response.t()}
+          {:error, Exception.t()} | {:ok, Response.t()}
   def put_rtc(config, bucket, replication_rule_id, status) do
     body_xml = EEx.eval_string(@body_tmpl, rule_id: replication_rule_id, status: status)
     put_bucket(config, bucket, body_xml, query_params: %{"rtc" => nil})
@@ -114,7 +111,7 @@ defmodule Aliyun.Oss.Bucket.Replication do
         }
       }}
   """
-  @spec get(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  @spec get(Config.t(), String.t()) :: {:error, Exception.t()} | {:ok, Response.t()}
   def get(config, bucket) do
     get_bucket(config, bucket, query_params: %{"replication" => nil})
   end
@@ -154,7 +151,7 @@ defmodule Aliyun.Oss.Bucket.Replication do
       }}
 
   """
-  @spec get_location(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  @spec get_location(Config.t(), String.t()) :: {:error, Exception.t()} | {:ok, Response.t()}
   def get_location(config, bucket) do
     get_bucket(config, bucket, query_params: %{"replicationLocation" => nil})
   end
@@ -189,7 +186,7 @@ defmodule Aliyun.Oss.Bucket.Replication do
 
   """
   @spec get_progress(Config.t(), String.t(), String.t()) ::
-          {:error, error()} | {:ok, Response.t()}
+          {:error, Exception.t()} | {:ok, Response.t()}
   def get_progress(config, bucket, rule_id) do
     get_bucket(config, bucket,
       query_params: %{"rule-id" => rule_id, "replicationProgress" => nil}
@@ -224,7 +221,7 @@ defmodule Aliyun.Oss.Bucket.Replication do
   </ReplicationRules>
   """
   @spec delete(Config.t(), String.t(), String.t()) ::
-          {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
+          {:error, Exception.t()} | {:ok, Aliyun.Oss.Client.Response.t()}
   def delete(config, bucket, rule_id) do
     body_xml = EEx.eval_string(@body_tmpl, rule_id: rule_id)
 

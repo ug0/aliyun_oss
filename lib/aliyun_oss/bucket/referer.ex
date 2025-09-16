@@ -5,10 +5,7 @@ defmodule Aliyun.Oss.Bucket.Referer do
 
   import Aliyun.Oss.Bucket, only: [get_bucket: 3, put_bucket: 4]
   alias Aliyun.Oss.Config
-  alias Aliyun.Oss.Client.{Response, Error}
-
-  @type error() ::
-          %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
+  alias Aliyun.Oss.Client.Response
 
   @doc """
   GetBucketReferer - gets the Referer configurations of a bucket.
@@ -33,7 +30,7 @@ defmodule Aliyun.Oss.Bucket.Referer do
 
   """
 
-  @spec get(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  @spec get(Config.t(), String.t()) :: {:error, Exception.t()} | {:ok, Response.t()}
   def get(config, bucket) do
     get_bucket(config, bucket, query_params: %{"referer" => nil})
   end
@@ -71,7 +68,7 @@ defmodule Aliyun.Oss.Bucket.Referer do
 
   """
   @spec put(Config.t(), String.t(), String.t()) ::
-          {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
+          {:error, Exception.t()} | {:ok, Aliyun.Oss.Client.Response.t()}
   def put(config, bucket, xml_body) do
     put_bucket(config, bucket, xml_body, query_params: %{"referer" => nil})
   end

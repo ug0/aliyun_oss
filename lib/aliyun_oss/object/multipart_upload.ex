@@ -7,11 +7,8 @@ defmodule Aliyun.Oss.Object.MultipartUpload do
   import Aliyun.Oss.Object, only: [get_object: 4, put_object: 5, post_object: 5, delete_object: 4]
 
   alias Aliyun.Oss.Config
-  alias Aliyun.Oss.Client.{Response, Error}
+  alias Aliyun.Oss.Client.Response
   alias Aliyun.Oss.TaskSupervisor
-
-  @type error() ::
-          %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
 
   @doc """
   A shortcut for uploading streaming data.
@@ -39,7 +36,7 @@ defmodule Aliyun.Oss.Object.MultipartUpload do
 
   """
   @spec upload(Config.t(), String.t(), String.t(), Enum.t()) ::
-          {:error, error()} | {:ok, Response.t()}
+          {:error, Exception.t()} | {:ok, Response.t()}
   def upload(config, bucket, object, parts) do
     case init_upload(config, bucket, object) do
       {:ok, upload_id} ->
@@ -114,7 +111,7 @@ defmodule Aliyun.Oss.Object.MultipartUpload do
 
   """
   @spec init_upload(Config.t(), String.t(), String.t(), keyword()) ::
-          {:error, error()} | {:ok, String.t()}
+          {:error, Exception.t()} | {:ok, String.t()}
   def init_upload(config, bucket, object, options \\ []) do
     query_params =
       case Keyword.get(options, :encoding_type) do
@@ -155,7 +152,7 @@ defmodule Aliyun.Oss.Object.MultipartUpload do
 
   """
   @spec upload_part(Config.t(), String.t(), String.t(), String.t(), integer(), String.t()) ::
-          {:error, error()} | {:ok, Response.t()}
+          {:error, Exception.t()} | {:ok, Response.t()}
   def upload_part(config, bucket, object, upload_id, part_number, body) do
     query_params = %{"uploadId" => upload_id, "partNumber" => part_number}
     put_object(config, bucket, object, body, query_params: query_params)
@@ -205,7 +202,7 @@ defmodule Aliyun.Oss.Object.MultipartUpload do
           String.t(),
           keyword()
         ) ::
-          {:error, error()} | {:ok, Response.t()}
+          {:error, Exception.t()} | {:ok, Response.t()}
   def upload_part_copy(
         config,
         bucket,
@@ -279,7 +276,7 @@ defmodule Aliyun.Oss.Object.MultipartUpload do
           list({integer(), String.t()}),
           keyword()
         ) ::
-          {:error, error()} | {:ok, Response.t()}
+          {:error, Exception.t()} | {:ok, Response.t()}
   def complete_upload(config, bucket, object, upload_id, parts, options \\ []) do
     body = EEx.eval_string(@body_tmpl, parts: parts)
     headers = Keyword.get(options, :headers, %{})
@@ -311,7 +308,7 @@ defmodule Aliyun.Oss.Object.MultipartUpload do
 
   """
   @spec abort_upload(Config.t(), String.t(), String.t(), String.t()) ::
-          {:error, error()} | {:ok, Response.t()}
+          {:error, Exception.t()} | {:ok, Response.t()}
   def abort_upload(config, bucket, object, upload_id) do
     delete_object(config, bucket, object, query_params: %{"uploadId" => upload_id})
   end
@@ -364,7 +361,8 @@ defmodule Aliyun.Oss.Object.MultipartUpload do
       }
 
   """
-  @spec list_uploads(Config.t(), String.t(), keyword()) :: {:error, error()} | {:ok, Response.t()}
+  @spec list_uploads(Config.t(), String.t(), keyword()) ::
+          {:error, Exception.t()} | {:ok, Response.t()}
   def list_uploads(config, bucket, options \\ []) do
     options =
       Keyword.update(options, :query_params, %{"uploads" => nil}, &Map.put(&1, "uploads", nil))
@@ -420,7 +418,7 @@ defmodule Aliyun.Oss.Object.MultipartUpload do
 
   """
   @spec list_parts(Config.t(), String.t(), String.t(), String.t(), keyword()) ::
-          {:error, error()} | {:ok, Response.t()}
+          {:error, Exception.t()} | {:ok, Response.t()}
   def list_parts(config, bucket, object, upload_id, options \\ []) do
     options =
       Keyword.update(

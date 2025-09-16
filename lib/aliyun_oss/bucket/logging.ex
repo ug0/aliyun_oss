@@ -5,10 +5,7 @@ defmodule Aliyun.Oss.Bucket.Logging do
 
   import Aliyun.Oss.Bucket, only: [get_bucket: 3, put_bucket: 4, delete_bucket: 3]
   alias Aliyun.Oss.Config
-  alias Aliyun.Oss.Client.{Response, Error}
-
-  @type error() ::
-          %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
+  alias Aliyun.Oss.Client.Response
 
   @doc """
   GetBucketLogging - gets the access logging configuration of a bucket.
@@ -32,7 +29,7 @@ defmodule Aliyun.Oss.Bucket.Logging do
       }}
 
   """
-  @spec get(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  @spec get(Config.t(), String.t()) :: {:error, Exception.t()} | {:ok, Response.t()}
   def get(config, bucket) do
     get_bucket(config, bucket, query_params: %{"logging" => nil})
   end
@@ -68,7 +65,7 @@ defmodule Aliyun.Oss.Bucket.Logging do
   </BucketLoggingStatus>
   """
   @spec put(Config.t(), String.t(), String.t(), String.t()) ::
-          {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
+          {:error, Exception.t()} | {:ok, Aliyun.Oss.Client.Response.t()}
   def put(config, bucket, target_bucket, target_prefix \\ "oss-accesslog/") do
     body =
       EEx.eval_string(
@@ -101,6 +98,9 @@ defmodule Aliyun.Oss.Bucket.Logging do
       iex> Aliyun.Oss.Bucket.Logging.delete(config, "unknown-bucket")
       {:error,
       %Aliyun.Oss.Client.Error{
+        status: 404,
+        code: "NoSuchBucket",
+        message: "The specified bucket does not exist.",
         parsed_details: %{
           "BucketName" => "unknown-bucket",
           "Code" => "NoSuchBucket",
@@ -109,14 +109,12 @@ defmodule Aliyun.Oss.Bucket.Logging do
           "Message" => "The specified bucket does not exist.",
           "RecommendDoc" => "https://api.aliyun.com/troubleshoot?q=0015-00000101",
           "RequestId" => "5C38283EC84D1C4471F2F48A"
-        },
-        body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>...</xml>",
-        status_code: 404
+        }
       }}
 
   """
   @spec delete(Config.t(), String.t()) ::
-          {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
+          {:error, Exception.t()} | {:ok, Aliyun.Oss.Client.Response.t()}
   def delete(config, bucket) do
     delete_bucket(config, bucket, query_params: %{"logging" => nil})
   end
@@ -158,7 +156,7 @@ defmodule Aliyun.Oss.Bucket.Logging do
   </UserDefinedLogFieldsConfiguration>
   """
   @spec put_user_defined_log_fields_config(Config.t(), String.t(), list(), list()) ::
-          {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
+          {:error, Exception.t()} | {:ok, Aliyun.Oss.Client.Response.t()}
   def put_user_defined_log_fields_config(config, bucket, headers, params) do
     body =
       EEx.eval_string(
@@ -191,7 +189,7 @@ defmodule Aliyun.Oss.Bucket.Logging do
 
   """
   @spec get_user_defined_log_fields_config(Config.t(), String.t()) ::
-          {:error, error()} | {:ok, Response.t()}
+          {:error, Exception.t()} | {:ok, Response.t()}
   def get_user_defined_log_fields_config(config, bucket) do
     get_bucket(config, bucket, query_params: %{"userDefinedLogFieldsConfig" => nil})
   end
@@ -217,7 +215,7 @@ defmodule Aliyun.Oss.Bucket.Logging do
 
   """
   @spec delete_user_defined_log_fields_config(Config.t(), String.t()) ::
-          {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
+          {:error, Exception.t()} | {:ok, Aliyun.Oss.Client.Response.t()}
   def delete_user_defined_log_fields_config(config, bucket) do
     delete_bucket(config, bucket, query_params: %{"userDefinedLogFieldsConfig" => nil})
   end

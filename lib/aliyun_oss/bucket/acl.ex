@@ -74,6 +74,6 @@ defmodule Aliyun.Oss.Bucket.ACL do
   @spec put(Config.t(), String.t(), String.t()) ::
           {:error, Exception.t()} | {:ok, Aliyun.Oss.Client.Response.t()}
   def put(config, bucket, acl) do
-    put_bucket(config, bucket, "", headers: %{"x-oss-acl" => acl, "acl" => acl})
+    put_bucket(config, bucket, "", headers: %{"x-oss-acl" => acl}, query_params: %{"acl" => nil})
   end
 end

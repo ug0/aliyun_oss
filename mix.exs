@@ -2,7 +2,7 @@ defmodule AliyunOss.MixProject do
   use Mix.Project
 
   @source_url "https://github.com/ug0/aliyun_oss"
-  @version "3.2.0"
+  @version "3.3.0"
 
   def project do
     [

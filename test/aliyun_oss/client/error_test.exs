@@ -25,7 +25,7 @@ defmodule Aliyun.Oss.Client.ErrorTest do
     test "xml body is missing `Error` key" do
       assert %Error{
                status: 400,
-               message: @xml,
+               message: @xml
              } = Error.build(400, @xml)
     end
 

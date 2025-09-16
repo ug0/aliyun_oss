@@ -5,10 +5,7 @@ defmodule Aliyun.Oss.Bucket.Inventory do
 
   import Aliyun.Oss.Bucket, only: [get_bucket: 3, put_bucket: 4, delete_bucket: 3]
   alias Aliyun.Oss.Config
-  alias Aliyun.Oss.Client.{Response, Error}
-
-  @type error() ::
-          %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
+  alias Aliyun.Oss.Client.Response
 
   @doc """
   PutBucketInventory - configures inventories for a bucket.
@@ -34,7 +31,7 @@ defmodule Aliyun.Oss.Bucket.Inventory do
 
   """
   @spec put(Config.t(), String.t(), String.t(), String.t()) ::
-          {:error, error()} | {:ok, Response.t()}
+          {:error, Exception.t()} | {:ok, Response.t()}
   def put(config, bucket, inventory_id, config_xml) do
     put_bucket(config, bucket, config_xml,
       query_params: %{"inventory" => nil, "inventoryId" => inventory_id}
@@ -77,7 +74,7 @@ defmodule Aliyun.Oss.Bucket.Inventory do
       }}
 
   """
-  @spec get(Config.t(), String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  @spec get(Config.t(), String.t(), String.t()) :: {:error, Exception.t()} | {:ok, Response.t()}
   def get(config, bucket, inventory_id) do
     get_bucket(config, bucket, query_params: %{"inventory" => nil, "inventoryId" => inventory_id})
   end
@@ -104,7 +101,8 @@ defmodule Aliyun.Oss.Bucket.Inventory do
         }
       }}
   """
-  @spec list(Config.t(), String.t(), nil | String.t()) :: {:error, error()} | {:ok, Response.t()}
+  @spec list(Config.t(), String.t(), nil | String.t()) ::
+          {:error, Exception.t()} | {:ok, Response.t()}
   def list(config, bucket, continuation_token \\ nil) do
     get_bucket(config, bucket,
       query_params: %{
@@ -135,7 +133,7 @@ defmodule Aliyun.Oss.Bucket.Inventory do
 
   """
   @spec delete(Config.t(), String.t(), String.t()) ::
-          {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
+          {:error, Exception.t()} | {:ok, Aliyun.Oss.Client.Response.t()}
   def delete(config, bucket, inventory_id) do
     delete_bucket(config, bucket,
       query_params: %{"inventory" => nil, "inventoryId" => inventory_id}

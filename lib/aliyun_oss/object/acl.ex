@@ -5,10 +5,7 @@ defmodule Aliyun.Oss.Object.ACL do
 
   import Aliyun.Oss.Object, only: [get_object: 4, put_object: 5]
   alias Aliyun.Oss.Config
-  alias Aliyun.Oss.Client.{Response, Error}
-
-  @type error() ::
-          %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
+  alias Aliyun.Oss.Client.Response
 
   @doc """
   GetObjectACL - gets the access control list (ACL) of an object.
@@ -33,7 +30,7 @@ defmodule Aliyun.Oss.Object.ACL do
       }
 
   """
-  @spec get(Config.t(), String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  @spec get(Config.t(), String.t(), String.t()) :: {:error, Exception.t()} | {:ok, Response.t()}
   def get(config, bucket, object) do
     get_object(config, bucket, object, headers: %{}, query_params: %{"acl" => nil})
   end
@@ -55,7 +52,7 @@ defmodule Aliyun.Oss.Object.ACL do
       }
   """
   @spec put(Config.t(), String.t(), String.t(), String.t()) ::
-          {:error, error()} | {:ok, Response.t()}
+          {:error, Exception.t()} | {:ok, Response.t()}
   def put(config, bucket, object, acl) do
     put_object(config, bucket, object, "",
       headers: %{"x-oss-object-acl" => acl},

@@ -7,10 +7,7 @@ defmodule Aliyun.Oss.LiveChannel do
   import Aliyun.Oss.Object, only: [put_object: 5, post_object: 5, get_object: 4, delete_object: 4]
 
   alias Aliyun.Oss.Config
-  alias Aliyun.Oss.Client.{Response, Error}
-
-  @type error() ::
-          %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
+  alias Aliyun.Oss.Client.Response
 
   @doc """
   Creates a signed RTMP ingest URL.
@@ -95,7 +92,7 @@ defmodule Aliyun.Oss.LiveChannel do
 
   """
   @spec put(Config.t(), String.t(), String.t(), String.t()) ::
-          {:error, error()} | {:ok, Response.t()}
+          {:error, Exception.t()} | {:ok, Response.t()}
   def put(config, bucket, channel_name, config_xml) do
     put_object(config, bucket, channel_name, config_xml, query_params: %{"live" => nil})
   end
@@ -143,7 +140,7 @@ defmodule Aliyun.Oss.LiveChannel do
       }
 
   """
-  @spec list(Config.t(), String.t(), keyword()) :: {:error, error()} | {:ok, Response.t()}
+  @spec list(Config.t(), String.t(), keyword()) :: {:error, Exception.t()} | {:ok, Response.t()}
   def list(config, bucket, options \\ []) do
     query_params =
       options
@@ -169,7 +166,8 @@ defmodule Aliyun.Oss.LiveChannel do
       }
 
   """
-  @spec delete(Config.t(), String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  @spec delete(Config.t(), String.t(), String.t()) ::
+          {:error, Exception.t()} | {:ok, Response.t()}
   def delete(config, bucket, channel_name) do
     delete_object(config, bucket, channel_name, query_params: %{"live" => nil})
   end
@@ -191,7 +189,7 @@ defmodule Aliyun.Oss.LiveChannel do
 
   """
   @spec put_status(Config.t(), String.t(), String.t(), String.t()) ::
-          {:error, error()} | {:ok, Response.t()}
+          {:error, Exception.t()} | {:ok, Response.t()}
   def put_status(config, bucket, channel_name, status) do
     put_object(config, bucket, channel_name, "",
       query_params: %{"live" => nil, "status" => status}
@@ -225,7 +223,8 @@ defmodule Aliyun.Oss.LiveChannel do
       }
 
   """
-  @spec get_info(Config.t(), String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  @spec get_info(Config.t(), String.t(), String.t()) ::
+          {:error, Exception.t()} | {:ok, Response.t()}
   def get_info(config, bucket, channel_name) do
     get_object(config, bucket, channel_name, query_params: %{"live" => nil})
   end
@@ -246,7 +245,8 @@ defmodule Aliyun.Oss.LiveChannel do
       }
 
   """
-  @spec get_stat(Config.t(), String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  @spec get_stat(Config.t(), String.t(), String.t()) ::
+          {:error, Exception.t()} | {:ok, Response.t()}
   def get_stat(config, bucket, channel_name) do
     get_object(config, bucket, channel_name, query_params: %{"live" => nil, "comp" => "stat"})
   end
@@ -276,7 +276,8 @@ defmodule Aliyun.Oss.LiveChannel do
       }
 
   """
-  @spec get_history(Config.t(), String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  @spec get_history(Config.t(), String.t(), String.t()) ::
+          {:error, Exception.t()} | {:ok, Response.t()}
   def get_history(config, bucket, channel_name) do
     get_object(config, bucket, channel_name, query_params: %{"live" => nil, "comp" => "history"})
   end
@@ -298,7 +299,7 @@ defmodule Aliyun.Oss.LiveChannel do
 
   """
   @spec post_vod_playlist(Config.t(), String.t(), String.t(), String.t(), integer(), integer()) ::
-          {:error, error()} | {:ok, Response.t()}
+          {:error, Exception.t()} | {:ok, Response.t()}
   def post_vod_playlist(config, bucket, channel_name, list_name, start_time, end_time) do
     post_object(config, bucket, "#{channel_name}/#{list_name}", "",
       query_params: %{"vod" => nil, "startTime" => start_time, "endTime" => end_time}
@@ -322,7 +323,7 @@ defmodule Aliyun.Oss.LiveChannel do
 
   """
   @spec get_vod_playlist(Config.t(), String.t(), String.t(), integer(), integer()) ::
-          {:error, error()} | {:ok, Response.t()}
+          {:error, Exception.t()} | {:ok, Response.t()}
   def get_vod_playlist(config, bucket, channel_name, start_time, end_time) do
     get_object(config, bucket, channel_name,
       query_params: %{

@@ -1,21 +1,32 @@
 defmodule Aliyun.Oss.Client.Error do
-  defstruct [:status_code, :body, :parsed_details]
+  defexception [:status, :code, :message, :details]
 
-  def parse(error = %__MODULE__{body: body}) do
-    %__MODULE__{error | parsed_details: parse_error_xml(body)}
+  @impl true
+  def exception(%{status: status, body: body}) do
+    build(status, body)
   end
 
-  def parse(body, status_code) do
-    parse(%__MODULE__{status_code: status_code, body: body})
+  def build(status, xml_body) when is_binary(xml_body) do
+    case parse_error_xml(xml_body) do
+      %{"Code" => code, "Message" => message} = details ->
+        %__MODULE__{status: status, code: code, message: message, details: details}
+
+      body ->
+        %__MODULE__{status: status, code: nil, message: body, details: nil}
+    end
   end
 
   defp parse_error_xml(xml) do
     try do
-      xml
-      |> XmlToMap.naive_map()
-      |> Map.fetch!("Error")
-    catch
-      {:error, _} -> nil
+      try do
+        xml
+        |> XmlToMap.naive_map()
+        |> Map.fetch!("Error")
+      catch
+        {:error, _} -> xml
+      end
+    rescue
+      KeyError -> xml
     end
   end
 end

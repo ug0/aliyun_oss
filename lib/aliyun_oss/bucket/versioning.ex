@@ -5,10 +5,7 @@ defmodule Aliyun.Oss.Bucket.Versioning do
 
   import Aliyun.Oss.Bucket, only: [get_bucket: 3, put_bucket: 4]
   alias Aliyun.Oss.Config
-  alias Aliyun.Oss.Client.{Response, Error}
-
-  @type error() ::
-          %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
+  alias Aliyun.Oss.Client.Response
 
   @doc """
   PutBucketVersioning - configures the versioning state for a bucket.
@@ -32,7 +29,7 @@ defmodule Aliyun.Oss.Bucket.Versioning do
     <Status><%= status %></Status>
   </VersioningConfiguration>
   """
-  @spec put(Config.t(), String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  @spec put(Config.t(), String.t(), String.t()) :: {:error, Exception.t()} | {:ok, Response.t()}
   def put(config, bucket, status) do
     body_xml = EEx.eval_string(@body_tmpl, status: status)
     put_bucket(config, bucket, body_xml, query_params: %{"versioning" => nil})
@@ -53,7 +50,7 @@ defmodule Aliyun.Oss.Bucket.Versioning do
       }}
 
   """
-  @spec get(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  @spec get(Config.t(), String.t()) :: {:error, Exception.t()} | {:ok, Response.t()}
   def get(config, bucket) do
     get_bucket(config, bucket, query_params: %{"versioning" => nil})
   end
@@ -115,7 +112,7 @@ defmodule Aliyun.Oss.Bucket.Versioning do
 
   """
   @spec list_object_versions(Config.t(), String.t(), map()) ::
-          {:error, error()} | {:ok, Response.t()}
+          {:error, Exception.t()} | {:ok, Response.t()}
   def list_object_versions(config, bucket, query_params \\ %{}) do
     get_bucket(config, bucket, query_params: Map.put(query_params, "versions", nil))
   end

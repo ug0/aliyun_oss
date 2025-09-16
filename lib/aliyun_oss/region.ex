@@ -5,10 +5,7 @@ defmodule Aliyun.Oss.Region do
 
   alias Aliyun.Oss.Config
   alias Aliyun.Oss.Service
-  alias Aliyun.Oss.Client.{Response, Error}
-
-  @type error() ::
-          %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
+  alias Aliyun.Oss.Client.Response
 
   @doc """
   DescribeRegions - lists the region information.
@@ -63,23 +60,22 @@ defmodule Aliyun.Oss.Region do
       iex> Aliyun.Oss.Region.describe_regions(config, "unknown")
       {:error,
         %Aliyun.Oss.Client.Error{
-          status_code: 404,
-          parsed_details: %{
-            "ListBucketResult" => %{
-              "Code" => "NoSuchRegion",
-              "HostId" => "oss-cn-hangzhou.aliyuncs.com",
-              "Message" => "Unknown",
-              "Region" => "unknown",
-              "RequestId" => "5BFF89955E29FF66F10B9763"
-            }
-          },
-          body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>...</xml>"
+          status: 404,
+          code: "NoSuchRegion",
+          message: "unknown",
+          details: %{
+            "Code" => "NoSuchRegion",
+            "HostId" => "oss-cn-hangzhou.aliyuncs.com",
+            "Message" => "unknown",
+            "Region" => "unknown",
+            "RequestId" => "5BFF89955E29FF66F10B9763"
+          }
         }
       }
 
   """
-  @spec describe_regions(Config.t(), String.t()) ::
-          {:error, error()} | {:ok, Response.t()}
+  @spec describe_regions(Config.t(), String.t() | nil) ::
+          {:error, Exception.t()} | {:ok, Response.t()}
   def describe_regions(%Config{} = config, region_id \\ nil) do
     Service.get(config, nil, nil, query_params: %{"regions" => region_id})
   end

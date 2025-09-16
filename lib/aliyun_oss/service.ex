@@ -3,37 +3,34 @@ defmodule Aliyun.Oss.Service do
 
   alias Aliyun.Oss.Config
   alias Aliyun.Oss.Client
-  alias Aliyun.Oss.Client.{Response, Error}
-
-  @type error() ::
-          %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
+  alias Aliyun.Oss.Client.Response
 
   @spec get(Config.t(), String.t() | nil, String.t() | nil, keyword()) ::
-          {:error, error()} | {:ok, Response.t()}
+          {:error, Exception.t()} | {:ok, Response.t()}
   def get(%Config{} = config, bucket, object, options \\ []) do
     request(config, :get, bucket, object, "", options)
   end
 
   @spec post(Config.t(), String.t(), String.t() | nil, String.t(), keyword()) ::
-          {:error, error()} | {:ok, Response.t()}
+          {:error, Exception.t()} | {:ok, Response.t()}
   def post(%Config{} = config, bucket, object, body, options \\ []) do
     request(config, :post, bucket, object, body, options)
   end
 
   @spec put(Config.t(), String.t(), String.t() | nil, String.t(), keyword()) ::
-          {:error, error()} | {:ok, Response.t()}
+          {:error, Exception.t()} | {:ok, Response.t()}
   def put(%Config{} = config, bucket, object, body, options \\ []) do
     request(config, :put, bucket, object, body, options)
   end
 
   @spec delete(Config.t(), String.t(), String.t() | nil, keyword()) ::
-          {:error, error()} | {:ok, Response.t()}
+          {:error, Exception.t()} | {:ok, Response.t()}
   def delete(%Config{} = config, bucket, object, options \\ []) do
     request(config, :delete, bucket, object, "", options)
   end
 
   @spec head(Config.t(), String.t(), String.t() | nil, keyword()) ::
-          {:error, error()} | {:ok, Response.t()}
+          {:error, Exception.t()} | {:ok, Response.t()}
   def head(%Config{} = config, bucket, object, options \\ []) do
     request(config, :head, bucket, object, "", options)
   end
@@ -96,8 +93,10 @@ defmodule Aliyun.Oss.Service do
       iex> Aliyun.Oss.Service.list_buckets(config, query_params: %{"max-keys" => 100000})
       {:error,
         %Aliyun.Oss.Client.Error{
-          status_code: 400,
-          parsed_details: %{
+          status: 400,
+          code: "InvalidArgument",
+          message: "Argument max-keys must be an integer between 1 and 1000.",
+          details: %{
             "ArgumentName" => "max-keys",
             "ArgumentValue" => "100000",
             "Code" => "InvalidArgument",
@@ -106,14 +105,13 @@ defmodule Aliyun.Oss.Service do
             "Message" => "Argument max-keys must be an integer between 1 and 1000.",
             "RecommendDoc" => "https://api.aliyun.com/troubleshoot?q=0017-00000289",
             "RequestId" => "5BFF8912332CCD8D560F65D9"
-          },
-          body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>...</xml>"
+          }
         }
       }
 
   """
   @spec list_buckets(Config.t(), keyword()) ::
-          {:error, error()} | {:ok, Response.t()}
+          {:error, Exception.t()} | {:ok, Response.t()}
   def list_buckets(%Config{} = config, options \\ []) do
     request(config, :get, nil, nil, "", options)
   end

@@ -5,10 +5,7 @@ defmodule Aliyun.Oss.Bucket.Policy do
 
   import Aliyun.Oss.Bucket, only: [get_bucket: 3, put_bucket: 4, delete_bucket: 3]
   alias Aliyun.Oss.Config
-  alias Aliyun.Oss.Client.{Response, Error}
-
-  @type error() ::
-          %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
+  alias Aliyun.Oss.Client.Response
 
   @doc """
   PutBucketPolicy - configures policies for a specified bucket.
@@ -36,7 +33,7 @@ defmodule Aliyun.Oss.Bucket.Policy do
       }}
 
   """
-  @spec put(Config.t(), String.t(), map()) :: {:error, error()} | {:ok, Response.t()}
+  @spec put(Config.t(), String.t(), map()) :: {:error, Exception.t()} | {:ok, Response.t()}
   def put(config, bucket, %{} = policy) do
     put_bucket(config, bucket, Jason.encode!(policy), query_params: %{"policy" => nil})
   end
@@ -66,7 +63,7 @@ defmodule Aliyun.Oss.Bucket.Policy do
       }}
 
   """
-  @spec get(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  @spec get(Config.t(), String.t()) :: {:error, Exception.t()} | {:ok, Response.t()}
   def get(config, bucket) do
     get_bucket(config, bucket, query_params: %{"policy" => nil})
   end
@@ -88,7 +85,7 @@ defmodule Aliyun.Oss.Bucket.Policy do
       }}
 
   """
-  @spec get_status(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  @spec get_status(Config.t(), String.t()) :: {:error, Exception.t()} | {:ok, Response.t()}
   def get_status(config, bucket) do
     get_bucket(config, bucket, query_params: %{"policyStatus" => nil})
   end
@@ -114,7 +111,7 @@ defmodule Aliyun.Oss.Bucket.Policy do
 
   """
   @spec delete(Config.t(), String.t()) ::
-          {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
+          {:error, Exception.t()} | {:ok, Aliyun.Oss.Client.Response.t()}
   def delete(config, bucket) do
     delete_bucket(config, bucket, query_params: %{"policy" => nil})
   end

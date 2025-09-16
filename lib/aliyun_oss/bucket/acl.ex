@@ -5,17 +5,14 @@ defmodule Aliyun.Oss.Bucket.ACL do
 
   import Aliyun.Oss.Bucket, only: [get_bucket: 3, put_bucket: 4]
   alias Aliyun.Oss.Config
-  alias Aliyun.Oss.Client.{Response, Error}
-
-  @type error() ::
-          %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
+  alias Aliyun.Oss.Client.Response
 
   @doc """
   GetBucketAcl - gets the ACL of a bucket.
 
   ## Examples
 
-      iex> Aliyun.Oss.Bucket.ACL.get("some-bucket")
+      iex> Aliyun.Oss.Bucket.ACL.get(config, "some-bucket")
       {:ok, %Aliyun.Oss.Client.Response{
           data: %{
             "AccessControlPolicy" => %{
@@ -31,7 +28,7 @@ defmodule Aliyun.Oss.Bucket.ACL do
       }
 
   """
-  @spec get(Config.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  @spec get(Config.t(), String.t()) :: {:error, Exception.t()} | {:ok, Response.t()}
   def get(config, bucket) do
     get_bucket(config, bucket, query_params: %{"acl" => nil})
   end
@@ -41,7 +38,7 @@ defmodule Aliyun.Oss.Bucket.ACL do
 
   ## Examples
 
-      iex> Aliyun.Oss.Bucket.ACL.put("some-bucket", "public-read")
+      iex> Aliyun.Oss.Bucket.ACL.put(config, "some-bucket", "public-read")
       {:ok,
       %Aliyun.Oss.Client.Response{
         data: "",
@@ -55,10 +52,13 @@ defmodule Aliyun.Oss.Bucket.ACL do
           "x-oss-server-time" => ["479"]
         }
       }}
-      iex> Aliyun.Oss.Bucket.ACL.put("some-bucket", "invalid-permission")
+      iex> Aliyun.Oss.Bucket.ACL.put(config, "some-bucket", "invalid-permission")
       {:error,
       %Aliyun.Oss.Client.Error{
-        parsed_details: %{
+        status: 400,
+        code: "InvalidArgument",
+        message: "no such bucket access control exists",
+        details: %{
           "ArgumentName" => "x-oss-acl",
           "ArgumentValue" => "invalid-permission",
           "Code" => "InvalidArgument",
@@ -67,15 +67,13 @@ defmodule Aliyun.Oss.Bucket.ACL do
           "Message" => "no such bucket access control exists",
           "RecommendDoc" => "https://api.aliyun.com/troubleshoot?q=0015-00000204,
           "RequestId" => "5C3000000000000000000000"
-        },
-        body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>...</xml>",
-        status_code: 400
+        }
       }}
 
   """
   @spec put(Config.t(), String.t(), String.t()) ::
-          {:error, error()} | {:ok, Aliyun.Oss.Client.Response.t()}
+          {:error, Exception.t()} | {:ok, Aliyun.Oss.Client.Response.t()}
   def put(config, bucket, acl) do
-    put_bucket(config, bucket, "", headers: %{"x-oss-acl" => acl, "acl" => acl})
+    put_bucket(config, bucket, "", headers: %{"x-oss-acl" => acl}, query_params: %{"acl" => nil})
   end
 end

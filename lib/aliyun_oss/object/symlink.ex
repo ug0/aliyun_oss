@@ -5,10 +5,7 @@ defmodule Aliyun.Oss.Object.Symlink do
 
   import Aliyun.Oss.Object, only: [get_object: 4, put_object: 5]
   alias Aliyun.Oss.Config
-  alias Aliyun.Oss.Client.{Response, Error}
-
-  @type error() ::
-          %Error{body: String.t(), status_code: integer(), parsed_details: map()} | atom()
+  alias Aliyun.Oss.Client.Response
 
   @doc """
   GetSymlink - gets a symbol link.
@@ -35,7 +32,7 @@ defmodule Aliyun.Oss.Object.Symlink do
       }
 
   """
-  @spec get(Config.t(), String.t(), String.t()) :: {:error, error()} | {:ok, Response.t()}
+  @spec get(Config.t(), String.t(), String.t()) :: {:error, Exception.t()} | {:ok, Response.t()}
   def get(config, bucket, object) do
     get_object(config, bucket, object, headers: %{}, query_params: %{"symlink" => nil})
   end
@@ -70,7 +67,7 @@ defmodule Aliyun.Oss.Object.Symlink do
 
   """
   @spec put(Config.t(), String.t(), String.t(), String.t(), keyword()) ::
-          {:error, error()} | {:ok, Response.t()}
+          {:error, Exception.t()} | {:ok, Response.t()}
   def put(config, bucket, symlink, target_object, options \\ []) do
     storage_class = Keyword.get(options, :storage_class, "Standard")
     acl = Keyword.get(options, :acl, "default")

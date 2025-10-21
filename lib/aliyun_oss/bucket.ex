@@ -1,4 +1,6 @@
 defmodule Aliyun.Oss.Bucket do
+  require Logger
+
   @moduledoc """
   Bucket operations - basic operations.
 
@@ -164,6 +166,81 @@ defmodule Aliyun.Oss.Bucket do
       config,
       bucket,
       Keyword.update(options, :query_params, @query_params, &Map.merge(&1, @query_params))
+    )
+  end
+
+  @doc """
+  returns all objects in a bucket in stream
+
+  ## Options
+
+  - `:query_params` - Defaults to `%{}`
+  - `:headers` - Defaults to `%{}`
+
+  ## Examples
+
+      iex> stream = Aliyun.Oss.Bucket.stream_objects(config, "some-bucket", query_params: %{"prefix" => "foo/"})
+      iex> Enum.to_list(stream)
+      [
+        %{
+          "ETag" => "\"D410293F000B000D00D\"",
+          "key" => "foo/bar",
+          "LastModified" => "2018-09-12T02:59:41.000Z",
+          "Owner" => %{"DislayName" => "11111111", "ID" => "11111111"},
+          "Size" => "12345",
+          "StorageClass" => "IA",
+          "Type" => "Normal"
+        },
+        ...
+      ]
+  """
+  @query_params %{"list-type" => 2}
+  @spec stream_objects(Config.t(), String.t(), keyword()) :: Enumerable.t()
+  def stream_objects(%Config{} = config, bucket, options \\ []) do
+    Stream.resource(
+      fn -> list_objects(config, bucket, options) end,
+      fn
+        {:ok,
+         %Response{
+           data: %{
+             "ListBucketResult" => %{
+               "IsTruncated" => true,
+               "Contents" => contents,
+               "NextContinuationToken" => next_token
+             }
+           }
+         }} ->
+          {contents,
+           list_objects(
+             config,
+             bucket,
+             Keyword.update(
+               options,
+               :query_params,
+               Map.put(@query_params, "continuation-token", next_token),
+               &Map.put(&1, "continuation-token", next_token)
+             )
+           )}
+
+        {:ok,
+         %Response{
+           data: %{
+             "ListBucketResult" => %{
+               "IsTruncated" => false,
+               "Contents" => contents
+             }
+           }
+         }} ->
+          {contents, :done}
+
+        :done ->
+          {:halt, :done}
+
+        {:error, error} ->
+          Logger.error(error)
+          {:halt, error}
+      end,
+      fn _ -> :done end
     )
   end
 

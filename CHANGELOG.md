@@ -1,5 +1,8 @@
 # Changelog
 
+## v3.3.1
+- Add function: `Aliyun.Oss.Bucket.stream_objects/3`
+
 ## v3.3.0
 - **Breaking changes**: Rewrite `Aliyun.Oss.Client.Error` to implement the `Exception` behaviour. Now all API requests will either return `{:ok, Aliyun.Oss.Client.Response.t()}` or `{:error, Exception.t()}`
 - Fix functions:

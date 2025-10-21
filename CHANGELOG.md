@@ -1,5 +1,8 @@
 # Changelog
 
+## v3.3.2
+- Add function: `Aliyun.Oss.Bucket.stream_objects/3`
+
 ## v3.3.1
 - Replace `Jason` with built-in `JSON`
 

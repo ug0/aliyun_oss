@@ -29,7 +29,6 @@ defmodule AliyunOss.MixProject do
     [
       {:aliyun_util, "~> 0.4.1"},
       {:elixir_xml_to_map, "~> 3.0"},
-      {:jason, "~> 1.1"},
       {:mock, "~> 0.3.0", only: :test},
       {:ex_doc, "~> 0.20", only: :dev, runtime: false}
     ]
